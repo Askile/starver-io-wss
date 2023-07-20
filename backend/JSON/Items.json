@@ -91,31 +91,37 @@
   },
   "PICK_WOOD": {
     "type": "tool",
+    "harvest": 1,
     "damage": 6,
     "id": 8
   },
   "PICK": {
     "type": "tool",
+    "harvest": 2,
     "damage": 6,
     "id": 1
   },
   "PICK_GOLD": {
     "type": "tool",
+    "harvest": 3,
     "damage": 6,
     "id": 3
   },
   "PICK_DIAMOND": {
     "type": "tool",
+    "harvest": 4,
     "damage": 6,
     "id": 4
   },
   "PICK_AMETHYST": {
     "type": "tool",
+    "harvest": 5,
     "damage": 6,
     "id": 31
   },
   "PICK_REIDITE": {
     "type": "tool",
+    "harvest": 6,
     "damage": 6,
     "id": 32
   },

@@ -1,7 +1,7 @@
 import {Entity} from "./Entity";
 import {Server} from "../Server";
 import NanoTimer from "nanotimer";
-import ServerConfig from "../ServerConfig.json";
+import ServerConfig from "../JSON/ServerConfig.json";
 
 export class Box extends Entity {
     private item: number;
@@ -17,8 +17,12 @@ export class Box extends Entity {
         this.id = this.server.entityPool.createId();
         this.server.entities.push(this);
 
-        new NanoTimer().setTimeout(() => {
-            this.delete();
-        }, [], "16s");
+        new NanoTimer().setTimeout(
+            () => {
+                this.delete();
+            },
+            [],
+            "16s"
+        );
     }
 }

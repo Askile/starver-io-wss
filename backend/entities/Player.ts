@@ -1,15 +1,13 @@
 import {Entity} from "./Entity";
 import {Client} from "../network/Client";
-import {
-    getDefaultCamera, getDefaultHelmet, getDefaultItem, getDefaultPet,
-    getDefaultPlayerCosmetics,
-    getDefaultPlayerData,
-    getDefaultPlayerStats
-} from "../defaultValues";
+import {getDefaultCamera, getDefaultHelmet, getDefaultItem, getDefaultPet, getDefaultPlayerCosmetics, getDefaultPlayerData, getDefaultPlayerStats} from "../defaultValues";
 import {EntityType} from "../enums/EntityType";
 import {Inventory} from "./playerComponents/Inventory";
 import {InventoryType} from "../enums/InventoryType";
 import {InteractionManager} from "./playerComponents/InteractionManager";
+import {CommandManager} from "./playerComponents/CommandManager";
+import {AttackManager} from "./playerComponents/AttackManager";
+import {objects} from "../JSON/Resouces.json";
 
 export class Player extends Entity {
     public client: Client;
@@ -19,8 +17,9 @@ export class Player extends Entity {
     public camera: Camera;
     public inventory: Inventory;
     public interactionManager: InteractionManager;
+    public commandManager: CommandManager;
+    public attackManager: AttackManager;
 
-    public isAttack: boolean = false;
     public helmet: any = getDefaultHelmet();
     public right: any = getDefaultItem();
     public pet: any = getDefaultPet();
@@ -35,7 +34,8 @@ export class Player extends Entity {
         this.camera = getDefaultCamera();
         this.inventory = new Inventory(this, 10);
         this.interactionManager = new InteractionManager(this);
-
+        this.commandManager = new CommandManager(this);
+        this.attackManager = new AttackManager(this);
 
         setTimeout(() => {
             this.client.sendBinary(this.inventory.giveItem(InventoryType.PICK_WOOD, 1));
@@ -47,8 +47,9 @@ export class Player extends Entity {
             this.client.sendBinary(this.inventory.giveItem(InventoryType.BABY_LAVA, 1));
             this.client.sendBinary(this.inventory.giveItem(InventoryType.LAVA_HELMET, 1));
             this.client.sendBinary(this.inventory.giveItem(InventoryType.LAVA_SWORD, 1));
+            this.client.sendBinary(this.inventory.giveItem(InventoryType.REIDITE_SHIELD, 10));
+
+            this.client.sendJSON([7, objects]);
         });
-
     }
-
 }

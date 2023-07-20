@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InteractionManager = void 0;
-const Items_json_1 = __importDefault(require("../../Items.json"));
+const Items_json_1 = __importDefault(require("../../JSON/Items.json"));
 const InventoryType_1 = require("../../enums/InventoryType");
 const defaultValues_1 = require("../../defaultValues");
 class InteractionManager {
@@ -25,6 +25,8 @@ class InteractionManager {
     }
     useItem(id) {
         const itemName = InventoryType_1.InventoryType[id];
+        if (id !== 7 && !this.player.inventory.items.has(id))
+            return;
         if (id === 7 && Date.now() - this.lastSwordUse >= 10e3) {
             this.player.right = (0, defaultValues_1.getDefaultItem)();
         }

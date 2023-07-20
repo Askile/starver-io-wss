@@ -33,6 +33,6 @@ export class Vector {
         return new Vector(this.x / divisor, this.y / divisor);
     }
     public multiply(scalar: number) {
-        return new Vector(this.x / scalar, this.y / scalar);
+        return new Vector(this.x * scalar, this.y * scalar);
     }
 }

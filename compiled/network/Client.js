@@ -6,16 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Client = void 0;
 const msgpack_lite_1 = __importDefault(require("msgpack-lite"));
 const Player_1 = require("../entities/Player");
-const Logger_1 = require("../modules/Logger");
 const Handshake_1 = require("../packets/Handshake");
 const nanotimer_1 = __importDefault(require("nanotimer"));
 const EntityType_1 = require("../enums/EntityType");
 const Box_1 = require("../entities/Box");
 const ActionType_1 = require("../enums/ActionType");
-const logger = new Logger_1.Logger("./logs/", {
-    console: false,
-    file: true,
-});
+const ServerPackets_1 = require("../enums/packets/ServerPackets");
 class Client {
     socket;
     packetsQty = new Array(36).fill(0);
@@ -77,21 +73,21 @@ class Client {
             return;
         }
         switch (PACKET_TYPE) {
-            case 0:
+            case ServerPackets_1.ServerPackets.CHAT:
                 this.broadcast(JSON.stringify([0, this.player.id, PACKET]));
                 break;
-            case 2:
+            case ServerPackets_1.ServerPackets.MOVEMENT:
                 this.player.direction = PACKET;
                 break;
-            case 3:
+            case ServerPackets_1.ServerPackets.ANGLE:
                 this.player.angle = Number(PACKET) % 255;
                 break;
-            case 4:
+            case ServerPackets_1.ServerPackets.ATTACK:
                 this.player.angle = Number(PACKET) % 255;
                 this.player.action |= ActionType_1.ActionType.ATTACK;
-                this.player.isAttack = true;
+                this.player.attackManager.isAttack = true;
                 break;
-            case 5:
+            case ServerPackets_1.ServerPackets.INTERACTION:
                 this.player.interactionManager.useItem(PACKET);
                 break;
             case 6:
@@ -104,7 +100,7 @@ class Client {
                 this.sendBinary(this.player.inventory.deleteItem(PACKET));
                 break;
             case 14:
-                this.player.isAttack = false;
+                this.player.attackManager.isAttack = false;
                 break;
             case 28:
                 if (this.player.inventory.items.has(PACKET))
@@ -114,6 +110,9 @@ class Client {
                         count: 1
                     });
                 this.sendBinary(this.player.inventory.removeItem(PACKET, 1));
+                break;
+            case 36:
+                this.player.commandManager.handleCommand(PACKET);
                 break;
         }
     }
