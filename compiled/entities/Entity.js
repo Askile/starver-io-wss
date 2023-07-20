@@ -7,7 +7,7 @@ exports.Entity = void 0;
 const Vector_1 = require("../modules/Vector");
 const EntitySpeed_1 = require("./components/EntitySpeed");
 const EntityBiome_1 = require("./components/EntityBiome");
-const ServerConfig_json_1 = __importDefault(require("../ServerConfig.json"));
+const ServerConfig_json_1 = __importDefault(require("../JSON/ServerConfig.json"));
 const nanotimer_1 = __importDefault(require("nanotimer"));
 class Entity {
     position;
@@ -15,7 +15,6 @@ class Entity {
     direction;
     server;
     old;
-    isCollide;
     biomes;
     type;
     id;
@@ -45,11 +44,10 @@ class Entity {
             extra: this.extra,
             type: this.type
         };
-        this.isCollide = false;
         this.biomes = [];
     }
     getSpawn() {
-        let biomes = this.server.map.biomes.filter(biome => biome.type === EntityBiome_1.entityBiome[this.type]);
+        let biomes = this.server.map.biomes.filter((biome) => biome.type === EntityBiome_1.entityBiome[this.type]);
         if (!biomes.length)
             return new Vector_1.Vector(0, 0);
         let iteration = 0;
@@ -58,7 +56,7 @@ class Entity {
         while (iteration < maxIteration) {
             iteration++;
             const biome = biomes[~~(Math.random() * biomes.length)];
-            position = new Vector_1.Vector((biome.position.x + ~~(Math.random() * biome.size.x)), (biome.position.y + ~~(Math.random() * biome.size.y)));
+            position = new Vector_1.Vector(biome.position.x + ~~(Math.random() * biome.size.x), biome.position.y + ~~(Math.random() * biome.size.y));
             const chunkX = Math.floor(position.x / 100);
             const chunkY = Math.floor(position.y / 100);
             if (!this.server.map.chunks[chunkY][chunkX]) {
@@ -68,19 +66,13 @@ class Entity {
         return position;
     }
     queryUpdate() {
-        return this.old.position.x !== this.position.x ||
-            this.old.position.y !== this.position.y ||
-            this.old.angle !== this.angle ||
-            this.old.action !== this.action ||
-            this.old.info !== this.info ||
-            this.old.extra !== this.extra ||
-            this.old.speed !== this.speed;
+        return this.old.position.x !== this.position.x || this.old.position.y !== this.position.y || this.old.angle !== this.angle || this.old.action !== this.action || this.old.info !== this.info || this.old.extra !== this.extra || this.old.speed !== this.speed;
     }
     delete() {
         this.server.entityPool.deleteId(this.id);
         this.action = 1;
         new nanotimer_1.default().setTimeout(() => {
-            this.server.entities = this.server.entities.filter(entity => entity != this);
+            this.server.entities = this.server.entities.filter((entity) => entity != this);
         }, [], 1 / ServerConfig_json_1.default.network_tps + "s");
     }
 }

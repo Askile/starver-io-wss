@@ -31,7 +31,7 @@ class Vector {
         return new Vector(this.x / divisor, this.y / divisor);
     }
     multiply(scalar) {
-        return new Vector(this.x / scalar, this.y / scalar);
+        return new Vector(this.x * scalar, this.y * scalar);
     }
 }
 exports.Vector = Vector;

@@ -1,4 +1,4 @@
-import Items from "../../Items.json";
+import Items from "../../JSON/Items.json";
 import {InventoryType} from "../../enums/InventoryType";
 import {Player} from "../Player";
 import {getDefaultHelmet, getDefaultItem, getDefaultPet} from "../../defaultValues";
@@ -16,7 +16,6 @@ export class InteractionManager {
 
     private initConfig() {
         // const config = this.player.client.server.config;
-
         // this.items["BABY_MAMMOTH"].speed = config.speed_mount_baby_mammoth ?? this.items["BABY_MAMMOTH"].speed;
         // this.items["BABY_LAVA"].speed = config.speed_mount_baby_lava | this.items["BABY_LAVA"].speed;
         // this.items["BABY_DRAGON"].speed = config.speed_mount_baby_dragon ?? this.items["BABY_DRAGON"].speed;
@@ -24,23 +23,22 @@ export class InteractionManager {
 
     public useItem(id: number) {
         const itemName = InventoryType[id];
-        if(id === 7 && Date.now() - this.lastSwordUse >= 10e3) {
+        if (id !== 7 && !this.player.inventory.items.has(id)) return;
+        if (id === 7 && Date.now() - this.lastSwordUse >= 10e3) {
             this.player.right = getDefaultItem();
-        } else if(this.isInHand(itemName) && Date.now() - this.lastSwordUse >= 10e3){
+        } else if (this.isInHand(itemName) && Date.now() - this.lastSwordUse >= 10e3) {
             this.player.right = this.items[itemName];
-            if(this.isWeapon(itemName))
-                this.lastSwordUse = Date.now();
-        } else if(this.isHelmet(itemName) && Date.now() - this.lastHelmUse >= 5e3) {
+            if (this.isWeapon(itemName)) this.lastSwordUse = Date.now();
+        } else if (this.isHelmet(itemName) && Date.now() - this.lastHelmUse >= 5e3) {
             const helmet = this.items[itemName];
-            if(this.player.helmet.id == id)
-                this.player.helmet = getDefaultHelmet();
+            if (this.player.helmet.id == id) this.player.helmet = getDefaultHelmet();
             else {
                 this.player.helmet = helmet;
                 this.lastHelmUse = Date.now();
             }
         } else if (this.isPet(itemName)) {
             const pet = this.items[itemName];
-            if(this.player.pet.id == id) {
+            if (this.player.pet.id == id) {
                 this.player.pet = getDefaultPet();
             } else this.player.pet = pet;
         }
@@ -65,5 +63,4 @@ export class InteractionManager {
     private isHelmet(name: string) {
         return this.items[name].type === "helmet";
     }
-
 }

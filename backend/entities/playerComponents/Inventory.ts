@@ -2,6 +2,8 @@ import {BinaryWriter} from "../../modules/BinaryWriter";
 import {InventoryType} from "../../enums/InventoryType";
 import {Player} from "../Player";
 import {getDefaultHelmet, getDefaultItem, getDefaultPet} from "../../defaultValues";
+import {ClientPackets} from "../../enums/packets/ClientPackets";
+import {ServerPackets} from "../../enums/packets/ServerPackets";
 
 export class Inventory {
     public items: Map<number, number>;
@@ -13,15 +15,15 @@ export class Inventory {
         this.size = size;
     }
 
-    public giveItem(id: number, count: number): Buffer {
-        if (this.items.size + 1 <= this.size) {
-            if (this.items.has(id)) {
-                const itemQty = this.items.get(id) as number;
-                this.items.set(id, itemQty + count);
-            } else this.items.set(id, count)
+    public giveItem(id: number, count: number): Buffer | undefined {
+        if (this.items.has(id)) {
+            const itemQty = this.items.get(id) as number;
+            this.items.set(id, itemQty + count);
+        } else if (this.items.size + 1 <= this.size) {
+            this.items.set(id, count);
         } else {
             const writer = new BinaryWriter();
-            writer.writeUInt8(10);
+            writer.writeUInt8(ClientPackets.INV_FULL);
 
             return writer.toBuffer();
         }
@@ -45,7 +47,7 @@ export class Inventory {
                 this.items.set(id, newQty);
             }
             const writer = new BinaryWriter();
-            writer.writeUInt16(62);
+            writer.writeUInt16(ClientPackets.DELETE_SINGLE_INV);
             writer.writeUInt16(id);
             writer.writeUInt16(count);
             return writer.toBuffer();
@@ -58,20 +60,20 @@ export class Inventory {
 
             this.unEquipItem(id);
             const writer = new BinaryWriter();
-            writer.writeUInt8(52);
+            writer.writeUInt8(ClientPackets.DELETE_INV_OK);
             writer.writeUInt8(id);
             return writer.toBuffer();
         }
     }
 
     private unEquipItem(id: number) {
-        if(this.player.helmet.id == id) {
+        if (this.player.helmet.id == id) {
             this.player.helmet = getDefaultHelmet();
         }
-        if(this.player.pet.id == id) {
+        if (this.player.pet.id == id) {
             this.player.pet = getDefaultPet();
         }
-        if(this.player.right.id == id) {
+        if (this.player.right.id == id) {
             this.player.right = getDefaultItem();
         }
     }
@@ -87,7 +89,7 @@ export class Inventory {
 
         this.unEquipInventory();
         const writer = new BinaryWriter();
-        writer.writeUInt8(59);
+        writer.writeUInt8(ClientPackets.CLEAN_INVENTORY);
         return writer.toBuffer();
     }
 }
