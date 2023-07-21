@@ -4,6 +4,10 @@ import {IdPool} from "./modules/IdPool";
 import {WebSocketServer} from "./network/WebSocketServer";
 import {Ticker} from "./world/Ticker";
 import {Map} from "./world/Map";
+import {Leaderboard} from "./components/Leaderboard";
+import {Movement} from "./components/Movement";
+import * as uWS from "uWebSockets.js";
+import {Collision} from "./components/Collision";
 
 export class Server {
     public players: Player[] = [];
@@ -12,7 +16,11 @@ export class Server {
     public entityPool: IdPool;
     public wss: WebSocketServer;
     public config: Config;
+
     public map: Map;
+    public leaderboard: Leaderboard;
+    public movement: Movement;
+    public collision: Collision;
 
     private ticker: Ticker;
 
@@ -23,9 +31,19 @@ export class Server {
         this.config = config;
         this.map = new Map(this.config);
 
+        this.leaderboard = new Leaderboard(this);
+        this.movement = new Movement(this);
+        this.collision = new Collision(this);
+
         this.ticker = new Ticker(this);
     }
 
-
-
+    public broadcast(message: any, isBinary: boolean = false, selfSocket: uWS.WebSocket<any> | undefined = undefined) {
+        if (!message) return;
+        const clients = Array.from(this.wss.clients.values());
+        for (const client of clients) {
+            if (selfSocket && client.socket === selfSocket) continue;
+            client.socket.send(message, isBinary);
+        }
+    }
 }

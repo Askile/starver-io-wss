@@ -11,7 +11,6 @@ export class Entity {
     public server: Server;
 
     public old: any;
-    public biomes: Biome[];
 
     public type: number;
     public id: number;
@@ -44,8 +43,6 @@ export class Entity {
             extra: this.extra,
             type: this.type
         };
-
-        this.biomes = [];
     }
 
     public getSpawn() {
@@ -60,10 +57,11 @@ export class Entity {
             const biome = biomes[~~(Math.random() * biomes.length)];
 
             position = new Vector(biome.position.x + ~~(Math.random() * biome.size.x), biome.position.y + ~~(Math.random() * biome.size.y));
-
             const chunkX = Math.floor(position.x / 100);
             const chunkY = Math.floor(position.y / 100);
-            if (!this.server.map.chunks[chunkY][chunkX]) {
+
+            const chunks = this.server.map.getChunks(chunkX, chunkY, 2);
+            if (!chunks.length) {
                 iteration = maxIteration;
             }
         }
@@ -72,7 +70,7 @@ export class Entity {
     }
 
     public queryUpdate() {
-        return this.old.position.x !== this.position.x || this.old.position.y !== this.position.y || this.old.angle !== this.angle || this.old.action !== this.action || this.old.info !== this.info || this.old.extra !== this.extra || this.old.speed !== this.speed;
+        return this.old.position.x != this.position.x || this.old.position.y != this.position.y || this.old.angle != this.angle || this.old.action != this.action || this.old.info != this.info || this.old.extra != this.extra || this.old.speed != this.speed;
     }
 
     public delete() {

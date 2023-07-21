@@ -4,7 +4,7 @@
       "type": "p",
       "subtype": 0,
       "radius": 77,
-      "resource": "berry",
+      "resource": "PLANT",
       "limit": 5,
       "id": 0
     },
@@ -12,7 +12,7 @@
       "type": "s",
       "subtype": 0,
       "radius": 102,
-      "resource": "stone",
+      "resource": "STONE",
       "limit": 60,
       "id": 1
     },
@@ -20,126 +20,147 @@
       "type": "s",
       "subtype": 1,
       "radius": 87,
+      "resource":"STONE",
       "id": 2
     },
     {
       "type": "s",
       "subtype": 2,
       "radius": 58,
+      "resource": "STONE",
       "id": 3
     },
     {
       "type": "t",
       "subtype": 0,
       "radius": 102,
+      "resource":"WOOD",
       "id": 4
     },
     {
       "type": "t",
       "subtype": 1,
       "radius": 102,
+      "resource": "WOOD",
       "id": 5
     },
     {
       "type": "t",
       "subtype": 2,
       "radius": 77,
+      "resource": "WOOD",
       "id": 6
     },
     {
       "type": "t",
       "subtype": 3,
       "radius": 77,
+      "resource": "WOOD",
       "id": 7
     },
     {
       "type": "t",
       "subtype": 4,
       "radius": 60,
+      "resource": "WOOD",
       "id": 8
     },
     {
       "type": "t",
       "subtype": 5,
       "radius": 60,
+      "resource": "WOOD",
       "id": 9
     },
     {
       "type": "g",
       "subtype": 0,
       "radius": 90,
+      "resource": "GOLD",
       "id": 10
     },
     {
       "type": "g",
       "subtype": 1,
       "radius": 75,
+      "resource": "GOLD",
       "id": 11
     },
     {
       "type": "g",
       "subtype": 2,
       "radius": 65,
+      "resource": "GOLD",
       "id": 12
     },
     {
       "type": "d",
       "subtype": 0,
       "radius": 85,
+      "resource": "DIAMOND",
       "id": 13
     },
     {
       "type": "d",
       "subtype": 1,
       "radius": 75,
+      "resource": "DIAMOND",
       "id": 14
     },
     {
       "type": "d",
       "subtype": 2,
       "radius": 60,
+      "resource": "DIAMOND",
       "id": 15
     },
     {
       "type": "b",
       "subtype": 0,
       "radius": 97,
+      "resource": "WOOD",
       "id": 16
     },
     {
       "type": "b",
       "subtype": 1,
       "radius": 97,
+      "resource":  "WOOD",
       "id": 17
     },
     {
       "type": "b",
       "subtype": 2,
       "radius": 80,
+      "resource":  "WOOD",
       "id": 18
     },
     {
       "type": "b",
       "subtype": 3,
       "radius": 80,
+      "resource":  "WOOD",
       "id": 19
     },
     {
       "type": "f",
       "subtype": 0,
       "radius": 140,
+      "resource": "WOOD",
       "id": 20
     },
     {
       "type": "f",
       "subtype": 1,
       "radius": 115,
+      "resource":  "WOOD",
       "id": 21
     },
     {
       "type": "f",
       "subtype": 2,
       "radius": 95,
+      "resource":  "WOOD",
       "id": 22
     },
     {

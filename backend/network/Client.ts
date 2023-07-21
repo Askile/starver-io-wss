@@ -61,31 +61,20 @@ export class Client {
             }
 
             this.receivePacket(PACKET_TYPE, PACKET, PACKET_DATA);
-        } catch (error) {
-            // Обработка ошибки
-        }
+        } catch (error) {}
     }
 
     public receivePacket(PACKET_TYPE: number, PACKET: any, PACKET_DATA: number[]) {
         this.packetsQty[PACKET_TYPE]++;
         this.packetsSize[PACKET_TYPE] += PACKET_DATA.length;
 
-        if (this.packetsQty[0] > 5) {
-            this.socket.close();
-            return;
-        }
-        if (this.packetsQty[3] > 10) {
-            this.socket.close();
-            return;
-        }
-        if (this.packetsQty[PACKET_TYPE] > 30) {
-            this.socket.close();
-            return;
-        }
+        if (this.packetsQty[0] > 5) return this.socket.close();
+        if (this.packetsQty[3] > 10) return this.socket.close();
+        if (this.packetsQty[PACKET_TYPE] > 30) return this.socket.close();
 
         switch (PACKET_TYPE) {
             case ServerPackets.CHAT:
-                this.broadcast(JSON.stringify([0, this.player.id, PACKET]));
+                this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]));
                 break;
             case ServerPackets.MOVEMENT:
                 this.player.direction = PACKET;
@@ -94,9 +83,10 @@ export class Client {
                 this.player.angle = Number(PACKET) % 255;
                 break;
             case ServerPackets.ATTACK:
+                this.player.attackManager.isAttack = true;
                 this.player.angle = Number(PACKET) % 255;
                 this.player.action |= ActionType.ATTACK;
-                this.player.attackManager.isAttack = true;
+                this.player.attackManager.tick();
                 break;
             case ServerPackets.INTERACTION:
                 this.player.interactionManager.useItem(PACKET);
@@ -149,12 +139,5 @@ export class Client {
 
     public sendBinary(message: Uint8Array | Uint16Array | Uint32Array | undefined) {
         if (this.isActive && message) this.socket.send(message, true);
-    }
-
-    public broadcast(message: any) {
-        const clients = Array.from(this.server.wss.clients.values());
-        for (const client of clients) {
-            if (client.socket !== this.socket) client.socket.send(message);
-        }
     }
 }

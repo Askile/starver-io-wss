@@ -11,7 +11,7 @@ const MAX_VALUES = {
     CRATE: 71,
     BAG: 69,
     BOOK: 44
-}
+};
 
 export class Handshake {
     private readonly request: any;
@@ -58,23 +58,23 @@ export class Handshake {
 
     public testValid(): boolean {
         const typesToCheck = [
-            { type: "string", indices: [0, 4] },
-            { type: "number", indices: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11] }
+            {type: "string", indices: [0, 4]},
+            {type: "number", indices: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11]}
         ];
 
-        for (const { type, indices } of typesToCheck) {
+        for (const {type, indices} of typesToCheck) {
             for (const index of indices) {
                 const requestValue = this.request[index];
                 const requestType = typeof requestValue;
 
-                if(requestType !== type) return false;
+                if (requestType !== type) return false;
             }
         }
 
         return true;
     }
     public setupPlayer(player: Player) {
-        if(!this.testValid()) return;
+        if (!this.testValid()) return;
         player.id = this.server.playerPool.createId();
         player.data.nickname = this.nickname.slice(0, 16);
         player.camera.width = Math.max(getDefaultCamera().width, Math.min(3840, this.camera.width));
@@ -95,16 +95,16 @@ export class Handshake {
         this.client.sendJSON([
             ClientStringPackets.HANDSHAKE,
             GameMode.NORMAL,
-            0,           // TODO: days
+            0, // TODO: days
             player.position.x,
             players,
-            0,           // TODO: time
+            0, // TODO: time
             0,
             this.config.important.max_units,
             [],
             player.id,
             player.position.y,
-            100,         //TODO: max players
+            100, //TODO: max players
             "token fucking",
             0,
             [],
@@ -123,15 +123,6 @@ export class Handshake {
             0
         ]);
 
-        this.client.broadcast(JSON.stringify([
-            2,
-            player.id,
-            player.data.nickname,
-            player.data.level,
-            player.cosmetics.skin,
-            player.cosmetics.accessory,
-            player.cosmetics.bag,
-            player.cosmetics.book
-        ]));
+        this.server.broadcast(JSON.stringify([2, player.id, player.data.nickname, player.data.level, player.cosmetics.skin, player.cosmetics.accessory, player.cosmetics.bag, player.cosmetics.book]));
     }
 }

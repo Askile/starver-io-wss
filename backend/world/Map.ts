@@ -1,8 +1,10 @@
 import {Vector} from "../modules/Vector";
 import {objects} from "../JSON/Resouces.json";
+import {Biome} from "./map/Biome";
+import {Tile} from "./map/Tile";
 
 export class Map {
-    private readonly tiles: any[] = [];
+    private readonly objects: any[] = [];
     public width: number;
     public height: number;
 
@@ -10,7 +12,7 @@ export class Map {
     public biomes: Biome[] = [];
 
     constructor(config: Config) {
-        this.tiles = config.important.custom_map;
+        this.objects = config.important.custom_map;
         this.width = config.important.map_width * 100;
         this.height = config.important.map_height * 100;
         this.initCollision();
@@ -18,19 +20,18 @@ export class Map {
     }
 
     public initBiomes() {
-        for (const tile of this.tiles) {
+        for (const tile of this.objects) {
             const [type, x, y, sx, sy] = tile.slice(1, 6);
             if (!this.isTileTypeBiome(type)) continue;
-            this.biomes.push({
-                type,
-                position: new Vector(x * 100, y * 100),
-                size: new Vector(sx * 100, sy * 100)
-            } as any);
+            this.biomes.push(new Biome(type, new Vector(x * 100, y * 100), new Vector(sx * 100, sy * 100)));
         }
     }
 
+    /**
+     * Initialize chunks to map
+     */
     public initCollision() {
-        const numChunks = Math.ceil(this.width);
+        const numChunks = Math.ceil(this.height / 100);
         this.chunks = Array(numChunks)
             .fill(null)
             .map(() =>
@@ -39,27 +40,42 @@ export class Map {
                     .map(() => [])
             );
 
-        for (const tile of this.tiles) {
+        for (const tile of this.objects) {
             const [type, subtype, x, y] = tile.slice(1);
             if (this.isTileTypeBiome(type)) continue;
 
-            const chunkX = Math.floor(x);
-            const chunkY = Math.floor(y);
-
-            const chunkRow = this.chunks[chunkY][chunkX];
-
             const object = objects.find((object) => object.type == type && object.subtype == subtype);
 
-            if (object)
-                chunkRow.push({
-                    type,
-                    subtype,
-                    id: object.id,
-                    radius: object.radius,
-                    x,
-                    y
-                });
+            if (object) {
+                this.chunks[Math.floor(y)][Math.floor(x)].push(new Tile(new Vector(x, y), object));
+            }
         }
+    }
+
+    /**
+     * Retrieves chunks of data from a 2D grid based on the provided coordinates and size.
+     *
+     * @param {number} x - The X-coordinate to start retrieving chunks from.
+     * @param {number} y - The Y-coordinate to start retrieving chunks from.
+     * @param {number} size - The size of the area to retrieve chunks around the specified coordinates.
+     * @returns {Array<any>} An array containing the chunks of data retrieved from the grid.
+     */
+    public getChunks(x: number, y: number, size: number) {
+        const chunkX = Math.floor(x / 100);
+        const chunkY = Math.floor(y / 100);
+        const chunks = [];
+
+        for (let offsetY = -size; offsetY <= size; offsetY++) {
+            const chunkRow = this.chunks[chunkY + offsetY];
+
+            for (let offsetX = -size; offsetX <= size; offsetX++) {
+                const row = chunkRow && chunkRow[chunkX + offsetX];
+                if (row) {
+                    chunks.push(...row);
+                }
+            }
+        }
+        return chunks;
     }
 
     private isTileTypeBiome(type: string) {

@@ -6,8 +6,8 @@ import {Inventory} from "./playerComponents/Inventory";
 import {InventoryType} from "../enums/InventoryType";
 import {InteractionManager} from "./playerComponents/InteractionManager";
 import {CommandManager} from "./playerComponents/CommandManager";
-import {AttackManager} from "./playerComponents/AttackManager";
 import {objects} from "../JSON/Resouces.json";
+import {AttackManager} from "./playerComponents/AttackManager";
 
 export class Player extends Entity {
     public client: Client;
@@ -17,9 +17,10 @@ export class Player extends Entity {
     public camera: Camera;
     public inventory: Inventory;
     public interactionManager: InteractionManager;
-    public commandManager: CommandManager;
     public attackManager: AttackManager;
+    public commandManager: CommandManager;
 
+    public entities: number[] = [];
     public helmet: any = getDefaultHelmet();
     public right: any = getDefaultItem();
     public pet: any = getDefaultPet();
@@ -34,8 +35,8 @@ export class Player extends Entity {
         this.camera = getDefaultCamera();
         this.inventory = new Inventory(this, 10);
         this.interactionManager = new InteractionManager(this);
-        this.commandManager = new CommandManager(this);
         this.attackManager = new AttackManager(this);
+        this.commandManager = new CommandManager(this);
 
         setTimeout(() => {
             this.client.sendBinary(this.inventory.giveItem(InventoryType.PICK_WOOD, 1));

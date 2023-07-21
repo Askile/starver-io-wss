@@ -1,7 +1,8 @@
-import {Player} from "../Player";
 import {InventoryType} from "../../enums/InventoryType";
-import {BinaryWriter} from "../../modules/BinaryWriter";
 import {ClientPackets} from "../../enums/packets/ClientPackets";
+import {BinaryWriter} from "../../modules/BinaryWriter";
+import {Player} from "../Player";
+
 export class AttackManager {
     private player: Player;
     private lastAttack: number = 0;
@@ -10,60 +11,34 @@ export class AttackManager {
         this.player = player;
     }
 
-    /**
-     *
-     */
-    public hit() {
-        if (this.player.right.type === "tool" && this.isAttack && Date.now() - this.lastAttack >= 5e2) {
-            let {x, y} = this.player.position;
-            const {chunks} = this.player.server.map;
-            const chunkX = Math.floor(x / 100);
-            const chunkY = Math.floor(y / 100);
-            const chunk = [];
+    public tick() {
+        if (this.isAttack && Date.now() - this.lastAttack >= 5e2) {
+            this.lastAttack = Date.now();
 
-            for (let offsetY = -2; offsetY <= 2; offsetY++) {
-                const chunkRow = chunks[chunkY + offsetY];
+            const chunks = this.player.server.map.getChunks(this.player.position.x, this.player.position.y, 2);
+            const distanceToMove = this.player.right.type === "tool" ? 40 : 20;
 
-                for (let offsetX = -2; offsetX <= 2; offsetX++) {
-                    const row = chunkRow && chunkRow[chunkX + offsetX];
-                    if (row) {
-                        chunk.push(...row);
-                    }
-                }
-            }
+            const offsetX = distanceToMove * Math.cos((this.player.angle / 255) * (Math.PI * 2));
+            const offsetY = distanceToMove * Math.sin((this.player.angle / 255) * (Math.PI * 2));
 
-            const angleDegrees = this.player.angle;
-            const distanceToMove = 40;
-
-            const dx = distanceToMove * Math.cos((angleDegrees / 255) * (Math.PI * 2));
-            const dy = distanceToMove * Math.sin((angleDegrees / 255) * (Math.PI * 2));
-
-            x += dx;
-            y += dy;
-
-            for (const tile of chunk) {
-                const tileX = tile.x * 100 + 50;
-                const tileY = tile.y * 100 + 50;
-                const dx = tileX - x;
-                const dy = tileY - y;
+            const shake = new BinaryWriter();
+            shake.writeUInt16(ClientPackets.HITTEN);
+            for (const tile of chunks) {
+                if (!InventoryType[tile.resource]) continue;
+                const dx = tile.position.x * 100 + 50 - (this.player.position.x + offsetX);
+                const dy = tile.position.y * 100 + 50 - (this.player.position.y + offsetY);
                 const distance = Math.hypot(dx, dy);
-                const totalRadius = tile.radius + 45;
+                const totalRadius = tile.radius + (this.player.right.type === "tool" ? 45 : 20);
 
                 if (distance < totalRadius) {
-                    this.lastAttack = Date.now();
-                    this.player.client.sendBinary(this.player.inventory.giveItem(InventoryType.WOOD, this.player.right.harvest));
+                    const harvest = this.player.right.harvest | 1;
+                    this.player.client.sendBinary(this.player.inventory.giveItem(InventoryType[tile.resource] as any, harvest));
+                    this.player.stats.score += harvest;
 
-                    const writer = new BinaryWriter();
-                    writer.writeUInt16(ClientPackets.HITTEN);
-                    writer.writeUInt16(tile.x);
-                    writer.writeUInt16(tile.y);
-                    writer.writeUInt16(this.player.angle);
-                    writer.writeUInt16(tile.id);
-
-                    this.player.client.sendBinary(writer.toBuffer());
-                    this.player.stats.score += this.player.right.harvest;
+                    shake.writeUInt16(...tile.shake(this.player.angle));
                 }
             }
+            if (shake.toBuffer().length > 3) this.player.server.broadcast(shake.toBuffer(), true, this.player.client.socket);
         }
     }
 }
