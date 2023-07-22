@@ -4,7 +4,7 @@ import {Logger} from "./modules/Logger";
 import * as fs from "fs";
 import * as path from "path";
 import {Server} from "./Server";
-
+0;
 class App {
     private app: Express = express();
     private server: http.Server = http.createServer(this.app);

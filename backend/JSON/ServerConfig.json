@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "network_tps": 16,
-  "engine_tps": 16,
+  "network_tps": 10,
+  "engine_tps": 60,
   "leaderboard_tps": 0.5
 }

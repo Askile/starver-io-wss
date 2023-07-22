@@ -23,7 +23,7 @@ export class Entity {
         this.server = server;
         this.type = type;
 
-        this.id = 0;
+        this.id = server.entityPool.createId();
         this.speed = entitySpeed[type] ?? 0;
         this.angle = 0;
         this.action = 0;
@@ -49,18 +49,19 @@ export class Entity {
         let biomes = this.server.map.biomes.filter((biome) => biome.type === entityBiome[this.type]);
         if (!biomes.length) return new Vector(0, 0);
         let iteration = 0;
-        let maxIteration = 10000;
+        let maxIteration = 1000;
         let position;
         while (iteration < maxIteration) {
             iteration++;
 
             const biome = biomes[~~(Math.random() * biomes.length)];
 
-            position = new Vector(biome.position.x + ~~(Math.random() * biome.size.x), biome.position.y + ~~(Math.random() * biome.size.y));
-            const chunkX = Math.floor(position.x / 100);
-            const chunkY = Math.floor(position.y / 100);
+            position = new Vector(
+                biome.position.x + ~~(Math.random() * biome.size.x),
+                biome.position.y + ~~(Math.random() * biome.size.y)
+            );
 
-            const chunks = this.server.map.getChunks(chunkX, chunkY, 2);
+            const chunks = this.server.map.getChunks(position.x, position.y, 2);
             if (!chunks.length) {
                 iteration = maxIteration;
             }
@@ -70,7 +71,15 @@ export class Entity {
     }
 
     public queryUpdate() {
-        return this.old.position.x != this.position.x || this.old.position.y != this.position.y || this.old.angle != this.angle || this.old.action != this.action || this.old.info != this.info || this.old.extra != this.extra || this.old.speed != this.speed;
+        return (
+            this.old.position.x != this.position.x ||
+            this.old.position.y != this.position.y ||
+            this.old.angle != this.angle ||
+            this.old.action != this.action ||
+            this.old.info != this.info ||
+            this.old.extra != this.extra ||
+            this.old.speed != this.speed
+        );
     }
 
     public delete() {

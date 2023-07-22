@@ -1,6 +1,6 @@
 const CONFIG = {
-    LOG_SEND: false,
-    LOG_RECEIVE: true
+    LOG_SEND: true,
+    LOG_RECEIVE: false
 }
 class AntiCheat {
     constructor() {
@@ -17,7 +17,8 @@ class AntiCheat {
                 websocket.addEventListener("message", event => {
                     if(CONFIG.LOG_RECEIVE) {
                         if(typeof event.data == "object") {
-                            console.log(new Uint8Array(event.data));
+                            const message = new Uint8Array(event.data);
+                            console.log(message);
                         } else {
                             console.log(JSON.parse(event.data))
                         }
@@ -41,7 +42,7 @@ class AntiCheat {
     }
 
     crashPage(code) {
-        alert(`AntiCheat report #${code}`)
+        //alert(`AntiCheat report #${code}`)
         // while (true){}
     }
 

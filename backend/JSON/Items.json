@@ -91,37 +91,37 @@
   },
   "PICK_WOOD": {
     "type": "tool",
-    "harvest": 1,
-    "damage": 6,
+    "harvest": 2,
+    "damage": 1,
     "id": 8
   },
   "PICK": {
     "type": "tool",
-    "harvest": 2,
-    "damage": 6,
+    "harvest": 3,
+    "damage": 2,
     "id": 1
   },
   "PICK_GOLD": {
     "type": "tool",
-    "harvest": 3,
-    "damage": 6,
+    "harvest": 4,
+    "damage": 3,
     "id": 3
   },
   "PICK_DIAMOND": {
     "type": "tool",
-    "harvest": 4,
-    "damage": 6,
+    "harvest": 5,
+    "damage": 4,
     "id": 4
   },
   "PICK_AMETHYST": {
     "type": "tool",
-    "harvest": 5,
-    "damage": 6,
+    "harvest": 6,
+    "damage": 5,
     "id": 31
   },
   "PICK_REIDITE": {
     "type": "tool",
-    "harvest": 6,
+    "harvest": 7,
     "damage": 6,
     "id": 32
   },
@@ -274,5 +274,10 @@
     "speed": 0.23,
     "tame_chance": 0.01,
     "isFly": 0
+  },
+  "PLANT": {
+    "type": "food",
+    "id": 104,
+    "value": 10
   }
 }

@@ -26,5 +26,6 @@ export class CommandManager {
         }
         ["g", "give"].includes(commandType) && this.player.client.sendBinary(this.player.inventory.giveItem(Number(args[0]), Number(args[1])));
         ["s", "speed"].includes(commandType) && (entitySpeed[0] = Number(args[0]));
+        ["ci", "clean-inventory"].includes(commandType) && this.player.client.sendBinary(this.player.inventory.cleanInventory());
     }
 }

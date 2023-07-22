@@ -221,18 +221,21 @@
       "type": "a",
       "subtype": 0,
       "radius": 85,
+      "resource":"AMETHYST",
       "id": 32
     },
     {
       "type": "a",
       "subtype": 1,
       "radius": 75,
+      "resource": "AMETHYST",
       "id": 33
     },
     {
       "type": "a",
       "subtype": 2,
       "radius": 75,
+      "resource": "AMETHYST",
       "id": 34
     },
     {
@@ -263,42 +266,49 @@
       "type": "plm",
       "subtype": 0,
       "radius": 65,
+      "resource": "WOOD",
       "id": 40
     },
     {
       "type": "plm",
       "subtype": 1,
       "radius": 80,
+      "resource": "WOOD",
       "id": 41
     },
     {
       "type": "plm",
       "subtype": 2,
       "radius": 100,
+      "resource": "WOOD",
       "id": 42
     },
     {
       "type": "re",
       "subtype": 0,
       "radius": 67,
+      "resource":"REIDITE",
       "id": 50
     },
     {
       "type": "re",
       "subtype": 1,
       "radius": 82,
+      "resource": "REIDITE",
       "id": 51
     },
     {
       "type": "re",
       "subtype": 2,
       "radius": 90,
+      "resource": "REIDITE",
       "id": 52
     },
     {
       "type": "c",
       "radius": 55,
       "subtype": 0,
+      "resource": "CACTUS",
       "id": 55
     },
     {
@@ -318,6 +328,12 @@
       "subtype": 2,
       "radius": 90,
       "id": 58
+    },
+    {
+      "type": "r",
+      "subtype": 0,
+      "radius": 0,
+      "id": 0
     }
   ]
 }

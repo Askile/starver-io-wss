@@ -41,7 +41,13 @@ export class Map {
             );
 
         for (const tile of this.objects) {
-            const [type, subtype, x, y] = tile.slice(1);
+            let [type, subtype, x, y] = tile.slice(1);
+
+            if (tile.length == 5) {
+                y = x;
+                x = subtype;
+            }
+
             if (this.isTileTypeBiome(type)) continue;
 
             const object = objects.find((object) => object.type == type && object.subtype == subtype);

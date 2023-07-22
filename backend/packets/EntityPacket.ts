@@ -23,10 +23,22 @@ export class EntityPacket {
         writer.writeUInt16(Number(hard_refresh));
         for (const entity of entities) {
             const {position: entityPosition, id, angle, action, type, info, speed, extra} = entity;
-            const isInsideCamera = position.isVectorInsideRectangle(entityPosition.subtract(new Vector(-camera.width / 2, -camera.height / 2)), camera.width, camera.height);
-            const isInsideCameraExtended = position.isVectorInsideRectangle(entityPosition.subtract(new Vector(-camera.width / 2 - 50, -camera.height / 2 - 50)), camera.width + 100, camera.height + 100);
+            const isInsideCamera = position.isVectorInsideRectangle(
+                entityPosition.subtract(new Vector(-camera.width / 2, -camera.height / 2)),
+                camera.width,
+                camera.height
+            );
+            const isInsideCameraExtended = position.isVectorInsideRectangle(
+                entityPosition.subtract(new Vector(-camera.width / 2 - 50, -camera.height / 2 - 50)),
+                camera.width + 100,
+                camera.height + 100
+            );
 
-            if (!this.player.entities[entity.id] || entity.queryUpdate() || (isInsideCameraExtended && !isInsideCamera)) {
+            if (
+                !this.player.entities[entity.id] ||
+                entity.queryUpdate() ||
+                (isInsideCameraExtended && !isInsideCamera)
+            ) {
                 if (isInsideCamera) {
                     writer.writeUInt8(id);
                     writer.writeUInt8(angle);
@@ -34,7 +46,7 @@ export class EntityPacket {
                     writer.writeUInt16(type);
                     writer.writeUInt16(entityPosition.x);
                     writer.writeUInt16(entityPosition.y);
-                    writer.writeUInt16(0);
+                    writer.writeUInt16(!type ? 0 : id);
                     writer.writeUInt16(info);
                     writer.writeUInt16(speed);
                     writer.writeUInt16(extra);
@@ -46,7 +58,7 @@ export class EntityPacket {
                     writer.writeUInt16(type);
                     writer.writeUInt16(entityPosition.x);
                     writer.writeUInt16(entityPosition.y);
-                    writer.writeUInt16(0);
+                    writer.writeUInt16(!type ? 0 : id);
                     writer.writeUInt16(info);
                     writer.writeUInt16(speed);
                     writer.writeUInt16(extra);

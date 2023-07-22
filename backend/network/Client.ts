@@ -8,6 +8,9 @@ import {EntityType} from "../enums/EntityType";
 import {Box} from "../entities/Box";
 import {ActionType} from "../enums/ActionType";
 import {ServerPackets} from "../enums/packets/ServerPackets";
+import {InventoryType} from "../enums/InventoryType";
+import {Building} from "../entities/Building";
+import {ClientPackets} from "../enums/packets/ClientPackets";
 
 export class Client {
     public socket: WebSocket<any>;
@@ -77,6 +80,7 @@ export class Client {
                 this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]));
                 break;
             case ServerPackets.MOVEMENT:
+                //this.player.movement.tick();
                 this.player.direction = PACKET;
                 break;
             case ServerPackets.ANGLE:
@@ -100,6 +104,13 @@ export class Client {
                     });
                 this.sendBinary(this.player.inventory.deleteItem(PACKET));
                 break;
+            case 10:
+                if (!isNaN(PACKET_DATA[1] % 255) && this.player.inventory.items.has(PACKET)) {
+                    new Building(this.player, PACKET, PACKET_DATA[1] % 255);
+                    this.player.inventory.removeItem(PACKET, 1);
+                    this.player.client.sendBinary(new Uint8Array([ClientPackets.ACCEPT_BUILD, PACKET]));
+                }
+                break;
             case 14:
                 this.player.attackManager.isAttack = false;
                 break;
@@ -120,7 +131,7 @@ export class Client {
 
     public onClose() {
         this.isActive = false;
-
+        if (!this.player) return;
         this.player.action = 1;
         new NanoTimer().setTimeout(
             () => {
@@ -134,7 +145,7 @@ export class Client {
     }
 
     public sendJSON(message: any) {
-        this.socket.send(JSON.stringify(message));
+        if (this.isActive && message) this.socket.send(JSON.stringify(message));
     }
 
     public sendBinary(message: Uint8Array | Uint16Array | Uint32Array | undefined) {

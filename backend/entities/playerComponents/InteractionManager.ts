@@ -2,6 +2,7 @@ import Items from "../../JSON/Items.json";
 import {InventoryType} from "../../enums/InventoryType";
 import {Player} from "../Player";
 import {getDefaultHelmet, getDefaultItem, getDefaultPet} from "../../defaultValues";
+import {ClientPackets} from "../../enums/packets/ClientPackets";
 export class InteractionManager {
     private items: any;
     private player: Player;
@@ -24,6 +25,7 @@ export class InteractionManager {
     public useItem(id: number) {
         const itemName = InventoryType[id];
         if (id !== 7 && !this.player.inventory.items.has(id)) return;
+
         if (id === 7 && Date.now() - this.lastSwordUse >= 10e3) {
             this.player.right = getDefaultItem();
         } else if (this.isInHand(itemName) && Date.now() - this.lastSwordUse >= 10e3) {
@@ -41,6 +43,10 @@ export class InteractionManager {
             if (this.player.pet.id == id) {
                 this.player.pet = getDefaultPet();
             } else this.player.pet = pet;
+        } else if (this.isFood(itemName)) {
+            this.player.gauges.hunger += this.items[itemName].value;
+            this.player.client.sendBinary(new Uint8Array([ClientPackets.GAUGES_FOOD, this.player.gauges.hunger]));
+            this.player.client.sendBinary(this.player.inventory.removeItem(id, 1));
         }
     }
 
@@ -50,7 +56,11 @@ export class InteractionManager {
     }
 
     private isInHand(name: string) {
-        return this.items[name].type === "weapon" || this.items[name].type === "shield" || this.items[name].type === "tool";
+        return ["weapon", "shield", "tool"].includes(this.items[name].type);
+    }
+
+    private isFood(name: string) {
+        return this.items[name].type == "food";
     }
 
     private isPet(name: string) {

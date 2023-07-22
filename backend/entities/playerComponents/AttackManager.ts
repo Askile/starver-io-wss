@@ -31,14 +31,15 @@ export class AttackManager {
                 const totalRadius = tile.radius + (this.player.right.type === "tool" ? 45 : 20);
 
                 if (distance < totalRadius) {
-                    const harvest = this.player.right.harvest | 1;
+                    const harvest = this.player.right.harvest || 1;
                     this.player.client.sendBinary(this.player.inventory.giveItem(InventoryType[tile.resource] as any, harvest));
                     this.player.stats.score += harvest;
 
                     shake.writeUInt16(...tile.shake(this.player.angle));
                 }
             }
-            if (shake.toBuffer().length > 3) this.player.server.broadcast(shake.toBuffer(), true, this.player.client.socket);
+
+            if (shake.toBuffer().length > 3) this.player.server.broadcast(shake.toBuffer(), true);
         }
     }
 }
