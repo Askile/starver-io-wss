@@ -1,6 +1,6 @@
 import {Vector} from "../modules/Vector";
-import {entitySpeed} from "./components/EntitySpeed";
-import {entityBiome} from "./components/EntityBiome";
+import {entitySpeed} from "./EntitySpeed";
+import {entityBiome} from "./EntityBiome";
 import {Server} from "../Server";
 import ServerConfig from "../JSON/ServerConfig.json";
 import NanoTimer from "nanotimer";
@@ -61,8 +61,8 @@ export class Entity {
                 biome.position.y + ~~(Math.random() * biome.size.y)
             );
 
-            const chunks = this.server.map.getChunks(position.x, position.y, 2);
-            if (!chunks.length) {
+            const tiles = this.server.map.getTiles(position.x, position.y, 2);
+            if (!tiles.length) {
                 iteration = maxIteration;
             }
         }

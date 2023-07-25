@@ -8,7 +8,8 @@ export class Map {
     public width: number;
     public height: number;
 
-    public chunks: any[][] = [];
+    public grid: any[][][] = [];
+    public entitiesGrid: any[][][] = [];
     public biomes: Biome[] = [];
 
     constructor(config: Config) {
@@ -27,12 +28,23 @@ export class Map {
         }
     }
 
+    public updateEntities() {
+        const numChunks = Math.ceil(this.height / 100);
+        this.entitiesGrid = Array(numChunks)
+            .fill(null)
+            .map(() =>
+                Array(numChunks)
+                    .fill([])
+                    .map(() => [])
+            );
+    }
+
     /**
      * Initialize chunks to map
      */
     public initCollision() {
         const numChunks = Math.ceil(this.height / 100);
-        this.chunks = Array(numChunks)
+        this.grid = Array(numChunks)
             .fill(null)
             .map(() =>
                 Array(numChunks)
@@ -46,6 +58,7 @@ export class Map {
             if (tile.length == 5) {
                 y = x;
                 x = subtype;
+                subtype = 0;
             }
 
             if (this.isTileTypeBiome(type)) continue;
@@ -53,7 +66,7 @@ export class Map {
             const object = objects.find((object) => object.type == type && object.subtype == subtype);
 
             if (object) {
-                this.chunks[Math.floor(y)][Math.floor(x)].push(new Tile(new Vector(x, y), object));
+                this.grid[Math.floor(y)][Math.floor(x)].push(new Tile(new Vector(x, y), object));
             }
         }
     }
@@ -66,22 +79,46 @@ export class Map {
      * @param {number} size - The size of the area to retrieve chunks around the specified coordinates.
      * @returns {Array<any>} An array containing the chunks of data retrieved from the grid.
      */
-    public getChunks(x: number, y: number, size: number) {
+    public getTiles(x: number, y: number, size: number) {
         const chunkX = Math.floor(x / 100);
         const chunkY = Math.floor(y / 100);
-        const chunks = [];
+        const tiles = [];
 
         for (let offsetY = -size; offsetY <= size; offsetY++) {
-            const chunkRow = this.chunks[chunkY + offsetY];
+            const chunkRow = this.grid[chunkY + offsetY];
 
             for (let offsetX = -size; offsetX <= size; offsetX++) {
                 const row = chunkRow && chunkRow[chunkX + offsetX];
                 if (row) {
-                    chunks.push(...row);
+                    tiles.push(...row);
                 }
             }
         }
-        return chunks;
+        return tiles;
+    }
+
+    /**
+     * Retrieves chunks of data from a 2D grid based on the provided coordinates and size.
+     *
+     * @param {number} x - The X-coordinate to start retrieving chunks from.
+     * @param {number} y - The Y-coordinate to start retrieving chunks from.
+     * @param {number} size - The size of the area to retrieve chunks around the specified coordinates.
+     * @returns {Array<any>} An array containing the chunks of data retrieved from the grid.
+     */
+    public getEntities(x: number, y: number, size: number) {
+        const entities = [];
+
+        for (let offsetY = -size; offsetY <= size; offsetY++) {
+            const chunkRow = this.entitiesGrid[Math.floor(y / 100) + offsetY];
+
+            for (let offsetX = -size; offsetX <= size; offsetX++) {
+                const row = chunkRow && chunkRow[Math.floor(x / 100) + offsetX];
+                if (row) {
+                    entities.push(...row);
+                }
+            }
+        }
+        return entities;
     }
 
     private isTileTypeBiome(type: string) {

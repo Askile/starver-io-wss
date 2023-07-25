@@ -19,6 +19,9 @@ import {AttackManager} from "./playerComponents/AttackManager";
 import {Movement} from "./playerComponents/Movement";
 import {Gauges} from "./playerComponents/Gauges";
 import {BinaryWriter} from "../modules/BinaryWriter";
+import {ClientPackets} from "../enums/packets/ClientPackets";
+import NanoTimer from "nanotimer";
+import {EntityPacket} from "../packets/EntityPacket";
 
 export class Player extends Entity {
     public client: Client;
@@ -35,6 +38,7 @@ export class Player extends Entity {
     public commandManager: CommandManager;
     public movement: Movement;
 
+    public reason: number = 0;
     public entities: number[] = [];
     public helmet: any = getDefaultHelmet();
     public right: any = getDefaultItem();
@@ -66,8 +70,8 @@ export class Player extends Entity {
 
     public die() {
         const writer = new BinaryWriter();
-        writer.writeUInt8(25);
-        writer.writeUInt8(0);
+        writer.writeUInt8(ClientPackets.KILLED);
+        writer.writeUInt8(this.reason);
         writer.writeUInt16(this.stats.kills);
         writer.writeUInt32(this.stats.score);
 

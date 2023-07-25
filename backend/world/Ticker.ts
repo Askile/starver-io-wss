@@ -3,6 +3,7 @@ import NanoTimer from "nanotimer";
 import ServerConfig from "../JSON/ServerConfig.json";
 import {EntityPacket} from "../packets/EntityPacket";
 import {ActionType} from "../enums/ActionType";
+import {Entity} from "../entities/Entity";
 
 export class Ticker {
     private server: Server;
@@ -35,12 +36,16 @@ export class Ticker {
 
     private entityTick() {
         const players = this.server.players;
+        this.server.map.updateEntities();
+
         for (const player of players) {
             player.interactionManager.setEquipment();
             new EntityPacket(player, false);
         }
 
         for (const entity of this.server.entities) {
+            this.server.map.entitiesGrid[~~(entity.position.y / 100)][~~(entity.position.x / 100)].push(entity);
+
             if (entity.action & ActionType.ATTACK) entity.action -= ActionType.ATTACK;
             if (entity.action & ActionType.HUNGER) entity.action -= ActionType.HUNGER;
             if (entity.action & ActionType.COLD) entity.action -= ActionType.COLD;

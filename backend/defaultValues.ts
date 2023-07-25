@@ -18,16 +18,16 @@ export function getDefaultHelmet(): any {
         type: "helmet",
         id: 0,
         defense: 0
-    }
+    };
 }
-
 
 export function getDefaultItem(): any {
     return {
         type: "hand",
         id: 7,
-        damage: 5
-    }
+        damage: 5,
+        harvest: 1
+    };
 }
 
 export function getDefaultPet(): any {
@@ -36,7 +36,7 @@ export function getDefaultPet(): any {
         id: 0,
         speed: 0.23,
         tame_chance: 0.01
-    }
+    };
 }
 
 export function getDefaultPlayerCosmetics(): PlayerCosmetics {

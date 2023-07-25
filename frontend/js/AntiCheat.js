@@ -1,5 +1,5 @@
 const CONFIG = {
-    LOG_SEND: true,
+    LOG_SEND: false,
     LOG_RECEIVE: false
 }
 class AntiCheat {

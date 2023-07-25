@@ -18,12 +18,34 @@ class App {
 
     private loadServers() {
         fs.readdir("servers", (err, files) => {
-            this.logger.info("Loaded " + files.length + " configs");
-            for (const file of files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
                 const config = JSON.parse(fs.readFileSync(path.join("servers", file), {encoding: "utf-8"}));
-                new Server(config, path.parse(file).name);
+
+                let PATH = path.parse(file).name.replace(/\s/g, "-");
+                this.servers.push(new Server(config, PATH, i + 443));
             }
+
+            this.logger.info("Loaded " + files.length + " configs");
+            this.writeServersData();
         });
+    }
+
+    private writeServersData() {
+        const stream = fs.createWriteStream("./frontend/serversBound/index.html", {encoding: "utf-8"});
+        const servers = [];
+        for (const server of this.servers) {
+            servers.push({
+                a: server.path,
+                path: server.path,
+                nu: server.players.length,
+                m: server.playerPool.maxId,
+                p: server.port,
+                ssl: 0
+            });
+        }
+
+        stream.write(JSON.stringify(servers));
     }
 
     private setupStaticFiles() {

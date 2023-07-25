@@ -95,7 +95,7 @@ export class Client {
             case ServerPackets.INTERACTION:
                 this.player.interactionManager.useItem(PACKET);
                 break;
-            case 6:
+            case ServerPackets.DROP_ONE_ITEM:
                 if (this.player.inventory.items.has(PACKET))
                     new Box(this.server, EntityType.CRATE, {
                         owner: this.player,
@@ -104,17 +104,17 @@ export class Client {
                     });
                 this.sendBinary(this.player.inventory.deleteItem(PACKET));
                 break;
-            case 10:
+            case ServerPackets.BUILD:
                 if (!isNaN(PACKET_DATA[1] % 255) && this.player.inventory.items.has(PACKET)) {
                     new Building(this.player, PACKET, PACKET_DATA[1] % 255);
                     this.player.inventory.removeItem(PACKET, 1);
                     this.player.client.sendBinary(new Uint8Array([ClientPackets.ACCEPT_BUILD, PACKET]));
                 }
                 break;
-            case 14:
+            case ServerPackets.STOP_ATTACK:
                 this.player.attackManager.isAttack = false;
                 break;
-            case 28:
+            case ServerPackets.DROP_ITEM:
                 if (this.player.inventory.items.has(PACKET))
                     new Box(this.server, EntityType.CRATE, {
                         owner: this.player,
@@ -123,7 +123,7 @@ export class Client {
                     });
                 this.sendBinary(this.player.inventory.removeItem(PACKET, 1));
                 break;
-            case 36:
+            case ServerPackets.CONSOLE:
                 this.player.commandManager.handleCommand(PACKET);
                 break;
         }

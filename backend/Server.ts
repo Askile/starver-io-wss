@@ -24,10 +24,10 @@ export class Server {
 
     private ticker: Ticker;
 
-    constructor(config: Config, path: string) {
+    constructor(config: Config, public path: string, public port: number) {
         this.playerPool = new IdPool(1, 100);
-        this.entityPool = new IdPool(101, 10000);
-        this.wss = new WebSocketServer(path, this);
+        this.entityPool = new IdPool(101, 60000);
+        this.wss = new WebSocketServer(path, port, this);
         this.config = config;
         this.map = new Map(this.config);
 

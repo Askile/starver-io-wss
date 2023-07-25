@@ -20,9 +20,10 @@ export class Collision {
     public tick() {
         for (const entity of this.server.entities) {
             const {x, y} = entity.position;
-            const chunks = this.server.map.getChunks(x, y, 2);
+            const tiles = this.server.map.getTiles(x, y, 2);
 
-            for (const tile of chunks) {
+            for (const tile of tiles) {
+                if (!tile.radius) continue;
                 const tileX = tile.position.x * 100 + 50;
                 const tileY = tile.position.y * 100 + 50;
                 const dx = tileX - x;
@@ -47,6 +48,9 @@ export class Collision {
                     entity.position.x = tileX + newCoordinates.x;
                     entity.position.y = tileY + newCoordinates.y;
                 }
+
+                entity.position.x = Math.max(0, Math.min(this.server.map.width - 1, entity.position.x));
+                entity.position.y = Math.max(0, Math.min(this.server.map.height - 1, entity.position.y));
             }
         }
     }

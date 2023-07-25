@@ -1,4 +1,4 @@
-import {EntityType} from "../../enums/EntityType";
+import {EntityType} from "../enums/EntityType";
 
 export const entitySpeed: any = {
     [EntityType.PLAYERS]: 240,
