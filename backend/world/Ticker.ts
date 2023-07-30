@@ -3,40 +3,28 @@ import NanoTimer from "nanotimer";
 import ServerConfig from "../JSON/ServerConfig.json";
 import {EntityPacket} from "../packets/EntityPacket";
 import {ActionType} from "../enums/ActionType";
-import {Entity} from "../entities/Entity";
 
 export class Ticker {
     private server: Server;
     constructor(server: Server) {
         this.server = server;
 
-        new NanoTimer().setInterval(
-            () => {
+        new NanoTimer().setInterval(() => {
                 for (const player of this.server.players) {
                     player.attackManager.tick();
                 }
-            },
-            [],
-            1 / 5 + "s"
-        );
-        new NanoTimer().setInterval(
-            () => {
-                for (const player of this.server.players) {
-                    //player.movement.tick();
-                }
+            },[],1 / 5 + "s");
+        new NanoTimer().setInterval(() => {
                 this.server.movement.tick();
                 this.server.collision.tick();
-            },
-            [],
-            1 / ServerConfig.engine_tps + "s"
-        );
+                this.server.map.updateEntitiesInChunks();
+        },[],1 / ServerConfig.engine_tps + "s");
         new NanoTimer().setInterval(() => this.entityTick(), [], 1 / ServerConfig.network_tps + "s");
         new NanoTimer().setInterval(() => this.server.leaderboard.tick(), [], 1 / ServerConfig.leaderboard_tps + "s");
     }
 
     private entityTick() {
         const players = this.server.players;
-        this.server.map.updateEntities();
 
         for (const player of players) {
             player.interactionManager.setEquipment();
@@ -44,7 +32,6 @@ export class Ticker {
         }
 
         for (const entity of this.server.entities) {
-            this.server.map.entitiesGrid[~~(entity.position.y / 100)][~~(entity.position.x / 100)].push(entity);
 
             if (entity.action & ActionType.ATTACK) entity.action -= ActionType.ATTACK;
             if (entity.action & ActionType.HUNGER) entity.action -= ActionType.HUNGER;

@@ -35,4 +35,7 @@ export class Vector {
     public multiply(scalar: number) {
         return new Vector(this.x * scalar, this.y * scalar);
     }
+    public equal(v: Vector) {
+        return this.x === v.x && this.y === v.y;
+    }
 }

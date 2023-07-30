@@ -1,7 +1,7 @@
 import Items from "../../JSON/Items.json";
 import {InventoryType} from "../../enums/InventoryType";
 import {Player} from "../Player";
-import {getDefaultHelmet, getDefaultItem, getDefaultPet} from "../../defaultValues";
+import {getDefaultHelmet, getDefaultItem, getDefaultPet} from "../../default/defaultValues";
 import {ClientPackets} from "../../enums/packets/ClientPackets";
 export class InteractionManager {
     private items: any;

@@ -1,27 +1,29 @@
 import * as uWS from "uWebSockets.js";
-import {WebSocket} from "uWebSockets.js";
 import {Client} from "./Client";
 import {Server} from "../Server";
 import {Logger} from "../modules/Logger";
+import {IdPool} from "../modules/IdPool";
+import {WebSocket} from "uWebSockets.js";
 
 export class WebSocketServer {
     private readonly server: Server;
     private logger: Logger = new Logger("./logs", {console: true, file: true});
     public clients: Map<WebSocket<any>, Client> = new Map();
     public app: uWS.TemplatedApp = uWS.App();
+    public socketsPool: IdPool = new IdPool(1, 1000);
 
-    constructor(path: string, port: number, server: Server) {
+    constructor(path: string, server: Server) {
         this.server = server;
 
         this.setupWebSocket(path);
-        this.startListening(port);
+        this.startListening();
     }
 
     private setupWebSocket(path: string) {
         this.app.ws("/" + path, {
-            idleTimeout: 8,
+            idleTimeout: 0,
             maxBackpressure: 1024,
-            maxPayloadLength: 128,
+            maxPayloadLength: 100,
             compression: uWS.DEDICATED_COMPRESSOR_3KB,
             open: this.handleWebSocketOpen.bind(this),
             message: this.handleWebSocketMessage.bind(this),
@@ -46,9 +48,9 @@ export class WebSocketServer {
         this.clients.delete(ws);
     }
 
-    private startListening(port: number) {
-        this.app.listen(port, () => {
-            this.logger.info("WebSocket server is listening on port " + port);
+    private startListening() {
+        this.app.listen(this.server.config.port, () => {
+            this.logger.info("WebSocket server is listening on port 443");
         });
     }
 }

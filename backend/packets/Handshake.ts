@@ -1,4 +1,4 @@
-import {getDefaultCamera} from "../defaultValues";
+import {getDefaultCamera} from "../default/defaultValues";
 import {Client} from "../network/Client";
 import {ClientStringPackets} from "../enums/packets/ClientStringPackets";
 import {GameMode} from "../enums/GameMode";
@@ -117,8 +117,8 @@ export class Handshake {
             this.config.important.map_height,
             6,
             this.config.important.custom_map,
-            "Welcome",
-            0,
+            "",
+            this.server.config.important.recipes ? this.server.craftSystem.recipesToSend : 0,
             0,
             0
         ]);

@@ -1,4 +1,4 @@
-export enum InventoryType{
+export enum InventoryType {
     SWORD,
     PICK,
     FUR,

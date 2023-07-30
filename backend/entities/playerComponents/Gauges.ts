@@ -4,10 +4,9 @@ import {BinaryWriter} from "../../modules/BinaryWriter";
 import {ActionType} from "../../enums/ActionType";
 import NanoTimer from "nanotimer";
 import {DeathReason} from "../../enums/DeathReason";
-import {Vector} from "../../modules/Vector";
+import {Entity} from "../Entity";
 import {EntityType} from "../../enums/EntityType";
 
-const MAX_HEALTH = 200;
 const MAX_HUNGER = 100;
 const MAX_COLD = 100;
 const MAX_THIRST = 100;
@@ -21,19 +20,17 @@ export class Gauges {
     private player: Player;
     public timer: NanoTimer;
 
-    private _health!: number;
-    private _hunger!: number;
-    private _cold!: number;
-    private _thirst!: number;
-    private _oxygen!: number;
-    private _heat!: number;
-    private _bandage!: number;
-    private old: any;
+    public hunger!: number;
+    public cold!: number;
+    public thirst!: number;
+    public oxygen!: number;
+    public heat!: number;
+    public bandage!: number;
+    public old: any;
 
     constructor(player: Player) {
         this.player = player;
 
-        this.health = 200;
         this.hunger = 100;
         this.cold = 100;
         this.thirst = 100;
@@ -42,7 +39,6 @@ export class Gauges {
         this.bandage = 0;
 
         this.old = {
-            health: this.health,
             hunger: this.hunger,
             cold: this.cold,
             thirst: this.thirst,
@@ -52,12 +48,11 @@ export class Gauges {
         };
 
         this.timer = new NanoTimer();
-        this.timer.setInterval(this.tick.bind(this), [], "5s");
+        this.timer.setInterval(this.tick.bind(this), [], "0.5s");
     }
 
     private queryUpdate() {
         const hasUpdate =
-            this.old.health !== this.health ||
             this.old.hunger !== this.hunger ||
             this.old.cold !== this.cold ||
             this.old.thirst !== this.thirst ||
@@ -68,7 +63,6 @@ export class Gauges {
         if (hasUpdate) {
             // Update the 'old' object with the current values
             this.old = {
-                health: this.health,
                 hunger: this.hunger,
                 cold: this.cold,
                 thirst: this.thirst,
@@ -88,7 +82,7 @@ export class Gauges {
     private updateClientGauges() {
         const writer = new BinaryWriter();
         writer.writeUInt8(ClientPackets.GAUGES);
-        writer.writeUInt8(this.health / 2);
+        writer.writeUInt8(this.player.healthSystem.health / 2);
         writer.writeUInt8(this.hunger);
         writer.writeUInt8(this.cold);
         writer.writeUInt8(this.thirst);
@@ -98,40 +92,67 @@ export class Gauges {
 
         this.player.client.sendBinary(writer.toBuffer());
     }
-
-    private handleGaugeDamage(damage: number, actionType: ActionType) {
-        this.health -= damage;
-        if (!(this.player.action & actionType) && this.old.health !== this.health) {
-            this.player.action |= actionType;
-        }
-    }
     public tick() {
-        this.hunger -= 3;
-        this.cold -= 3;
-        this.thirst -= 2;
+        this.hunger = Math.clamp(this.hunger - 3, 0, MAX_HUNGER);
+
+        const chunks = this.player.server.map.getChunks(this.player.position.x, this.player.position.y, 2);
+        let isFire = false;
+        let isWorkbench = false;
+        let isWater = false;
+
+        for (const chunk of chunks) {
+            for (const entity of chunk.entities) {
+                if(entity.isFire() && entity.position.distance(this.player.position) < 200)
+                    isFire = true;
+                if(entity.isWorkbench() && entity.position.distance(this.player.position) < 200)
+                    isWorkbench = true;
+            }
+            for (const tile of chunk.tiles) {
+                if(tile.type === "r" && tile.position.x === ~~(this.player.position.x / 100) && tile.position.y === ~~(this.player.position.y / 100)) {
+                    isWater = true;
+                }
+            }
+        }
+
+        this.player.workbench = isWorkbench;
+        this.player.fire = isFire;
+        this.player.water = isWater;
+
+
+        if(this.player.fire) {
+            this.cold = Math.clamp(this.cold + 20, 0, MAX_COLD);
+        } else {
+            this.cold = Math.clamp(this.cold - 3, 0, MAX_COLD);
+        }
+
+        if(isWater) {
+            this.thirst = Math.clamp(this.thirst + 20, 0, MAX_THIRST);
+        } else {
+            this.thirst = Math.clamp(this.thirst - 2, 0, MAX_THIRST);
+        }
 
         if (this.oxygen === 0) {
             this.player.reason = DeathReason.OXYGEN;
-            this.handleGaugeDamage(OXYGEN_DAMAGE, ActionType.HURT);
+            this.player.healthSystem.damage(OXYGEN_DAMAGE, ActionType.HURT);
         }
         if (this.hunger === 0) {
             this.player.reason = DeathReason.STARVE;
-            this.handleGaugeDamage(HUNGER_DAMAGE, ActionType.HUNGER);
+            this.player.healthSystem.damage(HUNGER_DAMAGE, ActionType.HUNGER);
         }
 
         if (this.cold === 0) {
             this.player.reason = DeathReason.COLD;
-            this.handleGaugeDamage(COLD_DAMAGE, ActionType.COLD);
+            this.player.healthSystem.damage(COLD_DAMAGE, ActionType.COLD);
         }
 
         if (this.thirst === 0) {
             this.player.reason = DeathReason.WATER;
-            this.handleGaugeDamage(THIRST_DAMAGE, ActionType.HURT);
+            this.player.healthSystem.damage(THIRST_DAMAGE, ActionType.HURT);
         }
 
         if (this.oxygen === 0) {
             this.player.reason = DeathReason.OXYGEN;
-            this.handleGaugeDamage(OXYGEN_DAMAGE, ActionType.HURT);
+            this.player.healthSystem.damage(OXYGEN_DAMAGE, ActionType.HURT);
         }
 
         if (
@@ -142,64 +163,15 @@ export class Gauges {
             this.oxygen > 35 &&
             this.heat > 35
         ) {
-            this.handleGaugeDamage(-20, ActionType.HEAL);
+            this.player.healthSystem.heal(20);
         }
 
-        if (this.health === 0) {
+        if (this.player.healthSystem.health === 0) {
             this.player.die();
         }
 
         if (this.queryUpdate()) {
             this.updateClientGauges();
         }
-    }
-
-    get health() {
-        return this._health;
-    }
-    set health(value: number) {
-        this._health = this.clamp(value, 0, MAX_HEALTH);
-    }
-
-    get hunger() {
-        return this._hunger;
-    }
-    set hunger(value: number) {
-        this._hunger = this.clamp(value, 0, MAX_HUNGER);
-    }
-
-    get cold() {
-        return this._cold;
-    }
-    set cold(value: number) {
-        this._cold = this.clamp(value, 0, MAX_COLD);
-    }
-
-    get thirst() {
-        return this._thirst;
-    }
-    set thirst(value: number) {
-        this._thirst = this.clamp(value, 0, MAX_THIRST);
-    }
-
-    get oxygen() {
-        return this._oxygen;
-    }
-    set oxygen(value: number) {
-        this._oxygen = this.clamp(value, 0, MAX_THIRST);
-    }
-
-    get heat() {
-        return this._heat;
-    }
-    set heat(value: number) {
-        this._heat = this.clamp(value, 0, 100);
-    }
-
-    get bandage() {
-        return this._bandage;
-    }
-    set bandage(value: number) {
-        this._bandage = this.clamp(value, 0, 100);
     }
 }

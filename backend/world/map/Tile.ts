@@ -1,13 +1,14 @@
 import {Vector} from "../../modules/Vector";
 
 export class Tile {
-    private type: string;
-    private radius: number;
-    private limit: number;
+    public type: string;
+    public radius: number;
+    public limit: number;
     public hard: number = 0;
     public id: number;
     public resource: string;
     public position: Vector;
+    public realPosition: Vector;
     public count: number;
 
     constructor(position: Vector, data: any) {
@@ -16,8 +17,9 @@ export class Tile {
         this.radius = data.radius;
         this.resource = data.resource ?? "NONE";
         this.limit = data.limit ?? 0;
-        this.count = data.limit;
+        this.count = data.limit ?? 0;
         this.position = position;
+        this.realPosition = position.multiply(100).add(new Vector(50, 50));
 
         switch (this.resource) {
             case "WOOD":
@@ -48,5 +50,5 @@ export class Tile {
     public shake(angle: number): number[] {
         return [this.position.x, this.position.y, angle, this.id];
     }
-    public addResource() {}
+
 }

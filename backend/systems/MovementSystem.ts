@@ -3,9 +3,9 @@ import {Vector} from "../modules/Vector";
 import {ActionType} from "../enums/ActionType";
 import ServerConfig from "../JSON/ServerConfig.json";
 import {Player} from "../entities/Player";
-import {entitySpeed} from "../entities/EntitySpeed";
+import {entitySpeed} from "../entities/components/EntitySpeed";
 
-export class Movement {
+export class MovementSystem {
     private server: Server;
     constructor(server: Server) {
         this.server = server;

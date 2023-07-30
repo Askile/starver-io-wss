@@ -1,9 +1,10 @@
 import {Vector} from "../modules/Vector";
-import {entitySpeed} from "./EntitySpeed";
-import {entityBiome} from "./EntityBiome";
+import {entitySpeed} from "./components/EntitySpeed";
+import {entityBiome} from "./components/EntityBiome";
 import {Server} from "../Server";
 import ServerConfig from "../JSON/ServerConfig.json";
 import NanoTimer from "nanotimer";
+import {EntityType} from "../enums/EntityType";
 export class Entity {
     public position: Vector;
     public velocity: Vector;
@@ -30,7 +31,7 @@ export class Entity {
         this.info = 0;
         this.extra = 0;
 
-        this.position = this.getSpawn();
+        this.position = new Vector(0, 0);
         this.velocity = new Vector(0, 0);
         this.direction = 0;
 
@@ -43,31 +44,6 @@ export class Entity {
             extra: this.extra,
             type: this.type
         };
-    }
-
-    public getSpawn() {
-        let biomes = this.server.map.biomes.filter((biome) => biome.type === entityBiome[this.type]);
-        if (!biomes.length) return new Vector(0, 0);
-        let iteration = 0;
-        let maxIteration = 1000;
-        let position;
-        while (iteration < maxIteration) {
-            iteration++;
-
-            const biome = biomes[~~(Math.random() * biomes.length)];
-
-            position = new Vector(
-                biome.position.x + ~~(Math.random() * biome.size.x),
-                biome.position.y + ~~(Math.random() * biome.size.y)
-            );
-
-            const tiles = this.server.map.getTiles(position.x, position.y, 2);
-            if (!tiles.length) {
-                iteration = maxIteration;
-            }
-        }
-
-        return position as Vector;
     }
 
     public queryUpdate() {
@@ -85,12 +61,20 @@ export class Entity {
     public delete() {
         this.server.entityPool.deleteId(this.id);
         this.action = 1;
+
         new NanoTimer().setTimeout(
             () => {
                 this.server.entities = this.server.entities.filter((entity) => entity != this);
-            },
-            [],
-            1 / ServerConfig.network_tps + "s"
-        );
+        }, [], 1 / ServerConfig.network_tps + "s");
     }
+
+    public isFire() {
+        return [EntityType.FIRE, EntityType.BIG_FIRE, EntityType.FURNACE].includes(this.type);
+    }
+
+    public isWorkbench() {
+        return [EntityType.WORKBENCH].includes(this.type);
+    }
+
+
 }

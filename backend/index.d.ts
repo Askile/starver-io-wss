@@ -2,6 +2,9 @@ declare interface LoggerOptions {
     console: boolean;
     file: boolean;
 }
+declare interface Math {
+    clamp: (variable: number, min: number, max: number) => number;
+}
 
 declare interface Camera {
     width: number;
@@ -29,6 +32,7 @@ declare interface PlayerData {
     level: number;
 }
 declare interface Config {
+    port: number;
     important: Important;
     password: number;
     harvest: number;

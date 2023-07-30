@@ -8,7 +8,7 @@ import {
     getDefaultPlayerCosmetics,
     getDefaultPlayerData,
     getDefaultPlayerStats
-} from "../defaultValues";
+} from "../default/defaultValues";
 import {EntityType} from "../enums/EntityType";
 import {Inventory} from "./playerComponents/Inventory";
 import {InventoryType} from "../enums/InventoryType";
@@ -20,8 +20,7 @@ import {Movement} from "./playerComponents/Movement";
 import {Gauges} from "./playerComponents/Gauges";
 import {BinaryWriter} from "../modules/BinaryWriter";
 import {ClientPackets} from "../enums/packets/ClientPackets";
-import NanoTimer from "nanotimer";
-import {EntityPacket} from "../packets/EntityPacket";
+import {HealthSystem} from "../systems/HealthSystem";
 
 export class Player extends Entity {
     public client: Client;
@@ -34,10 +33,18 @@ export class Player extends Entity {
     public gauges: Gauges;
     public inventory: Inventory;
     public interactionManager: InteractionManager;
+    public healthSystem: HealthSystem;
     public attackManager: AttackManager;
     public commandManager: CommandManager;
     public movement: Movement;
 
+    public workbench: boolean = false;
+    public fire: boolean = false;
+    public lava: boolean = false;
+    public spike: boolean = false;
+    public water: boolean = false;
+
+    public isCrafting: boolean = false;
     public reason: number = 0;
     public entities: number[] = [];
     public helmet: any = getDefaultHelmet();
@@ -53,10 +60,14 @@ export class Player extends Entity {
         this.data = getDefaultPlayerData();
         this.stats = getDefaultPlayerStats();
         this.camera = getDefaultCamera();
+
+        this.position = this.server.spawnSystem.getSpawnPoint("FOREST");
+
         this.gauges = new Gauges(this);
         this.inventory = new Inventory(this, 10);
         this.interactionManager = new InteractionManager(this);
         this.attackManager = new AttackManager(this);
+        this.healthSystem = new HealthSystem(this,200);
         this.commandManager = new CommandManager(this);
         this.movement = new Movement(this);
 

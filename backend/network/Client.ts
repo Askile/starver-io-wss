@@ -87,15 +87,18 @@ export class Client {
                 this.player.angle = Number(PACKET) % 255;
                 break;
             case ServerPackets.ATTACK:
+                if(this.player.isCrafting) break;
                 this.player.attackManager.isAttack = true;
                 this.player.angle = Number(PACKET) % 255;
                 this.player.action |= ActionType.ATTACK;
                 this.player.attackManager.tick();
                 break;
             case ServerPackets.INTERACTION:
+                if(this.player.isCrafting) break;
                 this.player.interactionManager.useItem(PACKET);
                 break;
             case ServerPackets.DROP_ONE_ITEM:
+                if(this.player.isCrafting) break;
                 if (this.player.inventory.items.has(PACKET))
                     new Box(this.server, EntityType.CRATE, {
                         owner: this.player,
@@ -104,7 +107,12 @@ export class Client {
                     });
                 this.sendBinary(this.player.inventory.deleteItem(PACKET));
                 break;
+            case ServerPackets.CRAFT:
+                if(this.player.isCrafting) break;
+                this.server.craftSystem.handleCraft(this.player, PACKET);
+                break;
             case ServerPackets.BUILD:
+                if(this.player.isCrafting) break;
                 if (!isNaN(PACKET_DATA[1] % 255) && this.player.inventory.items.has(PACKET)) {
                     new Building(this.player, PACKET, PACKET_DATA[1] % 255);
                     this.player.inventory.removeItem(PACKET, 1);
@@ -115,6 +123,7 @@ export class Client {
                 this.player.attackManager.isAttack = false;
                 break;
             case ServerPackets.DROP_ITEM:
+                if(this.player.isCrafting) break;
                 if (this.player.inventory.items.has(PACKET))
                     new Box(this.server, EntityType.CRATE, {
                         owner: this.player,

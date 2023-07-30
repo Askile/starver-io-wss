@@ -4,10 +4,12 @@ import {IdPool} from "./modules/IdPool";
 import {WebSocketServer} from "./network/WebSocketServer";
 import {Ticker} from "./world/Ticker";
 import {Map} from "./world/Map";
-import {Leaderboard} from "./components/Leaderboard";
-import {Movement} from "./components/Movement";
+import {Leaderboard} from "./leaderboard/Leaderboard";
 import * as uWS from "uWebSockets.js";
-import {Collision} from "./components/Collision";
+import {CollisionSystem} from "./systems/CollisionSystem";
+import {MovementSystem} from "./systems/MovementSystem";
+import {CraftSystem} from "./systems/CraftSystem";
+import {SpawnSystem} from "./systems/SpawnSystem";
 
 export class Server {
     public players: Player[] = [];
@@ -19,21 +21,25 @@ export class Server {
 
     public map: Map;
     public leaderboard: Leaderboard;
-    public movement: Movement;
-    public collision: Collision;
+    public movement: MovementSystem;
+    public collision: CollisionSystem;
+    public craftSystem: CraftSystem;
+    public spawnSystem: SpawnSystem;
 
     private ticker: Ticker;
 
-    constructor(config: Config, public path: string, public port: number) {
+    constructor(config: Config, public path: string) {
         this.playerPool = new IdPool(1, 100);
         this.entityPool = new IdPool(101, 60000);
-        this.wss = new WebSocketServer(path, port, this);
         this.config = config;
-        this.map = new Map(this.config);
+        this.wss = new WebSocketServer(path, this);
+        this.map = new Map(this);
 
         this.leaderboard = new Leaderboard(this);
-        this.movement = new Movement(this);
-        this.collision = new Collision(this);
+        this.movement = new MovementSystem(this);
+        this.collision = new CollisionSystem(this);
+        this.craftSystem = new CraftSystem(this);
+        this.spawnSystem = new SpawnSystem(this.map);
 
         this.ticker = new Ticker(this);
     }

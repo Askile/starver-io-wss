@@ -1,7 +1,7 @@
 import {BinaryWriter} from "../../modules/BinaryWriter";
 import {InventoryType} from "../../enums/InventoryType";
 import {Player} from "../Player";
-import {getDefaultHelmet, getDefaultItem, getDefaultPet} from "../../defaultValues";
+import {getDefaultHelmet, getDefaultItem, getDefaultPet} from "../../default/defaultValues";
 import {ClientPackets} from "../../enums/packets/ClientPackets";
 import {ServerPackets} from "../../enums/packets/ServerPackets";
 
