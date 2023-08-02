@@ -2,6 +2,7 @@ import {Vector} from "../../modules/Vector";
 
 export class Tile {
     public type: string;
+    public subtype: number;
     public radius: number;
     public limit: number;
     public hard: number = 0;
@@ -18,6 +19,7 @@ export class Tile {
         this.resource = data.resource ?? "NONE";
         this.limit = data.limit ?? 0;
         this.count = data.limit ?? 0;
+        this.subtype = data.subtype ?? 0;
         this.position = position;
         this.realPosition = position.multiply(100).add(new Vector(50, 50));
 

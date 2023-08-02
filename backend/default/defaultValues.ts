@@ -54,6 +54,6 @@ export function getDefaultPlayerData(): PlayerData {
     return {
         nickname: "unnamed",
         token: "",
-        level: 0
+        level: 69
     };
 }

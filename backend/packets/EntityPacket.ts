@@ -35,14 +35,14 @@ export class EntityPacket {
 
     // Метод для записи данных сущности в бинарный поток
     private writeEntityData(writer: BinaryWriter, entity: Entity, playerPosition: Vector, camera: Camera) {
-        const {position: entityPosition, id, angle, action, type, info, speed, extra} = entity;
+        const {position , id, angle, action, type, info, speed, extra} = entity;
         const isInsideCamera = playerPosition.isVectorInsideRectangle(
-            entityPosition.subtract(new Vector(-camera.width / 2, -camera.height / 2)),
+            position.subtract(new Vector(-camera.width / 2, -camera.height / 2)),
             camera.width,
             camera.height
         );
         const isInsideCameraExtended = playerPosition.isVectorInsideRectangle(
-            entityPosition.subtract(new Vector(-camera.width / 2 - 50, -camera.height / 2 - 50)),
+            position.subtract(new Vector(-camera.width / 2 - 50, -camera.height / 2 - 50)),
             camera.width + 100,
             camera.height + 100
         );
@@ -52,8 +52,8 @@ export class EntityPacket {
             writer.writeUInt8(angle);
             writer.writeUInt16(isInsideCamera ? action : ActionType.DELETE);
             writer.writeUInt16(type);
-            writer.writeUInt16(entityPosition.x);
-            writer.writeUInt16(entityPosition.y);
+            writer.writeUInt16(position.x);
+            writer.writeUInt16(position.y);
             writer.writeUInt16(!type ? 0 : id);
             writer.writeUInt16(info);
             writer.writeUInt16(speed);

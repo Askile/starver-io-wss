@@ -18,6 +18,7 @@ export class Ticker {
                 this.server.movement.tick();
                 this.server.collision.tick();
                 this.server.map.updateEntitiesInChunks();
+                this.server.timeSystem.tick();
         },[],1 / ServerConfig.engine_tps + "s");
         new NanoTimer().setInterval(() => this.entityTick(), [], 1 / ServerConfig.network_tps + "s");
         new NanoTimer().setInterval(() => this.server.leaderboard.tick(), [], 1 / ServerConfig.leaderboard_tps + "s");

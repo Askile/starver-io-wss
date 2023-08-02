@@ -15,12 +15,16 @@ export class Inventory {
         this.size = size;
     }
 
-    public giveItem(id: number, count: number): Buffer | undefined {
+    public giveItem(id: number, count: number): Uint8Array | Buffer | undefined {
         if (this.items.has(id)) {
             const itemQty = this.items.get(id) as number;
             this.items.set(id, itemQty + count);
         } else if (this.items.size + 1 <= this.size) {
-            this.items.set(id, count);
+            if(id === InventoryType.BAG) {
+                this.size = 16;
+                this.items.set(id, count);
+                return new Uint8Array([ClientPackets.GET_BAG]);
+            } else this.items.set(id, count);
         } else {
             const writer = new BinaryWriter();
             writer.writeUInt8(ClientPackets.INV_FULL);
@@ -28,8 +32,8 @@ export class Inventory {
             return writer.toBuffer();
         }
 
-        const writer = new BinaryWriter();
-        writer.writeUInt16(3);
+        const writer = new BinaryWriter(3);
+        writer.writeUInt16(ClientPackets.GATHER);
         writer.writeUInt16(id);
         writer.writeUInt16(count);
 

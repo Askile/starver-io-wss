@@ -49,7 +49,7 @@ export class WebSocketServer {
     }
 
     private startListening() {
-        this.app.listen(this.server.config.port, () => {
+        this.app.listen(this.server.port, () => {
             this.logger.info("WebSocket server is listening on port 443");
         });
     }

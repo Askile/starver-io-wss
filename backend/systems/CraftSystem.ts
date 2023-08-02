@@ -1,5 +1,4 @@
 // TODO Crafts
-import {Server} from "../Server";
 import {Player} from "../entities/Player";
 import {InventoryType} from "../enums/InventoryType";
 import {CraftType} from "../enums/CraftType";
@@ -10,19 +9,17 @@ import {getDefaultRecipes} from "../default/defaultRecipes";
 export class CraftSystem {
     public recipes: Recipe[];
     public readonly recipesToSend: any[] = [];
-    private server: Server;
-    constructor(server: Server) {
-        this.server = server;
+    constructor(config: Config) {
         this.recipes = getDefaultRecipes() as any;
 
-        if(server.config.important.recipes) {
-            for (const recipe of server.config.important.recipes) {
+        if(config.important.recipes) {
+            for (const recipe of config.important.recipes) {
                 const id = this.findCraftId(recipe.item);
                 this.recipes[id] = recipe;
             }
         }
 
-        if(server.config.instant_craft == 1) {
+        if(config.instant_craft == 1) {
             for (const recipe of this.recipes) {
                 recipe.time = 0;
             }
@@ -43,9 +40,9 @@ export class CraftSystem {
     }
 
     public handleCraft(player: Player, id: number) {
-        if(!this.server.craftSystem.recipes[id]) return;
+        if(!this.recipes[id]) return;
 
-        const craft = this.server.craftSystem.recipes[id];
+        const craft = this.recipes[id];
 
         for (const ingredient of craft.recipe) {
             const ide = InventoryType[ingredient[0].toUpperCase() as any] as any;

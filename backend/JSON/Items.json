@@ -1,5 +1,5 @@
 {
-  "WOOD_SWORD": {
+  "SWORD_WOOD": {
     "type": "weapon",
     "damage": 12,
     "id": 57
@@ -9,17 +9,17 @@
     "damage": 19,
     "id": 0
   },
-  "GOLD_SWORD": {
+  "SWORD_GOLD": {
     "type": "weapon",
     "damage": 22,
     "id": 5
   },
-  "DIAMOND_SWORD": {
+  "SWORD_DIAMOND": {
     "type": "weapon",
     "damage": 24,
     "id": 6
   },
-  "AMETHYST_SWORD": {
+  "SWORD_AMETHYST": {
     "type": "weapon",
     "damage": 27,
     "id": 30
@@ -264,7 +264,7 @@
   "BABY_LAVA": {
     "type": "pet",
     "id": 222,
-    "speed": 1,
+    "speed": 10,
     "tame_chance": 0.002,
     "isFly": 1
   },
@@ -279,5 +279,77 @@
     "type": "food",
     "id": 104,
     "value": 10
+  },
+  "COOKIE": {
+    "type": "food",
+    "id": 127,
+    "value": 50
+  },
+  "SANDWICH": {
+    "type": "food",
+    "id": 139,
+    "value": 100
+  },
+  "CAKE": {
+    "type": "food",
+    "id": 130,
+    "value": 100
+  },
+  "FOODFISH": {
+    "type": "food",
+    "id": 131,
+    "value": 18,
+    "poison": 10
+  },
+  "FOODFISH_COOKED": {
+    "type": "food",
+    "id": 132,
+    "value": 35
+  },
+  "MEAT": {
+    "type": "food",
+    "id": 110,
+    "value": 15,
+    "poison": 10
+  },
+  "COOKED_MEAT": {
+    "type": "food",
+    "id": 111,
+    "value": 35 
+  },
+  "CRAB_STICK": {
+    "type": "food",
+    "id": 190,
+    "value": 20
+  },
+  "CRAB_LOOT": {
+    "type": "food",
+    "id": 191,
+    "value": 10
+  },
+  "PUMPKIN": {
+    "type": "food",
+    "id": 183,
+    "value": 30
+  },
+  "GARLIC": {
+    "type": "food",
+    "id": 186,
+    "value": 14
+  },
+  "CARROT": {
+    "type": "food",
+    "id": 199,
+    "value": 20
+  },
+  "TOMATO": {
+    "type": "food",
+    "id": 201,
+    "value": 16
+  },
+  "BREAD": {
+    "type": "food",
+    "id": 137,
+    "value": 15
   }
 }

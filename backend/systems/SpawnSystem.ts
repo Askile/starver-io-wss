@@ -10,6 +10,7 @@ export class SpawnSystem {
 
     public getSpawnPoint(biomeName: string) {
         const biome = this.getRandomBiome(biomeName);
+        if(!biome) return new Vector(0, 0)
         let attempt = 1000;
         let position = new Vector(0, 0);
         while (attempt) {
@@ -20,7 +21,7 @@ export class SpawnSystem {
                 biome.position.y + ~~(Math.random() * biome.size.y)
             )
 
-            const chunks = this.map.getChunks(position.x, position.y, 3);
+            const chunks = this.map.getChunks(position.x, position.y, 5);
             for (const chunk of chunks) {
                 if(!chunk.tiles.length) {
                     attempt = 0;

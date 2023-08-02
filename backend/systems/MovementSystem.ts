@@ -32,8 +32,20 @@ export class MovementSystem {
                 entity.direction & 2 ? 1 : entity.direction & 1 ? -1 : 0
             );
 
+            const isDiagonal = (angle / (Math.PI / 2) % 1);
+
+            const nullVec = new Vector(1, 1)
+
             entity.velocity.x = entity.speed * Math.cos(angle);
             entity.velocity.y = entity.speed * Math.sin(angle);
+
+            // if(entity.direction === 8 && isBorder) {
+            //     entity.velocity.y = 0;
+            //     entity.position.y = 0;
+            // } else if(entity.direction === 4 && isBorder) {
+            //     entity.velocity.y = 0;
+            //     entity.position.y = this.server.map.height - 1;
+            // }
 
             entity.position = entity.position.add(entity.velocity.divide(ServerConfig.engine_tps));
 
@@ -41,9 +53,6 @@ export class MovementSystem {
                 if (entity.pet.id) entity.speed = entity.pet.speed * 1000 - (entity.right.type === "weapon" ? 30 : 0);
                 else entity.speed = entitySpeed[entity.type] - (entity.right.type === "weapon" ? 30 : 0);
             }
-
-            entity.position.x = Math.max(0, Math.min(this.server.map.width - 1, entity.position.x));
-            entity.position.y = Math.max(0, Math.min(this.server.map.height - 1, entity.position.y));
         }
     }
 }

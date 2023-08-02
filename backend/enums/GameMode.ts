@@ -1,5 +1,5 @@
 export enum GameMode {
-    NORMAL,
-    FOREST,
-    COMMUNITY = 6
+    normal,
+    forest = 4,
+    community = 6
 }

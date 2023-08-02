@@ -6,6 +6,7 @@ import NanoTimer from "nanotimer";
 import {DeathReason} from "../../enums/DeathReason";
 import {Entity} from "../Entity";
 import {EntityType} from "../../enums/EntityType";
+import {WorldTime} from "../../enums/WorldTime";
 
 const MAX_HUNGER = 100;
 const MAX_COLD = 100;
@@ -48,7 +49,7 @@ export class Gauges {
         };
 
         this.timer = new NanoTimer();
-        this.timer.setInterval(this.tick.bind(this), [], "0.5s");
+        this.timer.setInterval(this.tick.bind(this), [], this.player.server.config.delay_gauges / 1000 + "s");
     }
 
     private queryUpdate() {
@@ -75,10 +76,6 @@ export class Gauges {
         return hasUpdate;
     }
 
-    private clamp(value: number, min: number, max: number): number {
-        return Math.max(min, Math.min(max, value));
-    }
-
     private updateClientGauges() {
         const writer = new BinaryWriter();
         writer.writeUInt8(ClientPackets.GAUGES);
@@ -93,12 +90,14 @@ export class Gauges {
         this.player.client.sendBinary(writer.toBuffer());
     }
     public tick() {
-        this.hunger = Math.clamp(this.hunger - 3, 0, MAX_HUNGER);
+        this.hunger = Math.clamp(this.hunger - this.player.server.config.reduce_food, 0, MAX_HUNGER);
 
         const chunks = this.player.server.map.getChunks(this.player.position.x, this.player.position.y, 2);
         let isFire = false;
         let isWorkbench = false;
         let isWater = false;
+
+        const biomes = this.player.server.map.getBiomesAtEntityPosition(this.player);
 
         for (const chunk of chunks) {
             for (const entity of chunk.entities) {
@@ -114,46 +113,50 @@ export class Gauges {
             }
         }
 
+        if(!biomes.length) {
+            isWater = true;
+        }
+
         this.player.workbench = isWorkbench;
         this.player.fire = isFire;
         this.player.water = isWater;
 
-
         if(this.player.fire) {
-            this.cold = Math.clamp(this.cold + 20, 0, MAX_COLD);
+            this.cold = Math.clamp(this.cold + this.player.server.config.increase_cold_on_fire, 0, MAX_COLD);
         } else {
-            this.cold = Math.clamp(this.cold - 3, 0, MAX_COLD);
+            if(this.player.server.timeSystem.time === WorldTime.DAY) {
+                this.cold = Math.clamp(this.cold - this.player.server.config.reduce_cold_day, 0, MAX_COLD);
+            } else {
+                this.cold = Math.clamp(this.cold - this.player.server.config.reduce_cold_night, 0, MAX_COLD);
+            }
         }
 
         if(isWater) {
-            this.thirst = Math.clamp(this.thirst + 20, 0, MAX_THIRST);
+            this.thirst = Math.clamp(this.thirst + this.player.server.config.drink_water, 0, MAX_THIRST);
         } else {
-            this.thirst = Math.clamp(this.thirst - 2, 0, MAX_THIRST);
+            this.thirst = Math.clamp(this.thirst - this.player.server.config.reduce_water, 0, MAX_THIRST);
         }
 
-        if (this.oxygen === 0) {
-            this.player.reason = DeathReason.OXYGEN;
-            this.player.healthSystem.damage(OXYGEN_DAMAGE, ActionType.HURT);
-        }
         if (this.hunger === 0) {
             this.player.reason = DeathReason.STARVE;
-            this.player.healthSystem.damage(HUNGER_DAMAGE, ActionType.HUNGER);
+            this.player.healthSystem.damage(this.player.server.config.damage_food, ActionType.HUNGER);
         }
 
         if (this.cold === 0) {
             this.player.reason = DeathReason.COLD;
-            this.player.healthSystem.damage(COLD_DAMAGE, ActionType.COLD);
+            this.player.healthSystem.damage(this.player.server.config.damage_cold, ActionType.COLD);
         }
 
         if (this.thirst === 0) {
             this.player.reason = DeathReason.WATER;
-            this.player.healthSystem.damage(THIRST_DAMAGE, ActionType.HURT);
+            this.player.healthSystem.damage(this.player.server.config.damage_water, ActionType.HURT);
         }
 
         if (this.oxygen === 0) {
             this.player.reason = DeathReason.OXYGEN;
-            this.player.healthSystem.damage(OXYGEN_DAMAGE, ActionType.HURT);
+            this.player.healthSystem.damage(this.player.server.config.damage_oxygen, ActionType.HURT);
         }
+
 
         if (
             this.oxygen > 35 &&

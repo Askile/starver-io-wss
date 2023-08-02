@@ -1,18 +1,19 @@
 import {Vector} from "../modules/Vector";
 import {entitySpeed} from "./components/EntitySpeed";
-import {entityBiome} from "./components/EntityBiome";
 import {Server} from "../Server";
 import ServerConfig from "../JSON/ServerConfig.json";
 import NanoTimer from "nanotimer";
 import {EntityType} from "../enums/EntityType";
 export class Entity {
     public position: Vector;
+    public newPosition: Vector;
     public velocity: Vector;
     public direction: number;
     public server: Server;
 
     public old: any;
 
+    public radius: number;
     public type: number;
     public id: number;
     public speed: number;
@@ -26,12 +27,14 @@ export class Entity {
 
         this.id = server.entityPool.createId();
         this.speed = entitySpeed[type] ?? 0;
+        this.radius = 25;
         this.angle = 0;
         this.action = 0;
         this.info = 0;
         this.extra = 0;
 
         this.position = new Vector(0, 0);
+        this.newPosition = new Vector(0, 0);
         this.velocity = new Vector(0, 0);
         this.direction = 0;
 

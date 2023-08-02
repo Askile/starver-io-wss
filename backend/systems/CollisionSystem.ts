@@ -1,5 +1,6 @@
 import {Server} from "../Server";
 import {Vector} from "../modules/Vector";
+import {Player} from "../entities/Player";
 
 export class CollisionSystem {
     private server: Server;
@@ -24,11 +25,36 @@ export class CollisionSystem {
     }
 
     public tick() {
-        for (const entity of this.server.entities) {
-            const {x, y} = entity.position;
+        for (const player of this.server.players) {
+            const {x, y} = player.position;
             const chunks = this.server.map.getChunks(x, y, 2);
 
             for (const chunk of chunks) {
+                for (const entity of chunk.entities) {
+                    if(!entity.radius) continue;
+                    if(entity instanceof Player) continue;
+                    const distance = entity.position.distance(player.position);
+                    const totalRadius = entity.radius + player.radius;
+
+                    if (distance < totalRadius) {
+                        const newCoordinates = this.getClosestPointOnCircle(
+                            {
+                                x: player.position.x,
+                                y: player.position.y,
+                                radius: player.radius
+                            },
+                            {
+                                x: entity.position.x,
+                                y: entity.position.y,
+                                radius: entity.radius
+                            }
+                        );
+
+                        player.position.x = newCoordinates.x;
+                        player.position.y = newCoordinates.y;
+                    }
+
+                }
                 for (const tile of chunk.tiles) {
                     if (!tile.radius) continue;
                     const tileX = tile.position.x * 100 + 50;
@@ -41,9 +67,9 @@ export class CollisionSystem {
                     if (distance < totalRadius) {
                         const newCoordinates = this.getClosestPointOnCircle(
                             {
-                                x: entity.position.x,
-                                y: entity.position.y,
-                                radius: 25
+                                x: player.position.x,
+                                y: player.position.y,
+                                radius: player.radius
                             },
                             {
                                 x: tileX,
@@ -52,8 +78,8 @@ export class CollisionSystem {
                             }
                         );
 
-                        entity.position.x = newCoordinates.x;
-                        entity.position.y = newCoordinates.y;
+                        player.position.x = newCoordinates.x;
+                        player.position.y = newCoordinates.y;
                     }
                 }
             }

@@ -8,8 +8,6 @@ import {EntityType} from "../enums/EntityType";
 import {Box} from "../entities/Box";
 import {ActionType} from "../enums/ActionType";
 import {ServerPackets} from "../enums/packets/ServerPackets";
-import {InventoryType} from "../enums/InventoryType";
-import {Building} from "../entities/Building";
 import {ClientPackets} from "../enums/packets/ClientPackets";
 
 export class Client {
@@ -54,13 +52,32 @@ export class Client {
                     return;
                 }
                 const handshake = new Handshake([PACKET_TYPE, ...PACKET_DATA], this);
+                const player = this.server.players.find(player => player.data.token === handshake.token);
+
+                if(player) {
+                    if(player.client.isActive) {
+                        player.client.sendBinary(new Uint8Array([ClientPackets.STEAL_TOKEN]));
+                        if(player.client.isActive) player.client.socket.close();
+                    }
+                    this.player = player;
+                    player.client = this;
+                    handshake.response(this.player, true);
+                    return;
+                }
+                if(this.server.players.length >= 99) {
+                    return this.sendBinary(new Uint8Array([ClientPackets.FULL]))
+                }
+
                 this.player = new Player(this);
+
                 handshake.setupPlayer(this.player);
 
                 this.server.players.push(this.player);
                 this.server.entities.push(this.player);
 
                 handshake.response(this.player);
+                handshake.broadcastCosmetics(this.player);
+
             }
 
             this.receivePacket(PACKET_TYPE, PACKET, PACKET_DATA);
@@ -71,16 +88,15 @@ export class Client {
         this.packetsQty[PACKET_TYPE]++;
         this.packetsSize[PACKET_TYPE] += PACKET_DATA.length;
 
-        if (this.packetsQty[0] > 5) return this.socket.close();
-        if (this.packetsQty[3] > 10) return this.socket.close();
-        if (this.packetsQty[PACKET_TYPE] > 30) return this.socket.close();
+        // if (this.packetsQty[0] > 5) return this.socket.close();
+        // if (this.packetsQty[3] > 10) return this.socket.close();
+        // if (this.packetsQty[PACKET_TYPE] > 30) return this.socket.close();
 
         switch (PACKET_TYPE) {
             case ServerPackets.CHAT:
                 this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]));
                 break;
             case ServerPackets.MOVEMENT:
-                //this.player.movement.tick();
                 this.player.direction = PACKET;
                 break;
             case ServerPackets.ANGLE:
@@ -113,11 +129,7 @@ export class Client {
                 break;
             case ServerPackets.BUILD:
                 if(this.player.isCrafting) break;
-                if (!isNaN(PACKET_DATA[1] % 255) && this.player.inventory.items.has(PACKET)) {
-                    new Building(this.player, PACKET, PACKET_DATA[1] % 255);
-                    this.player.inventory.removeItem(PACKET, 1);
-                    this.player.client.sendBinary(new Uint8Array([ClientPackets.ACCEPT_BUILD, PACKET]));
-                }
+                this.server.buildingSystem.request(this.player, PACKET_DATA);
                 break;
             case ServerPackets.STOP_ATTACK:
                 this.player.attackManager.isAttack = false;
@@ -133,24 +145,12 @@ export class Client {
                 this.sendBinary(this.player.inventory.removeItem(PACKET, 1));
                 break;
             case ServerPackets.CONSOLE:
-                this.player.commandManager.handleCommand(PACKET);
                 break;
         }
     }
 
     public onClose() {
         this.isActive = false;
-        if (!this.player) return;
-        this.player.action = 1;
-        new NanoTimer().setTimeout(
-            () => {
-                this.server.playerPool.deleteId(this.player.id);
-                this.server.players = this.server.players.filter((player) => player !== this.player);
-                this.server.entities = this.server.entities.filter((player) => player !== this.player);
-            },
-            [],
-            "0.1s"
-        );
     }
 
     public sendJSON(message: any) {

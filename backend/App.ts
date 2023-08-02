@@ -4,10 +4,13 @@ import {Logger} from "./modules/Logger";
 import * as fs from "fs";
 import * as path from "path";
 import {Server} from "./Server";
+import {GameMode} from "./enums/GameMode";
+import findFreePorts from "find-free-ports";
 
 Math.clamp = (variable: number, min: number, max: number) => {
     return Math.max(min, Math.min(variable, max));
 }
+
 class App {
     private app: Express = express();
     private server: http.Server = http.createServer(this.app);
@@ -19,35 +22,46 @@ class App {
         this.loadServers();
     }
 
-    private loadServers() {
-        fs.readdir("servers", (err, files) => {
-            for (const file of files) {
-                const config = JSON.parse(fs.readFileSync(path.join("servers", file), {encoding: "utf-8"}));
-                this.servers.push(new Server(config, path.parse(file).name.replace(/\s/g, "-")));
-            }
 
+    private loadServers() {
+        fs.readdir("servers/normal", async (err, files) => {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const [port] = await findFreePorts(1);
+                const config = JSON.parse(fs.readFileSync(path.join(`servers/normal/`, file), {encoding: "utf-8"}));
+                this.servers.push(new Server(config, "Normal-server-" + i, port, GameMode.normal));
+            }
             this.logger.info("Loaded " + files.length + " configs");
             this.writeServersData();
         });
+        fs.readdir("servers/community", async (err, files) => {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const [port] = await findFreePorts(1);
+                const config = JSON.parse(fs.readFileSync(path.join(`servers/community/`, file), {encoding: "utf-8"}));
+                this.servers.push(new Server(config, "Private-server-" + i, port, GameMode.community));
+            }
+            this.logger.info("Loaded " + files.length + " configs");
+            this.writeServersData();
+        });
+
+        setInterval(this.writeServersData.bind(this), 5000);
     }
 
     private writeServersData() {
-
-        setInterval(() => {
-            const stream = fs.createWriteStream("frontend/serversBound/index.html", {encoding: "utf-8"});
-            const servers = [];
-            for (const server of this.servers) {
-                servers.push({
-                    path: server.path,
-                    a: server.path,
-                    nu: server.players.length,
-                    m: server.playerPool.maxId,
-                    p: server.config.port
-                });
-            }
-
-            stream.write(JSON.stringify(servers));
-        }, 1000);
+        const stream = fs.createWriteStream("frontend/serversBound/index.html", {encoding: "utf-8"});
+        const servers = [];
+        for (const server of this.servers) {
+            servers.push({
+                path: server.path,
+                a: server.path.replace(/-/g, " "),
+                nu: server.players.length,
+                m: server.playerPool.maxId,
+                gm: GameMode[server.mode],
+                p: server.port
+            });
+        }
+        stream.write(JSON.stringify(servers));
     }
 
     private setupStaticFiles() {
