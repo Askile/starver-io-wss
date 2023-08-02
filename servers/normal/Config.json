@@ -1,4 +1,4 @@
-{"port": 444, "important":{"max_units":1000,"max_building":1000,"map_width":230,"map_height":310,"custom_map":[
+{"important":{"max_units":1000,"max_building":1000,"map_width":230,"map_height":310,"custom_map":[
   [0, "DRAGON", 18, 6, 66, 35, 0],
   [0, "WINTER", 91, 18, 5, 40, 8],
   [0, "DESERT", 135, 180, 89, 124, 5],
