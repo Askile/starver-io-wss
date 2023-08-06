@@ -11,37 +11,27 @@ class BinaryWriter {
         this._buffer = Buffer.alloc(size);
         this._length = 0;
     }
-    writeUInt8(value) {
-        this.checkAlloc(1);
-        this._buffer[this._length++] = value;
+    writeUInt8(...values) {
+        for (const value of values) {
+            this.checkAlloc(1);
+            this._buffer[this._length++] = value;
+        }
     }
-    writeInt8(value) {
-        this.checkAlloc(1);
-        this._buffer[this._length++] = value;
+    writeUInt16(...values) {
+        for (const value of values) {
+            this.checkAlloc(2);
+            this._buffer[this._length++] = value;
+            this._buffer[this._length++] = value >> 8;
+        }
     }
-    writeUInt16(value) {
-        this.checkAlloc(2);
-        this._buffer[this._length++] = value;
-        this._buffer[this._length++] = value >> 8;
-    }
-    writeInt16(value) {
-        this.checkAlloc(2);
-        this._buffer[this._length++] = value;
-        this._buffer[this._length++] = value >> 8;
-    }
-    writeUInt32(value) {
-        this.checkAlloc(4);
-        this._buffer[this._length++] = value;
-        this._buffer[this._length++] = value >> 8;
-        this._buffer[this._length++] = value >> 16;
-        this._buffer[this._length++] = value >> 24;
-    }
-    writeInt32(value) {
-        this.checkAlloc(4);
-        this._buffer[this._length++] = value;
-        this._buffer[this._length++] = value >> 8;
-        this._buffer[this._length++] = value >> 16;
-        this._buffer[this._length++] = value >> 24;
+    writeUInt32(...values) {
+        for (const value of values) {
+            this.checkAlloc(4);
+            this._buffer[this._length++] = value;
+            this._buffer[this._length++] = value >> 8;
+            this._buffer[this._length++] = value >> 16;
+            this._buffer[this._length++] = value >> 24;
+        }
     }
     writeFloat(value) {
         this.checkAlloc(4);
@@ -59,15 +49,15 @@ class BinaryWriter {
         this._length += data.length;
     }
     writeStringUtf8(value) {
-        const length = Buffer.byteLength(value, 'utf8');
+        const length = Buffer.byteLength(value, "utf8");
         this.checkAlloc(length);
-        this._buffer.write(value, this._length, 'utf8');
+        this._buffer.write(value, this._length, "utf8");
         this._length += length;
     }
     writeStringUnicode(value) {
-        const length = Buffer.byteLength(value, 'ucs2');
+        const length = Buffer.byteLength(value, "ucs2");
         this.checkAlloc(length);
-        this._buffer.write(value, this._length, 'ucs2');
+        this._buffer.write(value, this._length, "ucs2");
         this._length += length;
     }
     writeStringZeroUtf8(value) {

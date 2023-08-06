@@ -1,5 +1,5 @@
 {
-  "WOOD_SWORD": {
+  "SWORD_WOOD": {
     "type": "weapon",
     "damage": 12,
     "id": 57
@@ -9,17 +9,17 @@
     "damage": 19,
     "id": 0
   },
-  "GOLD_SWORD": {
+  "SWORD_GOLD": {
     "type": "weapon",
     "damage": 22,
     "id": 5
   },
-  "DIAMOND_SWORD": {
+  "SWORD_DIAMOND": {
     "type": "weapon",
     "damage": 24,
     "id": 6
   },
-  "AMETHYST_SWORD": {
+  "SWORD_AMETHYST": {
     "type": "weapon",
     "damage": 27,
     "id": 30
@@ -91,39 +91,80 @@
   },
   "PICK_WOOD": {
     "type": "tool",
-    "harvest": 1,
-    "damage": 6,
+    "harvest": 2,
+    "damage": 1,
     "id": 8
   },
   "PICK": {
     "type": "tool",
-    "harvest": 2,
-    "damage": 6,
+    "harvest": 3,
+    "damage": 2,
     "id": 1
   },
   "PICK_GOLD": {
     "type": "tool",
-    "harvest": 3,
-    "damage": 6,
+    "harvest": 4,
+    "damage": 3,
     "id": 3
   },
   "PICK_DIAMOND": {
     "type": "tool",
-    "harvest": 4,
-    "damage": 6,
+    "harvest": 5,
+    "damage": 4,
     "id": 4
   },
   "PICK_AMETHYST": {
     "type": "tool",
-    "harvest": 5,
-    "damage": 6,
+    "harvest": 6,
+    "damage": 5,
     "id": 31
   },
   "PICK_REIDITE": {
     "type": "tool",
-    "harvest": 6,
+    "harvest": 7,
     "damage": 6,
     "id": 32
+  },
+  "HAMMER": {
+    "type": "hammer",
+    "building_damage": 20,
+    "damage": 2,
+    "id": 35
+  },
+  "HAMMER_GOLD": {
+    "type": "hammer",
+    "building_damage": 30,
+    "damage": 3,
+    "id": 36
+  },
+  "HAMMER_DIAMOND": {
+    "type": "hammer",
+    "building_damage": 40,
+    "damage": 4,
+    "id": 37
+  },
+  "HAMMER_AMETHYST": {
+    "type": "hammer",
+    "building_damage": 50,
+    "damage": 5,
+    "id": 38
+  },
+  "HAMMER_REIDITE": {
+    "type": "hammer",
+    "building_damage":  60,
+    "damage": 6,
+    "id": 39
+  },
+  "SUPER_HAMMER": {
+    "type": "hammer",
+    "building_damage": 70,
+    "damage": 12,
+    "id": 45
+  },
+  "BOOK": {
+    "type": "tool",
+    "id": 28,
+    "damage": 1
   },
   "SPELL_WOOD_ARROW": {
     "type": "spell",
@@ -264,7 +305,7 @@
   "BABY_LAVA": {
     "type": "pet",
     "id": 222,
-    "speed": 1,
+    "speed": 10,
     "tame_chance": 0.002,
     "isFly": 1
   },
@@ -274,5 +315,94 @@
     "speed": 0.23,
     "tame_chance": 0.01,
     "isFly": 0
+  },
+  "PLANT": {
+    "type": "food",
+    "id": 104,
+    "value": 10
+  },
+  "COOKIE": {
+    "type": "food",
+    "id": 127,
+    "value": 50
+  },
+  "SANDWICH": {
+    "type": "food",
+    "id": 139,
+    "value": 100
+  },
+  "CAKE": {
+    "type": "food",
+    "id": 130,
+    "value": 100
+  },
+  "FOODFISH": {
+    "type": "food",
+    "id": 131,
+    "value": 18,
+    "poison": true
+  },
+  "FOODFISH_COOKED": {
+    "type": "food",
+    "id": 132,
+    "value": 35
+  },
+  "MEAT": {
+    "type": "food",
+    "id": 110,
+    "value": 15,
+    "poison": true
+  },
+  "COOKED_MEAT": {
+    "type": "food",
+    "id": 111,
+    "value": 35 
+  },
+  "CRAB_STICK": {
+    "type": "food",
+    "id": 190,
+    "value": 20
+  },
+  "CRAB_LOOT": {
+    "type": "food",
+    "id": 191,
+    "value": 10
+  },
+  "PUMPKIN": {
+    "type": "food",
+    "id": 183,
+    "value": 30
+  },
+  "GARLIC": {
+    "type": "food",
+    "id": 186,
+    "value": 14
+  },
+  "CARROT": {
+    "type": "food",
+    "id": 199,
+    "value": 20
+  },
+  "TOMATO": {
+    "type": "food",
+    "id": 201,
+    "value": 16
+  },
+  "BREAD": {
+    "type": "food",
+    "id": 137,
+    "value": 15
+  },
+  "CACTUS": {
+    "type": "food",
+    "id": 227,
+    "value": 20,
+    "water": 10
+  },
+  "WATERMELON": {
+    "type": "food",
+    "id": 203,
+    "value": 20,
+    "water": 10
   }
 }

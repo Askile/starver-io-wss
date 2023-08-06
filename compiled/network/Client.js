@@ -8,10 +8,10 @@ const msgpack_lite_1 = __importDefault(require("msgpack-lite"));
 const Player_1 = require("../entities/Player");
 const Handshake_1 = require("../packets/Handshake");
 const nanotimer_1 = __importDefault(require("nanotimer"));
-const EntityType_1 = require("../enums/EntityType");
-const Box_1 = require("../entities/Box");
+const Crate_1 = require("../entities/Crate");
 const ActionType_1 = require("../enums/ActionType");
 const ServerPackets_1 = require("../enums/packets/ServerPackets");
+const ClientPackets_1 = require("../enums/packets/ClientPackets");
 class Client {
     socket;
     packetsQty = new Array(36).fill(0);
@@ -45,36 +45,41 @@ class Client {
                     return;
                 }
                 const handshake = new Handshake_1.Handshake([PACKET_TYPE, ...PACKET_DATA], this);
+                const player = this.server.players.find(player => player.data.token === handshake.token);
+                if (player) {
+                    if (player.client.isActive) {
+                        player.client.sendBinary(new Uint8Array([ClientPackets_1.ClientPackets.STEAL_TOKEN]));
+                        if (player.client.isActive)
+                            player.client.socket.close();
+                    }
+                    this.player = player;
+                    player.client = this;
+                    handshake.response(this.player, true);
+                    return;
+                }
+                if (this.server.players.length >= 99) {
+                    return this.sendBinary(new Uint8Array([ClientPackets_1.ClientPackets.FULL]));
+                }
                 this.player = new Player_1.Player(this);
                 handshake.setupPlayer(this.player);
                 this.server.players.push(this.player);
                 this.server.entities.push(this.player);
                 handshake.response(this.player);
+                handshake.broadcastCosmetics(this.player);
             }
             this.receivePacket(PACKET_TYPE, PACKET, PACKET_DATA);
         }
-        catch (error) {
-            // Обработка ошибки
-        }
+        catch (error) { }
     }
     receivePacket(PACKET_TYPE, PACKET, PACKET_DATA) {
         this.packetsQty[PACKET_TYPE]++;
         this.packetsSize[PACKET_TYPE] += PACKET_DATA.length;
-        if (this.packetsQty[0] > 5) {
-            this.socket.close();
-            return;
-        }
-        if (this.packetsQty[3] > 10) {
-            this.socket.close();
-            return;
-        }
-        if (this.packetsQty[PACKET_TYPE] > 30) {
-            this.socket.close();
-            return;
-        }
+        // if (this.packetsQty[0] > 5) return this.socket.close();
+        // if (this.packetsQty[3] > 10) return this.socket.close();
+        // if (this.packetsQty[PACKET_TYPE] > 30) return this.socket.close();
         switch (PACKET_TYPE) {
             case ServerPackets_1.ServerPackets.CHAT:
-                this.broadcast(JSON.stringify([0, this.player.id, PACKET]));
+                this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]), false, this.socket);
                 break;
             case ServerPackets_1.ServerPackets.MOVEMENT:
                 this.player.direction = PACKET;
@@ -83,61 +88,87 @@ class Client {
                 this.player.angle = Number(PACKET) % 255;
                 break;
             case ServerPackets_1.ServerPackets.ATTACK:
+                if (this.player.isCrafting)
+                    break;
+                this.player.attack = true;
                 this.player.angle = Number(PACKET) % 255;
                 this.player.action |= ActionType_1.ActionType.ATTACK;
-                this.player.attackManager.isAttack = true;
+                this.server.combatSystem.handleAttack(this.player);
                 break;
             case ServerPackets_1.ServerPackets.INTERACTION:
-                this.player.interactionManager.useItem(PACKET);
+                if (this.player.isCrafting)
+                    break;
+                this.server.interactionSystem.request(this.player, PACKET);
                 break;
-            case 6:
+            case ServerPackets_1.ServerPackets.DROP_ONE_ITEM:
+                if (this.player.isCrafting)
+                    break;
                 if (this.player.inventory.items.has(PACKET))
-                    new Box_1.Box(this.server, EntityType_1.EntityType.CRATE, {
+                    new Crate_1.Crate(this.server, {
                         owner: this.player,
                         item: PACKET,
                         count: this.player.inventory.items.get(PACKET)
                     });
                 this.sendBinary(this.player.inventory.deleteItem(PACKET));
                 break;
-            case 14:
-                this.player.attackManager.isAttack = false;
+            case ServerPackets_1.ServerPackets.CRAFT:
+                if (this.player.isCrafting)
+                    break;
+                this.server.craftSystem.handleCraft(this.player, PACKET);
                 break;
-            case 28:
+            case ServerPackets_1.ServerPackets.RECYCLE_START:
+                if (this.player.isCrafting)
+                    break;
+                this.server.craftSystem.handleRecycle(this.player, PACKET);
+                break;
+            case ServerPackets_1.ServerPackets.BUILD:
+                if (this.player.isCrafting)
+                    break;
+                this.server.buildingSystem.request(this.player, PACKET_DATA);
+                break;
+            case ServerPackets_1.ServerPackets.STOP_ATTACK:
+                this.player.attack = false;
+                break;
+            case ServerPackets_1.ServerPackets.DROP_ITEM:
+                if (this.player.isCrafting)
+                    break;
                 if (this.player.inventory.items.has(PACKET))
-                    new Box_1.Box(this.server, EntityType_1.EntityType.CRATE, {
+                    new Crate_1.Crate(this.server, {
                         owner: this.player,
                         item: PACKET,
                         count: 1
                     });
                 this.sendBinary(this.player.inventory.removeItem(PACKET, 1));
                 break;
-            case 36:
-                this.player.commandManager.handleCommand(PACKET);
+            case ServerPackets_1.ServerPackets.CANCEL_CRAFT:
+                this.server.craftSystem.stopCraft(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.CONSOLE:
                 break;
         }
     }
     onClose() {
         this.isActive = false;
-        this.player.action = 1;
-        new nanotimer_1.default().setTimeout(() => {
-            this.server.playerPool.deleteId(this.player.id);
-            this.server.players = this.server.players.filter((player) => player !== this.player);
-            this.server.entities = this.server.entities.filter((player) => player !== this.player);
-        }, [], "0.1s");
     }
     sendJSON(message) {
-        this.socket.send(JSON.stringify(message));
+        if (this.isActive && message)
+            this.socket.send(JSON.stringify(message));
+    }
+    sendU8(message) {
+        if (this.isActive && message)
+            this.socket.send(new Uint8Array(message), true);
+    }
+    sendU16(message) {
+        if (this.isActive && message)
+            this.socket.send(new Uint16Array(message), true);
+    }
+    sendU32(message) {
+        if (this.isActive && message)
+            this.socket.send(new Uint32Array(message), true);
     }
     sendBinary(message) {
         if (this.isActive && message)
             this.socket.send(message, true);
-    }
-    broadcast(message) {
-        const clients = Array.from(this.server.wss.clients.values());
-        for (const client of clients) {
-            if (client.socket !== this.socket)
-                client.socket.send(message);
-        }
     }
 }
 exports.Client = Client;

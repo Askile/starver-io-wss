@@ -1,24 +1,48 @@
+const CONFIG = {
+    LOG_SEND: false,
+    LOG_RECEIVE: false
+}
 class AntiCheat {
     constructor() {
         this.lineStroked = 0;
 
-        this.observeHooks();
+        //this.observeHooks();
         //this.observeCanvas();
+        const originalWebSocket = window.WebSocket; // Сохраняем исходный конструктор WebSocket
 
+        window.WebSocket = new Proxy(originalWebSocket, {
+            construct: function(target, args) {
+                const websocket = new target(...args);
+
+                websocket.addEventListener("message", event => {
+                    if(CONFIG.LOG_RECEIVE) {
+                        if(typeof event.data == "object") {
+                            const message = new Uint8Array(event.data);
+                            console.log(message);
+                        } else {
+                            console.log(JSON.parse(event.data))
+                        }
+                    }
+                });
+
+                return websocket;
+            }
+        });
         const { send } = WebSocket.prototype;
         WebSocket.prototype.send = function(...args) {
             const stackTrace = new Error().stack.split('\n');
             const location = stackTrace[2].trim();
 
-            if(args[0][0] !== 1)
-                console.log(args[0], location.slice(3, location.length));
+            CONFIG.LOG_SEND && console.log(args[0], location.slice(3, location.length));
             args[0] = window.msgpack.encode(args[0]);
             return send.apply(this, args);
-        };
+        }
+
+
     }
 
     crashPage(code) {
-        alert(`AntiCheat report #${code}`)
+        //alert(`AntiCheat report #${code}`)
         // while (true){}
     }
 

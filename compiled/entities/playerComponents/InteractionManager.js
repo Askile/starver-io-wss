@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InteractionManager = void 0;
 const Items_json_1 = __importDefault(require("../../JSON/Items.json"));
 const InventoryType_1 = require("../../enums/InventoryType");
-const defaultValues_1 = require("../../defaultValues");
+const defaultValues_1 = require("../../default/defaultValues");
+const ClientPackets_1 = require("../../enums/packets/ClientPackets");
 class InteractionManager {
     items;
     player;
@@ -52,13 +53,27 @@ class InteractionManager {
             else
                 this.player.pet = pet;
         }
+        else if (this.isFood(itemName)) {
+            this.player.gauges.hunger += this.items[itemName].value;
+            this.player.client.sendBinary(new Uint8Array([ClientPackets_1.ClientPackets.GAUGES_FOOD, this.player.gauges.hunger]));
+            this.player.client.sendBinary(this.player.inventory.removeItem(id, 1));
+        }
+        else {
+            this.player.right = {
+                type: "unknown",
+                id
+            };
+        }
     }
     setEquipment() {
-        this.player.info = this.player.right.id + this.player.helmet.id * 128;
+        this.player.info = this.player.right.id + this.player.helmet.id * 128 + (this.player.inventory.size >= 16 ? 0x4000 : 0);
         this.player.extra = this.player.pet.id;
     }
     isInHand(name) {
-        return this.items[name].type === "weapon" || this.items[name].type === "shield" || this.items[name].type === "tool";
+        return ["weapon", "shield", "tool"].includes(this.items[name].type);
+    }
+    isFood(name) {
+        return this.items[name].type == "food";
     }
     isPet(name) {
         return this.items[name].type === "pet";

@@ -6,20 +6,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Box = void 0;
 const Entity_1 = require("./Entity");
 const nanotimer_1 = __importDefault(require("nanotimer"));
+const Inventory_1 = require("../systems/individual/Inventory");
+const Player_1 = require("./Player");
+const EntityType_1 = require("../enums/EntityType");
 class Box extends Entity_1.Entity {
-    item;
-    count;
-    constructor(server, type, data) {
-        super(type, server);
+    inventory;
+    constructor(server, data) {
+        super(EntityType_1.EntityType.CRATE, server);
         this.position = data.owner.position;
-        this.info = data.owner.cosmetics.crate;
-        this.item = data.item;
-        this.count = data.count;
-        this.id = this.server.entityPool.createId();
+        this.angle = data.owner.angle;
+        this.info = data.owner.cosmetics.crate ?? 10;
+        this.inventory = new Inventory_1.Inventory(this, 16);
+        this.inventory.giveItem(data.item, data.count);
         this.server.entities.push(this);
         new nanotimer_1.default().setTimeout(() => {
             this.delete();
         }, [], "16s");
+    }
+    onDead(damager) {
+        if (damager instanceof Player_1.Player) {
+            damager.client.sendBinary(damager.inventory.addInventory(this.inventory));
+        }
     }
 }
 exports.Box = Box;

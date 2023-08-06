@@ -10,42 +10,29 @@ export class BinaryWriter {
         this._length = 0;
     }
 
-    public writeUInt8(value: number): void {
-        this.checkAlloc(1);
-        this._buffer[this._length++] = value;
+    public writeUInt8(...values: number[]): void {
+        for (const value of values) {
+            this.checkAlloc(1);
+            this._buffer[this._length++] = value;
+        }
     }
 
-    public writeInt8(value: number): void {
-        this.checkAlloc(1);
-        this._buffer[this._length++] = value;
+    public writeUInt16(...values: number[]): void {
+        for (const value of values) {
+            this.checkAlloc(2);
+            this._buffer[this._length++] = value;
+            this._buffer[this._length++] = value >> 8;
+        }
     }
 
-    public writeUInt16(value: number): void {
-        this.checkAlloc(2);
-        this._buffer[this._length++] = value;
-        this._buffer[this._length++] = value >> 8;
-    }
-
-    public writeInt16(value: number): void {
-        this.checkAlloc(2);
-        this._buffer[this._length++] = value;
-        this._buffer[this._length++] = value >> 8;
-    }
-
-    public writeUInt32(value: number): void {
-        this.checkAlloc(4);
-        this._buffer[this._length++] = value;
-        this._buffer[this._length++] = value >> 8;
-        this._buffer[this._length++] = value >> 16;
-        this._buffer[this._length++] = value >> 24;
-    }
-
-    public writeInt32(value: number): void {
-        this.checkAlloc(4);
-        this._buffer[this._length++] = value;
-        this._buffer[this._length++] = value >> 8;
-        this._buffer[this._length++] = value >> 16;
-        this._buffer[this._length++] = value >> 24;
+    public writeUInt32(...values: number[]): void {
+        for (const value of values) {
+            this.checkAlloc(4);
+            this._buffer[this._length++] = value;
+            this._buffer[this._length++] = value >> 8;
+            this._buffer[this._length++] = value >> 16;
+            this._buffer[this._length++] = value >> 24;
+        }
     }
 
     public writeFloat(value: number): void {
@@ -67,16 +54,16 @@ export class BinaryWriter {
     }
 
     public writeStringUtf8(value: string): void {
-        const length = Buffer.byteLength(value, 'utf8');
+        const length = Buffer.byteLength(value, "utf8");
         this.checkAlloc(length);
-        this._buffer.write(value, this._length, 'utf8');
+        this._buffer.write(value, this._length, "utf8");
         this._length += length;
     }
 
     public writeStringUnicode(value: string): void {
-        const length = Buffer.byteLength(value, 'ucs2');
+        const length = Buffer.byteLength(value, "ucs2");
         this.checkAlloc(length);
-        this._buffer.write(value, this._length, 'ucs2');
+        this._buffer.write(value, this._length, "ucs2");
         this._length += length;
     }
 

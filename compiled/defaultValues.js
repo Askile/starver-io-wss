@@ -28,7 +28,8 @@ function getDefaultItem() {
     return {
         type: "hand",
         id: 7,
-        damage: 5
+        damage: 5,
+        harvest: 1
     };
 }
 exports.getDefaultItem = getDefaultItem;

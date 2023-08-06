@@ -1,4 +1,4 @@
-import {getDefaultCamera} from "../defaultValues";
+import {getDefaultCamera} from "../default/defaultValues";
 import {Client} from "../network/Client";
 import {ClientStringPackets} from "../enums/packets/ClientStringPackets";
 import {GameMode} from "../enums/GameMode";
@@ -11,7 +11,7 @@ const MAX_VALUES = {
     CRATE: 71,
     BAG: 69,
     BOOK: 44
-}
+};
 
 export class Handshake {
     private readonly request: any;
@@ -21,7 +21,7 @@ export class Handshake {
     private nickname: string;
     private camera: Camera = getDefaultCamera();
     private version: number;
-    private token: string;
+    public token: string | number;
     private reconnect: 0 | 1;
     private readonly skin: number;
     private readonly accessory: number;
@@ -58,25 +58,26 @@ export class Handshake {
 
     public testValid(): boolean {
         const typesToCheck = [
-            { type: "string", indices: [0, 4] },
-            { type: "number", indices: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11] }
+            {type: "string", indices: [0, 4]},
+            {type: "number", indices: [1, 2, 3, 5, 6, 7, 8, 9, 10, 11]}
         ];
 
-        for (const { type, indices } of typesToCheck) {
+        for (const {type, indices} of typesToCheck) {
             for (const index of indices) {
                 const requestValue = this.request[index];
                 const requestType = typeof requestValue;
 
-                if(requestType !== type) return false;
+                if (requestType !== type) return false;
             }
         }
 
         return true;
     }
     public setupPlayer(player: Player) {
-        if(!this.testValid()) return;
+        if (!this.testValid()) return;
         player.id = this.server.playerPool.createId();
-        player.data.nickname = this.nickname.slice(0, 16);
+        player.data.nickname = this.nickname.slice(0, 16) || "Player";
+        player.data.token = this.token as string;
         player.camera.width = Math.max(getDefaultCamera().width, Math.min(3840, this.camera.width));
         player.camera.height = Math.max(getDefaultCamera().height, Math.min(2160, this.camera.height));
         player.cosmetics.skin = Math.max(0, Math.min(MAX_VALUES.SKIN, this.skin));
@@ -87,51 +88,56 @@ export class Handshake {
         player.cosmetics.dead = Math.max(0, Math.min(MAX_VALUES.CRATE, this.dead));
     }
 
-    public response(player: Player) {
+    public response(player: Player, isRestore: boolean = false) {
         const players = this.server.players.map(({id, data, cosmetics, stats}) => {
             return [id, data.nickname, data.level, stats.score, cosmetics.skin, cosmetics.accessory, cosmetics.book, cosmetics.bag];
         });
+        const inventory = new Array(255).fill(null);
+        for (let i = 0; i < player.inventory.items.size; i++) {
+            const items = Array.from(player.inventory.items.keys()) as any;
+            const counts = Array.from(player.inventory.items.values()) as any;
+            inventory[items[i]] = counts[i];
+        }
+
+        if(isRestore) {
+            this.token = 0;
+        }
 
         this.client.sendJSON([
             ClientStringPackets.HANDSHAKE,
-            GameMode.NORMAL,
-            0,           // TODO: days
+            this.server.mode,
+            player.stats.time,
             player.position.x,
             players,
-            0,           // TODO: time
-            0,
+            this.server.timeSystem.time,
+            0, // TODO: GHOST
             this.config.important.max_units,
-            [],
+            [], // TODO: TEAM
             player.id,
             player.position.y,
-            100,         //TODO: max players
-            "token fucking",
+            100, // TODO: max players
+            this.token,
+            0, // TODO: Player score for kits
+            isRestore ? inventory: [],
+            this.server.timeSystem.getGameTime(),
+            0, // TODO: Quests born
+            [], // TODO: Quests
             0,
-            [],
-            0,
-            0,
-            [],
-            0,
-            22009,
+            this.server.mapGenerator.seed,
             this.config.important.map_width,
             this.config.important.map_height,
-            6,
+            this.config.important.islands,
+            //this.server.map.getCustomMap(),
             this.config.important.custom_map,
-            "Welcome",
-            0,
-            0,
-            0
+            "",
+            this.server.config.important.recipes ? this.server.craftSystem.recipesToSend : 0,
+            0,  // TODO: Sandstorm
+            0   // TODO: Blizzard
         ]);
 
-        this.client.broadcast(JSON.stringify([
-            2,
-            player.id,
-            player.data.nickname,
-            player.data.level,
-            player.cosmetics.skin,
-            player.cosmetics.accessory,
-            player.cosmetics.bag,
-            player.cosmetics.book
-        ]));
+    }
+
+    public broadcastCosmetics(player: Player) {
+        this.server.broadcast(JSON.stringify([2, player.id, player.data.nickname, player.data.level, player.cosmetics.skin, player.cosmetics.accessory, player.cosmetics.bag, player.cosmetics.book]));
     }
 }

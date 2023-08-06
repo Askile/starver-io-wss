@@ -40,7 +40,7 @@ class WebSocketServer {
         this.startListening();
     }
     setupWebSocket(path) {
-        this.app.ws('/' + path, {
+        this.app.ws("/" + path, {
             idleTimeout: 0,
             maxBackpressure: 1024,
             maxPayloadLength: 100,
@@ -66,8 +66,8 @@ class WebSocketServer {
         this.clients.delete(ws);
     }
     startListening() {
-        this.app.listen(443, () => {
-            this.logger.info('WebSocket server is listening on port 443');
+        this.app.listen(this.server.port, () => {
+            this.logger.info("WebSocket server is listening on port " + this.server.port);
         });
     }
 }

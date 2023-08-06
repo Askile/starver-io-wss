@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Inventory = void 0;
 const BinaryWriter_1 = require("../../modules/BinaryWriter");
-const defaultValues_1 = require("../../defaultValues");
+const InventoryType_1 = require("../../enums/InventoryType");
+const defaultValues_1 = require("../../default/defaultValues");
 const ClientPackets_1 = require("../../enums/packets/ClientPackets");
 class Inventory {
     items;
@@ -19,15 +20,18 @@ class Inventory {
             this.items.set(id, itemQty + count);
         }
         else if (this.items.size + 1 <= this.size) {
-            this.items.set(id, count);
+            if (id === InventoryType_1.InventoryType.BAG) {
+                this.size = 16;
+                return new Uint8Array([ClientPackets_1.ClientPackets.GET_BAG]);
+            }
+            else
+                this.items.set(id, count);
         }
         else {
-            const writer = new BinaryWriter_1.BinaryWriter();
-            writer.writeUInt8(ClientPackets_1.ClientPackets.INV_FULL);
-            return writer.toBuffer();
+            return new Uint8Array([ClientPackets_1.ClientPackets.INV_FULL]);
         }
-        const writer = new BinaryWriter_1.BinaryWriter();
-        writer.writeUInt16(3);
+        const writer = new BinaryWriter_1.BinaryWriter(3);
+        writer.writeUInt16(ClientPackets_1.ClientPackets.GATHER);
         writer.writeUInt16(id);
         writer.writeUInt16(count);
         return writer.toBuffer();

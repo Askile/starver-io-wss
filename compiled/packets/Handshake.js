@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Handshake = void 0;
-const defaultValues_1 = require("../defaultValues");
+const defaultValues_1 = require("../default/defaultValues");
 const ClientStringPackets_1 = require("../enums/packets/ClientStringPackets");
-const GameMode_1 = require("../enums/GameMode");
 const MAX_VALUES = {
     SKIN: 174,
     ACCESSORY: 94,
@@ -70,7 +69,8 @@ class Handshake {
         if (!this.testValid())
             return;
         player.id = this.server.playerPool.createId();
-        player.data.nickname = this.nickname.slice(0, 16);
+        player.data.nickname = this.nickname.slice(0, 16) || "Player";
+        player.data.token = this.token;
         player.camera.width = Math.max((0, defaultValues_1.getDefaultCamera)().width, Math.min(3840, this.camera.width));
         player.camera.height = Math.max((0, defaultValues_1.getDefaultCamera)().height, Math.min(2160, this.camera.height));
         player.cosmetics.skin = Math.max(0, Math.min(MAX_VALUES.SKIN, this.skin));
@@ -80,50 +80,53 @@ class Handshake {
         player.cosmetics.crate = Math.max(0, Math.min(MAX_VALUES.CRATE, this.crate));
         player.cosmetics.dead = Math.max(0, Math.min(MAX_VALUES.CRATE, this.dead));
     }
-    response(player) {
+    response(player, isRestore = false) {
         const players = this.server.players.map(({ id, data, cosmetics, stats }) => {
             return [id, data.nickname, data.level, stats.score, cosmetics.skin, cosmetics.accessory, cosmetics.book, cosmetics.bag];
         });
+        const inventory = new Array(255).fill(null);
+        for (let i = 0; i < player.inventory.items.size; i++) {
+            const items = Array.from(player.inventory.items.keys());
+            const counts = Array.from(player.inventory.items.values());
+            inventory[items[i]] = counts[i];
+        }
+        if (isRestore) {
+            this.token = 0;
+        }
         this.client.sendJSON([
             ClientStringPackets_1.ClientStringPackets.HANDSHAKE,
-            GameMode_1.GameMode.NORMAL,
-            0,
+            this.server.mode,
+            player.stats.time,
             player.position.x,
             players,
-            0,
+            this.server.timeSystem.time,
             0,
             this.config.important.max_units,
             [],
             player.id,
             player.position.y,
             100,
-            "token fucking",
+            this.token,
+            0,
+            isRestore ? inventory : [],
+            this.server.timeSystem.getGameTime(),
             0,
             [],
             0,
-            0,
-            [],
-            0,
-            22009,
+            this.server.mapGenerator.seed,
             this.config.important.map_width,
             this.config.important.map_height,
-            6,
+            this.config.important.islands,
+            //this.server.map.getCustomMap(),
             this.config.important.custom_map,
-            "Welcome",
+            "",
+            this.server.config.important.recipes ? this.server.craftSystem.recipesToSend : 0,
             0,
-            0,
-            0
+            0 // TODO: Blizzard
         ]);
-        this.client.broadcast(JSON.stringify([
-            2,
-            player.id,
-            player.data.nickname,
-            player.data.level,
-            player.cosmetics.skin,
-            player.cosmetics.accessory,
-            player.cosmetics.bag,
-            player.cosmetics.book
-        ]));
+    }
+    broadcastCosmetics(player) {
+        this.server.broadcast(JSON.stringify([2, player.id, player.data.nickname, player.data.level, player.cosmetics.skin, player.cosmetics.accessory, player.cosmetics.bag, player.cosmetics.book]));
     }
 }
 exports.Handshake = Handshake;
