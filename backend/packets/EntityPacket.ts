@@ -33,24 +33,34 @@ export class EntityPacket {
         }
     }
 
-    // Метод для записи данных сущности в бинарный поток
     private writeEntityData(writer: BinaryWriter, entity: Entity, playerPosition: Vector, camera: Camera) {
-        const {position , id, angle, action, type, info, speed, extra} = entity;
+        let {position , id, angle, action, type, info, speed, extra} = entity
+
         const isInsideCamera = playerPosition.isVectorInsideRectangle(
             position.subtract(new Vector(-camera.width / 2, -camera.height / 2)),
             camera.width,
             camera.height
         );
+
         const isInsideCameraExtended = playerPosition.isVectorInsideRectangle(
             position.subtract(new Vector(-camera.width / 2 - 50, -camera.height / 2 - 50)),
             camera.width + 100,
             camera.height + 100
         );
 
-        if (!this.player.entities[id] || 1 || (isInsideCameraExtended && !isInsideCamera)) {
+        const ENTITY = this.player.entities[id];
+
+        if(isInsideCameraExtended && (!ENTITY || (ENTITY &&
+            ENTITY.position.x !== entity.position.x ||
+            ENTITY.position.y !== entity.position.y ||
+            ENTITY.info !== entity.info ||
+            ENTITY.action !== entity.action ||
+            ENTITY.angle !== entity.angle ||
+            ENTITY.extra !== entity.extra
+        ))) {
             writer.writeUInt8(id);
             writer.writeUInt8(angle);
-            writer.writeUInt16(isInsideCamera ? action : ActionType.DELETE);
+            writer.writeUInt16((isInsideCameraExtended && !isInsideCamera) ? ActionType.DELETE : action);
             writer.writeUInt16(type);
             writer.writeUInt16(position.x);
             writer.writeUInt16(position.y);
@@ -58,7 +68,17 @@ export class EntityPacket {
             writer.writeUInt16(info);
             writer.writeUInt16(speed);
             writer.writeUInt16(extra);
-            this.player.entities[id] = isInsideCamera ? 1 : 0;
+
+            this.player.entities[id] = {};
+            this.player.entities[id].position = Object.assign({}, entity.position);
+            this.player.entities[id].angle = entity.angle;
+            this.player.entities[id].extra = entity.extra;
+            this.player.entities[id].action = entity.action;
+            this.player.entities[id].info = entity.info;
+        }
+
+        if((isInsideCameraExtended && !isInsideCamera)) {
+            this.player.entities[id] = false;
         }
     }
 }

@@ -62,7 +62,6 @@ export class Gauges {
             this.old.bandage !== this.bandage;
 
         if (hasUpdate) {
-            // Update the 'old' object with the current values
             this.old = {
                 hunger: this.hunger,
                 cold: this.cold,
@@ -90,36 +89,8 @@ export class Gauges {
         this.player.client.sendBinary(writer.toBuffer());
     }
     public tick() {
+
         this.hunger = Math.clamp(this.hunger - this.player.server.config.reduce_food, 0, MAX_HUNGER);
-
-        const chunks = this.player.server.map.getChunks(this.player.position.x, this.player.position.y, 2);
-        let isFire = false;
-        let isWorkbench = false;
-        let isWater = false;
-
-        const biomes = this.player.server.map.getBiomesAtEntityPosition(this.player);
-
-        for (const chunk of chunks) {
-            for (const entity of chunk.entities) {
-                if(entity.isFire() && entity.position.distance(this.player.position) < 200)
-                    isFire = true;
-                if(entity.isWorkbench() && entity.position.distance(this.player.position) < 200)
-                    isWorkbench = true;
-            }
-            for (const tile of chunk.tiles) {
-                if(tile.type === "r" && tile.position.x === ~~(this.player.position.x / 100) && tile.position.y === ~~(this.player.position.y / 100)) {
-                    isWater = true;
-                }
-            }
-        }
-
-        if(!biomes.length) {
-            isWater = true;
-        }
-
-        this.player.workbench = isWorkbench;
-        this.player.fire = isFire;
-        this.player.water = isWater;
 
         if(this.player.fire) {
             this.cold = Math.clamp(this.cold + this.player.server.config.increase_cold_on_fire, 0, MAX_COLD);
@@ -131,10 +102,12 @@ export class Gauges {
             }
         }
 
-        if(isWater) {
+        if(this.player.water) {
             this.thirst = Math.clamp(this.thirst + this.player.server.config.drink_water, 0, MAX_THIRST);
+            this.oxygen = Math.clamp(this.oxygen - this.player.server.config.reduce_oxygen, 0, 100);
         } else {
             this.thirst = Math.clamp(this.thirst - this.player.server.config.reduce_water, 0, MAX_THIRST);
+            this.oxygen = Math.clamp(this.oxygen + this.player.server.config.heal_oxygen, 0, 100);
         }
 
         if (this.hunger === 0) {
@@ -157,7 +130,6 @@ export class Gauges {
             this.player.healthSystem.damage(this.player.server.config.damage_oxygen, ActionType.HURT);
         }
 
-
         if (
             this.oxygen > 35 &&
             this.hunger > 35 &&
@@ -166,11 +138,7 @@ export class Gauges {
             this.oxygen > 35 &&
             this.heat > 35
         ) {
-            this.player.healthSystem.heal(20);
-        }
-
-        if (this.player.healthSystem.health === 0) {
-            this.player.die();
+            this.player.client.sendBinary(this.player.healthSystem.heal(40));
         }
 
         if (this.queryUpdate()) {

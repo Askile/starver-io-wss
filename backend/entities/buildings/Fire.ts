@@ -7,7 +7,7 @@ export class Fire extends Entity {
     constructor(type: number, server: Server) {
         super(type, server);
 
-        this.radius = 0;
+        this.radius = 25;
         if (this.getAliveTime()) {
             new NanoTimer().setTimeout(() => this.delete(), [], this.getAliveTime() + "s");
         }

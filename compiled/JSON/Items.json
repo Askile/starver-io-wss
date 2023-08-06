@@ -1,0 +1,408 @@
+{
+    "SWORD_WOOD": {
+        "type": "weapon",
+        "damage": 12,
+        "id": 57
+    },
+    "SWORD": {
+        "type": "weapon",
+        "damage": 19,
+        "id": 0
+    },
+    "SWORD_GOLD": {
+        "type": "weapon",
+        "damage": 22,
+        "id": 5
+    },
+    "SWORD_DIAMOND": {
+        "type": "weapon",
+        "damage": 24,
+        "id": 6
+    },
+    "SWORD_AMETHYST": {
+        "type": "weapon",
+        "damage": 27,
+        "id": 30
+    },
+    "PIRATE_SWORD": {
+        "type": "weapon",
+        "damage": 24,
+        "id": 9
+    },
+    "REIDITE_SWORD": {
+        "type": "weapon",
+        "damage": 30,
+        "id": 19
+    },
+    "DRAGON_SWORD": {
+        "type": "weapon",
+        "damage": 30,
+        "id": 62
+    },
+    "LAVA_SWORD": {
+        "type": "weapon",
+        "damage": 33,
+        "id": 63
+    },
+    "WOOD_SPEAR": {
+        "type": "weapon",
+        "damage": 10,
+        "id": 12
+    },
+    "STONE_SPEAR": {
+        "type": "weapon",
+        "damage": 14,
+        "id": 96
+    },
+    "GOLD_SPEAR": {
+        "type": "weapon",
+        "damage": 15,
+        "id": 97
+    },
+    "DIAMOND_SPEAR": {
+        "type": "weapon",
+        "damage": 17,
+        "id": 98
+    },
+    "AMETHYST_SPEAR": {
+        "type": "weapon",
+        "damage": 18,
+        "id": 33
+    },
+    "REIDITE_SPEAR": {
+        "type": "weapon",
+        "damage": 22,
+        "id": 34
+    },
+    "CRAB_SPEAR": {
+        "type": "weapon",
+        "damage": 14,
+        "id": 18
+    },
+    "DRAGON_SPEAR": {
+        "type": "weapon",
+        "damage": 22,
+        "id": 16
+    },
+    "LAVA_SPEAR": {
+        "type": "weapon",
+        "damage": 24,
+        "id": 17
+    },
+    "PICK_WOOD": {
+        "type": "tool",
+        "harvest": 2,
+        "damage": 1,
+        "id": 8
+    },
+    "PICK": {
+        "type": "tool",
+        "harvest": 3,
+        "damage": 2,
+        "id": 1
+    },
+    "PICK_GOLD": {
+        "type": "tool",
+        "harvest": 4,
+        "damage": 3,
+        "id": 3
+    },
+    "PICK_DIAMOND": {
+        "type": "tool",
+        "harvest": 5,
+        "damage": 4,
+        "id": 4
+    },
+    "PICK_AMETHYST": {
+        "type": "tool",
+        "harvest": 6,
+        "damage": 5,
+        "id": 31
+    },
+    "PICK_REIDITE": {
+        "type": "tool",
+        "harvest": 7,
+        "damage": 6,
+        "id": 32
+    },
+    "HAMMER": {
+        "type": "hammer",
+        "building_damage": 20,
+        "damage": 2,
+        "id": 35
+    },
+    "HAMMER_GOLD": {
+        "type": "hammer",
+        "building_damage": 30,
+        "damage": 3,
+        "id": 36
+    },
+    "HAMMER_DIAMOND": {
+        "type": "hammer",
+        "building_damage": 40,
+        "damage": 4,
+        "id": 37
+    },
+    "HAMMER_AMETHYST": {
+        "type": "hammer",
+        "building_damage": 50,
+        "damage": 5,
+        "id": 38
+    },
+    "HAMMER_REIDITE": {
+        "type": "hammer",
+        "building_damage": 60,
+        "damage": 6,
+        "id": 39
+    },
+    "SUPER_HAMMER": {
+        "type": "hammer",
+        "building_damage": 70,
+        "damage": 12,
+        "id": 45
+    },
+    "BOOK": {
+        "type": "tool",
+        "id": 28,
+        "damage": 1
+    },
+    "SPELL_WOOD_ARROW": {
+        "type": "spell",
+        "damage": 15,
+        "speed": 0.6,
+        "distance": 600,
+        "id": 95
+    },
+    "SPELL_STONE_ARROW": {
+        "type": "spell",
+        "damage": 20,
+        "speed": 0.6,
+        "distance": 900,
+        "id": 96
+    },
+    "SPELL_GOLD_ARROW": {
+        "type": "spell",
+        "damage": 25,
+        "speed": 0.6,
+        "distance": 900,
+        "id": 97
+    },
+    "SPELL_DIAMOND_ARROW": {
+        "type": "spell",
+        "damage": 30,
+        "speed": 0.6,
+        "distance": 900,
+        "id": 98
+    },
+    "SPELL_AMETHYST_ARROW": {
+        "type": "spell",
+        "damage": 35,
+        "speed": 0.6,
+        "distance": 900,
+        "id": 99
+    },
+    "SPELL_REIDITE_ARROW": {
+        "type": "spell",
+        "damage": 40,
+        "speed": 0.6,
+        "distance": 900,
+        "id": 100
+    },
+    "SPELL_DRAGON_ARROW": {
+        "type": "spell",
+        "damage": 45,
+        "speed": 0.6,
+        "distance": 900,
+        "id": 101
+    },
+    "WOOD_SHIELD": {
+        "type": "shield",
+        "defense": -1,
+        "id": 71
+    },
+    "STONE_SHIELD": {
+        "type": "shield",
+        "defense": -2,
+        "id": 72
+    },
+    "GOLD_SHIELD": {
+        "type": "shield",
+        "defense": -3,
+        "id": 73
+    },
+    "DIAMOND_SHIELD": {
+        "type": "shield",
+        "defense": -4,
+        "id": 74
+    },
+    "AMETHYST_SHIELD": {
+        "type": "shield",
+        "defense": -5,
+        "id": 75
+    },
+    "REIDITE_SHIELD": {
+        "type": "shield",
+        "defense": -6,
+        "id": 76
+    },
+    "WOOD_HELMET": {
+        "type": "helmet",
+        "defense": -1,
+        "id": 58
+    },
+    "STONE_HELMET": {
+        "type": "helmet",
+        "defense": -2,
+        "id": 25
+    },
+    "GOLD_HELMET": {
+        "type": "helmet",
+        "defense": -4,
+        "id": 26
+    },
+    "DIAMOND_HELMET": {
+        "type": "helmet",
+        "defense": -5,
+        "id": 27
+    },
+    "AMETHYST_HELMET": {
+        "type": "helmet",
+        "defense": -6,
+        "id": 43
+    },
+    "REIDITE_HELMET": {
+        "type": "helmet",
+        "defense": -7,
+        "id": 44
+    },
+    "CRAB_HELMET": {
+        "type": "helmet",
+        "defense": -5,
+        "id": 61
+    },
+    "DRAGON_HELMET": {
+        "type": "helmet",
+        "id": 59,
+        "defense": -8
+    },
+    "LAVA_HELMET": {
+        "type": "helmet",
+        "id": 60,
+        "defense": -10
+    },
+    "CROWN_GREEN": {
+        "type": "helmet",
+        "id": 77,
+        "defense": -4
+    },
+    "BABY_DRAGON": {
+        "type": "pet",
+        "id": 221,
+        "speed": 0.24,
+        "tame_chance": 0.01,
+        "isFly": 1
+    },
+    "BABY_LAVA": {
+        "type": "pet",
+        "id": 222,
+        "speed": 10,
+        "tame_chance": 0.002,
+        "isFly": 1
+    },
+    "BABY_MAMMOTH": {
+        "type": "pet",
+        "id": 233,
+        "speed": 0.23,
+        "tame_chance": 0.01,
+        "isFly": 0
+    },
+    "PLANT": {
+        "type": "food",
+        "id": 104,
+        "value": 10
+    },
+    "COOKIE": {
+        "type": "food",
+        "id": 127,
+        "value": 50
+    },
+    "SANDWICH": {
+        "type": "food",
+        "id": 139,
+        "value": 100
+    },
+    "CAKE": {
+        "type": "food",
+        "id": 130,
+        "value": 100
+    },
+    "FOODFISH": {
+        "type": "food",
+        "id": 131,
+        "value": 18,
+        "poison": true
+    },
+    "FOODFISH_COOKED": {
+        "type": "food",
+        "id": 132,
+        "value": 35
+    },
+    "MEAT": {
+        "type": "food",
+        "id": 110,
+        "value": 15,
+        "poison": true
+    },
+    "COOKED_MEAT": {
+        "type": "food",
+        "id": 111,
+        "value": 35
+    },
+    "CRAB_STICK": {
+        "type": "food",
+        "id": 190,
+        "value": 20
+    },
+    "CRAB_LOOT": {
+        "type": "food",
+        "id": 191,
+        "value": 10
+    },
+    "PUMPKIN": {
+        "type": "food",
+        "id": 183,
+        "value": 30
+    },
+    "GARLIC": {
+        "type": "food",
+        "id": 186,
+        "value": 14
+    },
+    "CARROT": {
+        "type": "food",
+        "id": 199,
+        "value": 20
+    },
+    "TOMATO": {
+        "type": "food",
+        "id": 201,
+        "value": 16
+    },
+    "BREAD": {
+        "type": "food",
+        "id": 137,
+        "value": 15
+    },
+    "CACTUS": {
+        "type": "food",
+        "id": 227,
+        "value": 20,
+        "water": 10
+    },
+    "WATERMELON": {
+        "type": "food",
+        "id": 203,
+        "value": 20,
+        "water": 10
+    }
+}

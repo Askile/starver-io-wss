@@ -10,9 +10,11 @@ export class BinaryWriter {
         this._length = 0;
     }
 
-    public writeUInt8(value: number): void {
-        this.checkAlloc(1);
-        this._buffer[this._length++] = value;
+    public writeUInt8(...values: number[]): void {
+        for (const value of values) {
+            this.checkAlloc(1);
+            this._buffer[this._length++] = value;
+        }
     }
 
     public writeUInt16(...values: number[]): void {

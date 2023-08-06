@@ -4,6 +4,10 @@ import {Biome} from "./map/Biome";
 import {Tile} from "./map/Tile";
 import {Entity} from "../entities/Entity";
 import {Server} from "../Server";
+import NanoTimer from "nanotimer";
+import {TileType} from "../enums/TileType";
+import {EntityType} from "../enums/EntityType";
+import {Fruit} from "../entities/Fruit";
 
 interface Chunk {
     entities: Entity[];
@@ -12,13 +16,15 @@ interface Chunk {
 
 export class Map {
     private readonly objects: any[] = [];
-    private server: Server;
+    private readonly server: Server;
     public width: number;
     public height: number;
 
+    public tiles: Tile[] = [];
     public grid: Chunk[][] = [];
     public biomes: Biome[] = [];
 
+    private resourcesTimeStamp: number = 0;
     constructor(server: Server) {
         this.server = server;
         this.objects = server.config.important.custom_map;
@@ -26,6 +32,16 @@ export class Map {
         this.height = server.config.important.map_height * 100;
         this.initCollision();
         this.initBiomes();
+
+        new NanoTimer().setInterval(() => {
+            if(Date.now() - this.resourcesTimeStamp < this.server.config.resource_delay - ((this.server.config.resource_delay - this.server.config.resource_delay_min) * (this.server.players.length / this.server.playerPool.maxId))) return;
+            this.resourcesTimeStamp = Date.now();
+            for (const tile of this.tiles) {
+                tile.count = Math.clamp(tile.count + Math.ceil(tile.limit * 0.06667), 0, tile.limit);
+                if(tile.entity)
+                    tile.entity.info = tile.count;
+            }
+        }, [], "1s");
     }
 
     public initBiomes() {
@@ -53,12 +69,82 @@ export class Map {
         }
 
         for (const tile of this.objects) {
+            if(tile[1] !== "isl") continue;
             let [type, subtype, x, y] = tile.slice(1);
 
-            if (tile.length == 5) {
-                y = x;
-                x = subtype;
-                subtype = 0;
+            for (let k = 0; k < 4; k++) {
+                for (let l = 0; l < 3; l++) {
+                    this.objects.push([0, "iblk", 0, x - k, y - l, 0]);
+                    this.objects.push([0, "iblk", 0, x - k, y + l, 0]);
+                    this.objects.push([0, "iblk", 0, x + k, y + l, 0]);
+                    this.objects.push([0, "iblk", 0, x + k, y - l, 0]);
+                }
+            }
+
+            if(subtype === 0) {
+                for (let k = 0; k < 2; k++) {
+                    this.objects.push([0, "iblk", 0, x - 4, y - k,  0]);
+                    this.objects.push([0, "iblk", 0, x - 4, y + k, 0]);
+                    this.objects.push([0, "iblk", 0, x + 4, y - k, 0]);
+                    this.objects.push([0, "iblk", 0, x + 4, y + k, 0]);
+                }
+
+                for (let k = 0; k < 3; k++) {
+                    this.objects.push([0, "iblk", 0, x + k, y - 3, 0]);
+                    this.objects.push([0, "iblk", 0, x + k, y + 3, 0]);
+                    this.objects.push([0, "iblk", 0, x - k, y - 3, 0]);
+                    this.objects.push([0, "iblk", 0, x - k, y + 3, 0]);
+                }
+
+                this.objects.push([0, "iblk", 0, x - 2, y - 4, 0]);
+                this.objects.push([0, "iblk", 0, x - 3, y - 3, 0]);
+                this.objects.push([0, "iblk", 0, x + 2, y + 4, 0]);
+                this.objects.push([0, "iblk", 0, x + 3, y + 3, 0]);
+            }
+            else if (subtype === 1) {
+                for (let k = 0; k < 3; k++) {
+                    this.objects.push([0, "iblk", 0, x - 4, y - k, 0]);
+                    this.objects.push([0, "iblk", 0, x - 4, y + k, 0]);
+                    this.objects.push([0, "iblk", 0, x + 4, y - k, 0]);
+                    this.objects.push([0, "iblk", 0, x + 4, y + k, 0]);
+                }
+                for (let k = 0; k < 4; k++) {
+                    this.objects.push([0, "iblk", 0, x + k, y - 3, 0]);
+                    this.objects.push([0, "iblk", 0, x + k, y + 3, 0]);
+                    this.objects.push([0, "iblk", 0, x - k, y - 3, 0]);
+                    this.objects.push([0, "iblk", 0, x - k, y + 3, 0]);
+                }
+            }
+            else if (subtype === 2) {
+                for (let k = 0; k < 3; k++) {
+                    this.objects.push([0, "iblk", 0, x - 4, y - k, 0]);
+                    this.objects.push([0, "iblk", 0, x - 4, y + k, 0]);
+                    this.objects.push([0, "iblk", 0, x + 4, y - k, 0]);
+                    this.objects.push([0, "iblk", 0, x + 4, y + k, 0]);
+                }
+                for (let k = 0; k < 3; k++) {
+                    this.objects.push([0, "iblk", 0, x + k, y - 3, 0]);
+                    this.objects.push([0, "iblk", 0, x + k, y + 3, 0]);
+                    this.objects.push([0, "iblk", 0, x - k, y - 3, 0]);
+                    this.objects.push([0, "iblk", 0, x - k, y + 3, 0]);
+                }
+            }
+
+        }
+
+        for (let tile of this.objects) {
+            const type = tile[1];
+            let subtype = 0;
+            let x;
+            let y;
+
+            if(tile.length <= 5) {
+                x = tile[2];
+                y = tile[3];
+            } else {
+                subtype = tile[2];
+                x = tile[3];
+                y = tile[4];
             }
 
             if (this.isTileTypeBiome(type)) continue;
@@ -66,7 +152,16 @@ export class Map {
             const object = objects.find((object) => object.type == type && object.subtype == subtype);
 
             if (object) {
-                this.grid[y][x].tiles.push(new Tile(new Vector(x, y), object));
+                const tile = new Tile(new Vector(x, y), object);
+                this.grid[y][x].tiles.push(tile);
+
+                if(tile.type === TileType.BERRY) {
+                    const fruit = new Fruit(EntityType.FRUIT, this.server);
+                    tile.entity = fruit;
+                    fruit.position = tile.realPosition;
+                }
+
+                this.tiles.push(tile);
             }
         }
 
@@ -86,6 +181,13 @@ export class Map {
                 this.grid[chunkY][chunkX].entities.push(entity);
             }
         } catch {}
+    }
+
+    public getChunk(x: number, y: number): Chunk{
+        const chunkX = Math.floor(x / 100);
+        const chunkY = Math.floor(y / 100);
+
+        return this.grid[chunkY][chunkX];
     }
 
     /**
@@ -114,6 +216,45 @@ export class Map {
         return chunks;
     }
 
+    public getTiles(x: number, y: number, size: number): Tile[] {
+        const chunkX = Math.floor(x / 100);
+        const chunkY = Math.floor(y / 100);
+        const tiles = [];
+
+        for (let offsetY = -size; offsetY <= size; offsetY++) {
+            const chunkRow = this.grid[chunkY + offsetY];
+
+            for (let offsetX = -size; offsetX <= size; offsetX++) {
+                const chunk = chunkRow && chunkRow[chunkX + offsetX];
+                if (chunk) {
+                    tiles.push(...chunk.tiles);
+                }
+            }
+        }
+
+        return tiles;
+    }
+
+    public getEntities(x: number, y: number, size: number): Entity[] {
+        const chunkX = Math.floor(x / 100);
+        const chunkY = Math.floor(y / 100);
+        const entities = [];
+
+        for (let offsetY = -size; offsetY <= size; offsetY++) {
+            const chunkRow = this.grid[chunkY + offsetY];
+
+            for (let offsetX = -size; offsetX <= size; offsetX++) {
+                const chunk = chunkRow && chunkRow[chunkX + offsetX];
+                if (chunk) {
+                    entities.push(...chunk.entities);
+                }
+            }
+        }
+
+        return entities;
+    }
+
+
     public getDistFromBiome(biome: Biome, x: number, y: number) {
         let x1 = biome.position.x + 30;
         let y1 = biome.position.y + 250;
@@ -136,19 +277,6 @@ export class Map {
         }
 
         return dist;
-    }
-
-    public getCustomMap() {
-        const custom_map = [];
-        for (const chunks of this.grid) {
-            for (const chunk of chunks) {
-                if(!chunk.tiles.length) continue;
-                for (const tile of chunk.tiles) {
-                    custom_map.push([1, tile.type, tile.subtype, tile.position.x, tile.position.y])
-                }
-            }
-        }
-        return custom_map;
     }
 
     /**

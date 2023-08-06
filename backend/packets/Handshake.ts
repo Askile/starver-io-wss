@@ -76,7 +76,7 @@ export class Handshake {
     public setupPlayer(player: Player) {
         if (!this.testValid()) return;
         player.id = this.server.playerPool.createId();
-        player.data.nickname = this.nickname.slice(0, 16);
+        player.data.nickname = this.nickname.slice(0, 16) || "Player";
         player.data.token = this.token as string;
         player.camera.width = Math.max(getDefaultCamera().width, Math.min(3840, this.camera.width));
         player.camera.height = Math.max(getDefaultCamera().height, Math.min(2160, this.camera.height));

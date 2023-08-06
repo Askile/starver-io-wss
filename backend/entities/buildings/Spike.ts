@@ -27,7 +27,11 @@ export class Spike extends Entity {
                 this.durability = this.server.config.reidite_spike_life;
                 break;
         }
+
         this.info = 100;
         this.radius = 35;
+
+        this.collide = true;
+
     }
 }

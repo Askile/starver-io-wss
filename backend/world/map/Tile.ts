@@ -1,7 +1,12 @@
 import {Vector} from "../../modules/Vector";
+import {Entity} from "../../entities/Entity";
 
 export class Tile {
     public type: string;
+    public collide: boolean = true;
+
+    public entity!: Entity;
+
     public subtype: number;
     public radius: number;
     public limit: number;
@@ -22,6 +27,10 @@ export class Tile {
         this.subtype = data.subtype ?? 0;
         this.position = position;
         this.realPosition = position.multiply(100).add(new Vector(50, 50));
+
+        if(!this.radius) {
+            this.collide = false;
+        }
 
         switch (this.resource) {
             case "WOOD":

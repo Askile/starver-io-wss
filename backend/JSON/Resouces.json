@@ -37,7 +37,8 @@
       "subtype": 0,
       "radius": 102,
       "resource":"WOOD",
-      "id": 4
+      "id": 4,
+      "limit": 60
     },
     {
       "type": "t",
@@ -84,7 +85,8 @@
       "subtype": 0,
       "radius": 90,
       "resource": "GOLD",
-      "id": 10
+      "id": 10,
+      "limit": 50
     },
     {
       "type": "g",
@@ -107,21 +109,24 @@
       "subtype": 0,
       "radius": 85,
       "resource": "DIAMOND",
-      "id": 13
+      "id": 13,
+      "limit": 40
     },
     {
       "type": "d",
       "subtype": 1,
       "radius": 75,
       "resource": "DIAMOND",
-      "id": 14
+      "id": 14,
+      "limit": 20
     },
     {
       "type": "d",
       "subtype": 2,
       "radius": 60,
       "resource": "DIAMOND",
-      "id": 15
+      "id": 15,
+      "limit": 5
     },
     {
       "type": "b",
@@ -184,6 +189,7 @@
       "subtype": 0,
       "radius": 85,
       "resource":"AMETHYST",
+      "limit": 30,
       "id": 32
     },
     {
@@ -191,6 +197,7 @@
       "subtype": 1,
       "radius": 75,
       "resource": "AMETHYST",
+      "limit": 20,
       "id": 33
     },
     {
@@ -198,6 +205,7 @@
       "subtype": 2,
       "radius": 75,
       "resource": "AMETHYST",
+      "limit": 20,
       "id": 34
     },
     {
@@ -253,6 +261,7 @@
       "subtype": 0,
       "radius": 67,
       "resource":"REIDITE",
+      "limit": 5,
       "id": 50
     },
     {
@@ -260,6 +269,7 @@
       "subtype": 1,
       "radius": 82,
       "resource": "REIDITE",
+      "limit": 10,
       "id": 51
     },
     {
@@ -267,6 +277,7 @@
       "subtype": 2,
       "radius": 90,
       "resource": "REIDITE",
+      "limit": 15,
       "id": 52
     },
     {
@@ -281,19 +292,28 @@
       "type": "m",
       "subtype": 0,
       "radius": 85,
+      "limit": 10,
       "id": 56
     },
     {
       "type": "m",
       "subtype": 1,
       "radius": 85,
+      "limit": 10,
       "id": 57
     },
     {
       "type": "m",
       "subtype": 2,
       "radius": 90,
+      "limit": 15,
       "id": 58
+    },
+    {
+      "type": "iblk",
+      "subtype": 0,
+      "radius": 0,
+      "id": 0
     },
     {
       "type": "r",

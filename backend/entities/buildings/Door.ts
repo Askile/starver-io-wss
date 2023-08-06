@@ -28,7 +28,22 @@ export class Door extends Entity {
                 break;
         }
 
-        this.info = 100 * 127;
+        this.info = 200;
         this.radius = 45;
+
+        this.collide = true;
+    }
+
+    public onDamage(damager?: Entity) {
+        if(!damager) return;
+        if(damager.position.distance(this.position) > damager.radius + this.radius - 2) {
+            this.collide =! this.collide;
+        }
+        this.info = ~~(this.healthSystem.health / this.healthSystem.maxHealth * 200);
+
+        if(!this.collide && !(this.info % 2)) {
+            this.info -= 1;
+        }
+
     }
 }

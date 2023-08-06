@@ -1,0 +1,6 @@
+{
+    "version": 1,
+    "network_tps": 60,
+    "engine_tps": 60,
+    "leaderboard_tps": 1
+}

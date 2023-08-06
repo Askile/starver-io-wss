@@ -35,7 +35,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 20
+        time: 20,
+        bonus: 93
     }, {
         item: "workbench",
         recipe: [
@@ -264,7 +265,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 5
+        time: 5,
+        bonus: 20
     }, {
         item: "watering_can_full",
         recipe: [
@@ -274,7 +276,8 @@ export function getDefaultRecipes() {
         water: 1,
         workbench: 0,
         well: 0,
-        time: 5
+        time: 5,
+        bonus: 10
     }, {
         item: "pitchfork",
         recipe: [
@@ -411,7 +414,8 @@ export function getDefaultRecipes() {
         water: 1,
         workbench: 1,
         well: 0,
-        time: 200
+        time: 200,
+        bonus: 10000
     }, {
         item: "crab_spear",
         recipe: [
@@ -622,7 +626,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 0,
         well: 0,
-        time: 3
+        time: 3,
+        bonus: 6
     }, {
         item: "cookie",
         recipe: [
@@ -734,7 +739,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 8
+        time: 8,
+        bonus: 22
     }, {
         item: "stone_door",
         recipe: [
@@ -745,7 +751,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 8
+        time: 8,
+        bonus: 25
     }, {
         item: "gold_door",
         recipe: [
@@ -756,7 +763,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 8
+        time: 8,
+        bonus: 28
     }, {
         item: "diamond_door",
         recipe: [
@@ -801,7 +809,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 20
+        time: 20,
+        bonus: 57
     }, {
         item: "stone_spike",
         recipe: [
@@ -812,7 +821,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 20
+        time: 20,
+        bonus: 61
     }, {
         item: "gold_spike",
         recipe: [
@@ -824,7 +834,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 20
+        time: 20,
+        bonus: 69
     }, {
         item: "diamond_spike",
         recipe: [
@@ -872,7 +883,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 20
+        time: 20,
+        bonus: 74
     }, {
         item: "stone_door_spike",
         recipe: [
@@ -883,7 +895,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 20
+        time: 20,
+        bonus: 82
     }, {
         item: "gold_door_spike",
         recipe: [
@@ -895,7 +908,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 20
+        time: 20,
+        bonus: 98
     }, {
         item: "diamond_door_spike",
         recipe: [
@@ -1239,7 +1253,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 5
+        time: 5,
+        bonus: 15
     }, {
         item: "lockpick",
         recipe: [
@@ -1249,7 +1264,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 60
+        time: 60,
+        bonus: 245
     }, {
         item: "totem",
         recipe: [
@@ -1259,7 +1275,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 10
+        time: 10,
+        bonus: 30
     }, {
         item: "bridge",
         recipe: [
@@ -1269,7 +1286,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 5
+        time: 5,
+        bonus: 13
     }, {
         item: "roof",
         recipe: [
@@ -1279,7 +1297,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 5
+        time: 5,
+        bonus: 16
     }, {
         item: "wood_tower",
         recipe: [
@@ -1503,7 +1522,8 @@ export function getDefaultRecipes() {
         water: 1,
         workbench: 1,
         well: 0,
-        time: 180
+        time: 180,
+        bonus: 9000
     }, {
         item: "crown_crab",
         recipe: [
@@ -1542,7 +1562,8 @@ export function getDefaultRecipes() {
         water: 1,
         workbench: 1,
         well: 0,
-        time: 180
+        time: 180,
+        bonus: 10000
     }, {
         item: "wood_bow",
         recipe: [
@@ -1831,7 +1852,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 10
+        time: 10,
+        bonus: 970
     }, {
         item: "peasant",
         recipe: [
@@ -1881,7 +1903,8 @@ export function getDefaultRecipes() {
         water: 1,
         workbench: 0,
         well: 0,
-        time: 5
+        time: 5,
+        bonus: 10
     }, {
         item: "bucket_empty",
         recipe: [
@@ -1892,7 +1915,8 @@ export function getDefaultRecipes() {
         water: 0,
         workbench: 1,
         well: 0,
-        time: 5
+        time: 5,
+        bonus: 64
     }, {
         item: "well",
         recipe: [

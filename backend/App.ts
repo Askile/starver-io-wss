@@ -22,12 +22,11 @@ class App {
         this.loadServers();
     }
 
-
     private loadServers() {
         fs.readdir("servers/normal", async (err, files) => {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                const [port] = await findFreePorts(1);
+                const [port] = await findFreePorts(1, {startPort: 8084, endPort: 8085});
                 const config = JSON.parse(fs.readFileSync(path.join(`servers/normal/`, file), {encoding: "utf-8"}));
                 this.servers.push(new Server(config, "Normal-server-" + i, port, GameMode.normal));
             }
@@ -37,7 +36,7 @@ class App {
         fs.readdir("servers/community", async (err, files) => {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                const [port] = await findFreePorts(1);
+                const [port] = await findFreePorts(1, {startPort: 443, endPort: 448});
                 const config = JSON.parse(fs.readFileSync(path.join(`servers/community/`, file), {encoding: "utf-8"}));
                 this.servers.push(new Server(config, "Private-server-" + i, port, GameMode.community));
             }

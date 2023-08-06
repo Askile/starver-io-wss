@@ -10,15 +10,14 @@ import {
     getDefaultPlayerStats
 } from "../default/defaultValues";
 import {EntityType} from "../enums/EntityType";
-import {Inventory} from "./playerComponents/Inventory";
-import {InteractionManager} from "./playerComponents/InteractionManager";
 import {objects} from "../JSON/Resouces.json";
-import {AttackManager} from "./playerComponents/AttackManager";
 import {Gauges} from "./playerComponents/Gauges";
 import {BinaryWriter} from "../modules/BinaryWriter";
 import {ClientPackets} from "../enums/packets/ClientPackets";
-import {HealthSystem} from "../systems/HealthSystem";
 import {DeathReason} from "../enums/DeathReason";
+import {StateManager} from "./playerComponents/StateManager";
+import {Inventory} from "../systems/individual/Inventory";
+import {DeadBox} from "./DeadBox";
 
 export class Player extends Entity {
     public client: Client;
@@ -30,20 +29,25 @@ export class Player extends Entity {
 
     public gauges: Gauges;
     public inventory: Inventory;
-    public interactionManager: InteractionManager;
-    public healthSystem: HealthSystem;
-    public attackManager: AttackManager;
+    public stateManager: StateManager;
+
 
     public lastBuildingStamp: number = 0;
+    public lastWeaponUse: number = 0;
+    public lastHelmetUse: number = 0;
 
+    public island: boolean = false;
     public workbench: boolean = false;
     public fire: boolean = false;
     public lava: boolean = false;
     public spike: boolean = false;
     public water: boolean = false;
+    public well: boolean = false;
+    public attack: boolean = false;
 
     public buildings: any = [];
-    public entities: number[] = [];
+    public entities: any = [];
+
     public isCrafting: boolean = false;
     public reason: number = DeathReason.UNKNOWN;
     public helmet: any = getDefaultHelmet();
@@ -54,6 +58,7 @@ export class Player extends Entity {
         super(EntityType.PLAYERS, client.server);
 
         this.client = client;
+        this.radius = 25;
 
         this.cosmetics = getDefaultPlayerCosmetics();
         this.data = getDefaultPlayerData();
@@ -63,24 +68,36 @@ export class Player extends Entity {
 
         this.gauges = new Gauges(this);
         this.inventory = new Inventory(this, 10);
-        this.interactionManager = new InteractionManager(this);
-        this.attackManager = new AttackManager(this);
-        this.healthSystem = new HealthSystem(this,200);
+        this.stateManager = new StateManager(this);
+
 
         setTimeout(() => {
             this.server.kitSystem.gainKit(this);
 
             this.client.sendJSON([7, objects]);
+
+            this.info = this.right.id + this.helmet.id * 128 + (this.inventory.size >= 16 ? 0x4000 : 0);
         });
     }
 
-    public die() {
+    public updateInfo() {
+        this.info = this.right.id + this.helmet.id * 128 + (this.inventory.size >= 16 ? 0x4000 : 0);
+        this.extra = this.pet.id;
+    }
+
+    public onDead(damager: Entity) {
         const writer = new BinaryWriter();
         writer.writeUInt8(ClientPackets.KILLED);
+
         writer.writeUInt8(this.reason);
         writer.writeUInt16(this.stats.kills);
         writer.writeUInt32(this.stats.score);
 
+        if(damager instanceof Player) {
+            damager.stats.score += this.stats.score * this.server.config.score_per_kill;
+        }
+
+        new DeadBox(this.server, this);
 
         for (const building of this.buildings) building.delete();
         this.delete();

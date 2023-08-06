@@ -125,6 +125,47 @@
     "damage": 6,
     "id": 32
   },
+  "HAMMER": {
+    "type": "hammer",
+    "building_damage": 20,
+    "damage": 2,
+    "id": 35
+  },
+  "HAMMER_GOLD": {
+    "type": "hammer",
+    "building_damage": 30,
+    "damage": 3,
+    "id": 36
+  },
+  "HAMMER_DIAMOND": {
+    "type": "hammer",
+    "building_damage": 40,
+    "damage": 4,
+    "id": 37
+  },
+  "HAMMER_AMETHYST": {
+    "type": "hammer",
+    "building_damage": 50,
+    "damage": 5,
+    "id": 38
+  },
+  "HAMMER_REIDITE": {
+    "type": "hammer",
+    "building_damage":  60,
+    "damage": 6,
+    "id": 39
+  },
+  "SUPER_HAMMER": {
+    "type": "hammer",
+    "building_damage": 70,
+    "damage": 12,
+    "id": 45
+  },
+  "BOOK": {
+    "type": "tool",
+    "id": 28,
+    "damage": 1
+  },
   "SPELL_WOOD_ARROW": {
     "type": "spell",
     "damage": 15,
@@ -299,7 +340,7 @@
     "type": "food",
     "id": 131,
     "value": 18,
-    "poison": 10
+    "poison": true
   },
   "FOODFISH_COOKED": {
     "type": "food",
@@ -310,7 +351,7 @@
     "type": "food",
     "id": 110,
     "value": 15,
-    "poison": 10
+    "poison": true
   },
   "COOKED_MEAT": {
     "type": "food",
@@ -351,5 +392,17 @@
     "type": "food",
     "id": 137,
     "value": 15
+  },
+  "CACTUS": {
+    "type": "food",
+    "id": 227,
+    "value": 20,
+    "water": 10
+  },
+  "WATERMELON": {
+    "type": "food",
+    "id": 203,
+    "value": 20,
+    "water": 10
   }
 }

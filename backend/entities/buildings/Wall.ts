@@ -30,5 +30,7 @@ export class Wall extends Entity {
 
         this.info = 100;
         this.radius = 45;
+
+        this.collide = true;
     }
 }

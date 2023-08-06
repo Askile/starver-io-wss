@@ -6,16 +6,20 @@ import {Ticker} from "./world/Ticker";
 import {Map} from "./world/Map";
 import {Leaderboard} from "./leaderboard/Leaderboard";
 import * as uWS from "uWebSockets.js";
-import {CollisionSystem} from "./systems/CollisionSystem";
-import {MovementSystem} from "./systems/MovementSystem";
-import {CraftSystem} from "./systems/CraftSystem";
-import {SpawnSystem} from "./systems/SpawnSystem";
-import { TimeSystem } from "./systems/TimeSystem";
-import { KitSystem } from "./systems/KitSystem";
-import { EventSystem } from "./systems/EventSystem";
-import { CommandSystem } from "./systems/CommandSystem";
+import {CollisionSystem} from "./systems/server/CollisionSystem";
+import {MovementSystem} from "./systems/server/MovementSystem";
+import {CraftSystem} from "./systems/server/CraftSystem";
+import {SpawnSystem} from "./systems/server/SpawnSystem";
+import { TimeSystem } from "./systems/server/TimeSystem";
+import { KitSystem } from "./systems/server/KitSystem";
+import { EventSystem } from "./systems/server/EventSystem";
+import { CommandSystem } from "./systems/server/CommandSystem";
 import {MapGenerator} from "./world/MapGenerator";
-import {BuildingSystem} from "./systems/BuildingSystem";
+import {BuildingSystem} from "./systems/server/BuildingSystem";
+import {CombatSystem} from "./systems/server/CombatSystem";
+import {ConfigSystem} from "./systems/server/ConfigSystem";
+import {InteractionSystem} from "./systems/individual/InteractionSystem";
+import {MobSystem} from "./systems/server/MobSystem";
 
 export class Server {
     public players: Player[] = [];
@@ -38,6 +42,10 @@ export class Server {
     public eventSystem: EventSystem;
     public commandSystem: CommandSystem;
     public buildingSystem: BuildingSystem;
+    public combatSystem: CombatSystem;
+    public configSystem: ConfigSystem;
+    public interactionSystem: InteractionSystem;
+    public mobSystem: MobSystem;
     public mapGenerator: MapGenerator;
 
     private ticker: Ticker;
@@ -46,10 +54,11 @@ export class Server {
         this.playerPool = new IdPool(1, 100);
         this.entityPool = new IdPool(101, 60000);
         this.config = config;
+        this.configSystem = new ConfigSystem(this.config);
+
         this.wss = new WebSocketServer(path, this);
         this.map = new Map(this);
         this.mapGenerator = new MapGenerator(this, 100);
-
 
         this.leaderboard = new Leaderboard(this);
         this.movement = new MovementSystem(this);
@@ -60,11 +69,15 @@ export class Server {
         this.spawnSystem = new SpawnSystem(this.map);
         this.eventSystem = new EventSystem(this);
         this.commandSystem = new CommandSystem();
+        this.combatSystem = new CombatSystem(this);
         this.buildingSystem = new BuildingSystem(this);
+        this.interactionSystem = new InteractionSystem(this);
+        this.mobSystem = new MobSystem(this);
 
         this.mode = mode;
 
         this.ticker = new Ticker(this);
+
     }
 
     public broadcast(message: any, isBinary: boolean = false, selfSocket: uWS.WebSocket<any> | undefined = undefined) {

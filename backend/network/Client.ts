@@ -5,7 +5,7 @@ import {Server} from "../Server";
 import {Handshake} from "../packets/Handshake";
 import NanoTimer from "nanotimer";
 import {EntityType} from "../enums/EntityType";
-import {Box} from "../entities/Box";
+import {Crate} from "../entities/Crate";
 import {ActionType} from "../enums/ActionType";
 import {ServerPackets} from "../enums/packets/ServerPackets";
 import {ClientPackets} from "../enums/packets/ClientPackets";
@@ -94,7 +94,7 @@ export class Client {
 
         switch (PACKET_TYPE) {
             case ServerPackets.CHAT:
-                this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]));
+                this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]), false, this.socket);
                 break;
             case ServerPackets.MOVEMENT:
                 this.player.direction = PACKET;
@@ -104,19 +104,19 @@ export class Client {
                 break;
             case ServerPackets.ATTACK:
                 if(this.player.isCrafting) break;
-                this.player.attackManager.isAttack = true;
+                this.player.attack = true;
                 this.player.angle = Number(PACKET) % 255;
                 this.player.action |= ActionType.ATTACK;
-                this.player.attackManager.tick();
+                this.server.combatSystem.handleAttack(this.player);
                 break;
             case ServerPackets.INTERACTION:
                 if(this.player.isCrafting) break;
-                this.player.interactionManager.useItem(PACKET);
+                this.server.interactionSystem.request(this.player, PACKET);
                 break;
             case ServerPackets.DROP_ONE_ITEM:
                 if(this.player.isCrafting) break;
                 if (this.player.inventory.items.has(PACKET))
-                    new Box(this.server, EntityType.CRATE, {
+                    new Crate(this.server, {
                         owner: this.player,
                         item: PACKET,
                         count: this.player.inventory.items.get(PACKET)
@@ -127,22 +127,29 @@ export class Client {
                 if(this.player.isCrafting) break;
                 this.server.craftSystem.handleCraft(this.player, PACKET);
                 break;
+            case ServerPackets.RECYCLE_START:
+                if(this.player.isCrafting) break;
+                this.server.craftSystem.handleRecycle(this.player, PACKET);
+                break;
             case ServerPackets.BUILD:
                 if(this.player.isCrafting) break;
                 this.server.buildingSystem.request(this.player, PACKET_DATA);
                 break;
             case ServerPackets.STOP_ATTACK:
-                this.player.attackManager.isAttack = false;
+                this.player.attack = false;
                 break;
             case ServerPackets.DROP_ITEM:
                 if(this.player.isCrafting) break;
                 if (this.player.inventory.items.has(PACKET))
-                    new Box(this.server, EntityType.CRATE, {
+                    new Crate(this.server, {
                         owner: this.player,
                         item: PACKET,
                         count: 1
                     });
                 this.sendBinary(this.player.inventory.removeItem(PACKET, 1));
+                break;
+            case ServerPackets.CANCEL_CRAFT:
+                this.server.craftSystem.stopCraft(this.player);
                 break;
             case ServerPackets.CONSOLE:
                 break;
@@ -155,6 +162,18 @@ export class Client {
 
     public sendJSON(message: any) {
         if (this.isActive && message) this.socket.send(JSON.stringify(message));
+    }
+
+    public sendU8(message: any){
+        if (this.isActive && message) this.socket.send(new Uint8Array(message), true);
+    }
+
+    public sendU16(message: any){
+        if (this.isActive && message) this.socket.send(new Uint16Array(message), true);
+    }
+
+    public sendU32(message: any){
+        if (this.isActive && message) this.socket.send(new Uint32Array(message), true);
     }
 
     public sendBinary(message: Uint8Array | Uint16Array | Uint32Array | undefined) {
