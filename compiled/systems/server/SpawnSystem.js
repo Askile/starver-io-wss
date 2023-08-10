@@ -17,7 +17,8 @@ class SpawnSystem {
             attempt--;
             position = new Vector_1.Vector(biome.position.x + ~~(Math.random() * biome.size.x), biome.position.y + ~~(Math.random() * biome.size.y));
             const tiles = this.map.getTiles(position.x, position.y, 1);
-            if (tiles.length === 0) {
+            const entities = this.map.getEntities(position.x, position.y, 2);
+            if (tiles.length === 0 && entities.length === 0) {
                 attempt = 0;
             }
         }

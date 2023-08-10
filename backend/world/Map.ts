@@ -37,9 +37,10 @@ export class Map {
             if(Date.now() - this.resourcesTimeStamp < this.server.config.resource_delay - ((this.server.config.resource_delay - this.server.config.resource_delay_min) * (this.server.players.length / this.server.playerPool.maxId))) return;
             this.resourcesTimeStamp = Date.now();
             for (const tile of this.tiles) {
-                tile.count = Math.clamp(tile.count + Math.ceil(tile.limit * 0.06667), 0, tile.limit);
-                if(tile.entity)
+                tile.count = Math.clamp(tile.count + Math.ceil(tile.limit / 15), 0, tile.limit);
+                if(tile.entity) {
                     tile.entity.info = tile.count;
+                }
             }
         }, [], "1s");
     }
@@ -297,7 +298,7 @@ export class Map {
         return biomes;
     }
 
-    private isTileTypeBiome(type: string) {
+    private isTileTypeBiome(type: string): boolean {
         const biomeTypes = ["FOREST", "DRAGON", "DESERT", "LAVA", "WINTER"];
         return biomeTypes.includes(type);
     }

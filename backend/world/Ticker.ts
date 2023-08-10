@@ -14,12 +14,8 @@ export class Ticker {
             this.server.movement.tick();
             this.server.collision.tick();
             this.server.timeSystem.tick();
-            this.server.combatSystem.tick();
             this.server.mobSystem.tick();
-
-            for (const entity of this.server.entities) {
-                entity.onTick();
-            }
+            this.server.combatSystem.tick();
         },[],1 / ServerConfig.engine_tps + "s");
 
         new NanoTimer().setInterval(() => {
@@ -27,9 +23,12 @@ export class Ticker {
                 player.stateManager.tick();
                 new EntityPacket(player, false);
             }
-            this.entityTick()
+            this.entityTick();
         }, [], 1 / ServerConfig.network_tps + "s");
-        new NanoTimer().setInterval(() => this.server.leaderboard.tick(), [], 1 / ServerConfig.leaderboard_tps + "s");
+
+        new NanoTimer().setInterval(() => {
+            this.server.leaderboard.tick();
+        }, [], 1 / ServerConfig.leaderboard_tps + "s");
     }
 
     private entityTick() {

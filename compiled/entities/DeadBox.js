@@ -30,7 +30,7 @@ class DeadBox extends Entity_1.Entity {
     }
     onDead(damager) {
         if (damager instanceof Player_1.Player) {
-            damager.client.sendBinary(damager.inventory.addInventory(this.inventory));
+            damager.client.sendBinary(damager.inventory.addInventory(this.inventory, 255));
         }
     }
 }

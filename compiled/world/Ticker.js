@@ -17,11 +17,8 @@ class Ticker {
             this.server.movement.tick();
             this.server.collision.tick();
             this.server.timeSystem.tick();
-            this.server.combatSystem.tick();
             this.server.mobSystem.tick();
-            for (const entity of this.server.entities) {
-                entity.onTick();
-            }
+            this.server.combatSystem.tick();
         }, [], 1 / ServerConfig_json_1.default.engine_tps + "s");
         new nanotimer_1.default().setInterval(() => {
             for (const player of this.server.players) {
@@ -30,7 +27,9 @@ class Ticker {
             }
             this.entityTick();
         }, [], 1 / ServerConfig_json_1.default.network_tps + "s");
-        new nanotimer_1.default().setInterval(() => this.server.leaderboard.tick(), [], 1 / ServerConfig_json_1.default.leaderboard_tps + "s");
+        new nanotimer_1.default().setInterval(() => {
+            this.server.leaderboard.tick();
+        }, [], 1 / ServerConfig_json_1.default.leaderboard_tps + "s");
     }
     entityTick() {
         for (const entity of this.server.entities) {

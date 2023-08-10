@@ -33,9 +33,10 @@ class Map {
                 return;
             this.resourcesTimeStamp = Date.now();
             for (const tile of this.tiles) {
-                tile.count = Math.clamp(tile.count + Math.ceil(tile.limit * 0.06667), 0, tile.limit);
-                if (tile.entity)
+                tile.count = Math.clamp(tile.count + Math.ceil(tile.limit / 15), 0, tile.limit);
+                if (tile.entity) {
                     tile.entity.info = tile.count;
+                }
             }
         }, [], "1s");
     }

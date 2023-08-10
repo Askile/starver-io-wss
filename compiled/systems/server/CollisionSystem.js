@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CollisionSystem = void 0;
 const Vector_1 = require("../../modules/Vector");
 const Player_1 = require("../../entities/Player");
-const Wolf_1 = require("../../entities/Wolf");
+const Animal_1 = require("../../entities/Animal");
 class CollisionSystem {
     server;
     constructor(server) {
@@ -22,10 +22,10 @@ class CollisionSystem {
     }
     tick() {
         for (const entity of this.server.entities) {
-            if (!(entity instanceof Player_1.Player) && !(entity instanceof Wolf_1.Wolf))
+            if (!(entity instanceof Player_1.Player) && !(entity instanceof Animal_1.Animal))
                 continue;
             const tiles = this.server.map.getTiles(entity.position.x, entity.position.y, 3);
-            const entities = this.server.map.getEntities(entity.position.x, entity.position.y, 2);
+            const entities = this.server.map.getEntities(entity.position.x, entity.position.y, 3);
             for (const tile of tiles) {
                 if (!tile.collide)
                     continue;

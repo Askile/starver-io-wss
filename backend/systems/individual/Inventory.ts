@@ -15,15 +15,22 @@ export class Inventory {
         this.size = size;
     }
 
-    public addInventory(inventory: Inventory) {
+    public addInventory(inventory: Inventory, bound: number = Infinity) {
         const writer = new BinaryWriter();
+
+        let isFill = false;
 
         writer.writeUInt16(ClientPackets.GATHER);
 
         for (const item of inventory.items) {
-            const buffer = this.giveItem(item[0], item[1])?.slice(2) as Buffer;
-            console.log(...buffer);
+            const buffer = this.giveItem(item[0], Math.min(item[1], bound))?.slice(2) as Buffer;
+            if(!buffer.length) isFill = true;
+
             writer.writeUInt8(...buffer);
+        }
+
+        if(isFill && this.entity instanceof Player) {
+            this.entity.client.sendU8([ClientPackets.INV_FULL]);
         }
 
         return writer.toBuffer();
@@ -43,6 +50,7 @@ export class Inventory {
         }
 
         const writer = new BinaryWriter(3);
+
         writer.writeUInt16(ClientPackets.GATHER);
         writer.writeUInt16(id);
         writer.writeUInt16(count);
@@ -96,6 +104,10 @@ export class Inventory {
         return writer.toBuffer();
     }
 
+    public isFull() {
+        return this.items.size > this.size;
+    }
+
     private unEquipItem(id: number) {
         if(!(this.entity instanceof Player)) return;
         if (this.entity.helmet.id == id) {
@@ -104,6 +116,7 @@ export class Inventory {
         if (this.entity.pet.id == id) {
             this.entity.pet = getDefaultPet();
         }
+
         if (this.entity.right.id == id) {
             this.entity.right = getDefaultItem();
         }

@@ -3,74 +3,30 @@ import {EntityType} from "../../enums/EntityType";
 export class ConfigSystem {
     public speed: number[];
     public health: number[];
+
+    public entityRadius: number[];
+    public entityCollide: boolean[];
+    public entityDamage: number[];
+
     public config: Config;
     constructor(config: Config) {
         this.config = config;
-        this.speed = [];
-        this.health = [];
 
+        this.speed = new Array(100).fill(0);
+        this.health = new Array(100).fill(0);
+        this.entityDamage = new Array(100).fill(0);
+        this.entityRadius = new Array(100).fill(25);
+        this.entityCollide = new Array(100).fill(false);
+
+        this.setupDamage();
         this.setupSpeed();
+        this.setupCollide();
+        this.setupRadius();
         this.setupHealth();
     }
 
     public setupSpeed() {
         this.speed[EntityType.PLAYERS] = this.config.speed ?? 0.24;
-        this.speed[EntityType.FIRE] = 0;
-        this.speed[EntityType.WORKBENCH] = 0;
-        this.speed[EntityType.SEED] = 0;
-        this.speed[EntityType.WALL] = 0;
-        this.speed[EntityType.SPIKE] = 0;
-        this.speed[EntityType.BIG_FIRE] = 0;
-        this.speed[EntityType.STONE_WALL] = 0;
-        this.speed[EntityType.GOLD_WALL] = 0;
-        this.speed[EntityType.DIAMOND_WALL] = 0;
-        this.speed[EntityType.WOOD_DOOR] = 0;
-        this.speed[EntityType.CHEST] = 0;
-        this.speed[EntityType.STONE_SPIKE] = 0;
-        this.speed[EntityType.GOLD_SPIKE] = 0;
-        this.speed[EntityType.DIAMOND_SPIKE] = 0;
-        this.speed[EntityType.STONE_DOOR] = 0;
-        this.speed[EntityType.GOLD_DOOR] = 0;
-        this.speed[EntityType.DIAMOND_DOOR] = 0;
-        this.speed[EntityType.FURNACE] = 0;
-        this.speed[EntityType.AMETHYST_WALL] = 0;
-        this.speed[EntityType.AMETHYST_SPIKE] = 0;
-        this.speed[EntityType.AMETHYST_DOOR] = 0;
-        this.speed[EntityType.RESURRECTION] = 0;
-        this.speed[EntityType.EMERALD_MACHINE] = 0;
-        this.speed[EntityType.EXTRACTOR_MACHINE_STONE] = 0;
-        this.speed[EntityType.EXTRACTOR_MACHINE_GOLD] = 0;
-        this.speed[EntityType.EXTRACTOR_MACHINE_DIAMOND] = 0;
-        this.speed[EntityType.EXTRACTOR_MACHINE_AMETHYST] = 0;
-        this.speed[EntityType.EXTRACTOR_MACHINE_REIDITE] = 0;
-        this.speed[EntityType.TOTEM] = 0;
-        this.speed[EntityType.BRIDGE] = 0;
-        this.speed[EntityType.WHEAT_SEED] = 0;
-        this.speed[EntityType.WINDMILL] = 0;
-        this.speed[EntityType.PLOT] = 0;
-        this.speed[EntityType.BREAD_OVEN] = 0;
-        this.speed[EntityType.WELL] = 0;
-        this.speed[EntityType.SIGN] = 0;
-        this.speed[EntityType.PUMPKIN_SEED] = 0;
-        this.speed[EntityType.ROOF] = 0;
-        this.speed[EntityType.GARLIC_SEED] = 0;
-        this.speed[EntityType.THORNBUSH_SEED] = 0;
-        this.speed[EntityType.BED] = 0;
-        this.speed[EntityType.GARLAND] = 0;
-        this.speed[EntityType.TOMATO_SEED] = 0;
-        this.speed[EntityType.CARROT_SEED] = 0;
-        this.speed[EntityType.WOOD_DOOR_SPIKE] = 0;
-        this.speed[EntityType.STONE_DOOR_SPIKE] = 0;
-        this.speed[EntityType.GOLD_DOOR_SPIKE] = 0;
-        this.speed[EntityType.DIAMOND_DOOR_SPIKE] = 0;
-        this.speed[EntityType.AMETHYST_DOOR_SPIKE] = 0;
-        this.speed[EntityType.REIDITE_WALL] = 0;
-        this.speed[EntityType.REIDITE_DOOR] = 0;
-        this.speed[EntityType.REIDITE_SPIKE] = 0;
-        this.speed[EntityType.REIDITE_DOOR_SPIKE] = 0;
-        this.speed[EntityType.WATERMELON_SEED] = 0;
-        this.speed[EntityType.ALOE_VERA_SEED] = 0;
-        this.speed[EntityType.WOOD_TOWER] = 0;
         this.speed[EntityType.WOLF] = this.config.speed_wolf ?? 0.230;
         this.speed[EntityType.SPIDER] = this.config.speed_spider ?? 0.240;
         this.speed[EntityType.FOX] = this.config.speed_fox ?? 0.235;
@@ -90,20 +46,138 @@ export class ConfigSystem {
         this.speed[EntityType.SAND_WORM] = this.config.speed_sand_worm ?? 0.250;
         this.speed[EntityType.BABY_MAMMOTH] = this.config.speed_baby_mammoth ?? 0.230;
         this.speed[EntityType.MAMMOTH] = this.config.speed_mammoth ?? 0.230;
-        this.speed[EntityType.WHEAT_MOB] = 0;
         this.speed[EntityType.RABBIT] = this.config.speed_rabbit ?? 0.320;
-        this.speed[EntityType.TREASURE_CHEST] = 0;
-        this.speed[EntityType.DEAD_BOX] = 0;
-        this.speed[EntityType.PUMPKIN_MOB] = 0;
-        this.speed[EntityType.GARLIC_MOB] = 0;
-        this.speed[EntityType.THORNBUSH_MOB] = 0;
-        this.speed[EntityType.CRATE] = 0;
-        this.speed[EntityType.GIFT] = 0;
         this.speed[EntityType.PENGUIN] = this.config.speed_penguin ?? 0.320;
-        this.speed[EntityType.ALOE_VERA_MOB] = 0;
-        this.speed[EntityType.FIREFLY] = 0;
-        this.speed[EntityType.SPELL] = 0;
-        this.speed[EntityType.FRUIT] = 0;
+    }
+
+    public setupDamage() {
+
+        // Building damage;
+        this.entityDamage[EntityType.SPIKE] = this.config.wood_spike_damage ?? 10;
+        this.entityDamage[EntityType.STONE_SPIKE] = this.config.stone_spike_damage ?? 20;
+        this.entityDamage[EntityType.GOLD_SPIKE] = this.config.stone_spike_damage ?? 30;
+        this.entityDamage[EntityType.DIAMOND_SPIKE] = this.config.stone_spike_damage ?? 40;
+        this.entityDamage[EntityType.AMETHYST_SPIKE] = this.config.stone_spike_damage ?? 50;
+        this.entityDamage[EntityType.REIDITE_SPIKE] = this.config.stone_spike_damage ?? 60;
+        this.entityDamage[EntityType.FIRE] = 40;
+        this.entityDamage[EntityType.BIG_FIRE] = 40;
+
+        // Seed damage
+        this.entityDamage[EntityType.THORNBUSH_MOB] = 40;
+
+        // Forest mobs damage
+        this.entityDamage[EntityType.WOLF] = this.config.damage_wolf ?? 40;
+        this.entityDamage[EntityType.SPIDER] = this.config.damage_spider ?? 30;
+        this.entityDamage[EntityType.BOAR] = this.config.damage_boar ?? 50;
+        this.entityDamage[EntityType.HAWK] = this.config.damage_hawk ?? 40;
+        this.entityDamage[EntityType.CRAB] = this.config.damage_crab ?? 35;
+        this.entityDamage[EntityType.CRAB_BOSS] = this.config.damage_king_crab ?? 80;
+
+        // Winter mobs damage
+        this.entityDamage[EntityType.FOX] = this.config.damage_fox ?? 25;
+        this.entityDamage[EntityType.BEAR] = this.config.damage_bear ?? 60;
+        this.entityDamage[EntityType.MAMMOTH] = this.config.damage_mammoth ?? 70;
+        this.entityDamage[EntityType.BABY_MAMMOTH] = this.config.damage_baby_mammoth ?? 50;
+        this.entityDamage[EntityType.DRAGON] = this.config.damage_dragon ?? 85;
+        this.entityDamage[EntityType.BABY_DRAGON] = this.config.damage_baby_dragon ?? 30;
+
+        // Desert mobs damage
+        this.entityDamage[EntityType.VULTURE] = this.config.damage_vulture ?? 45;
+        this.entityDamage[EntityType.SAND_WORM] = this.config.damage_sand_worm ?? 60;
+
+        // Lava mobs damage
+        this.entityDamage[EntityType.LAVA_DRAGON] = this.config.damage_lava_dragon ?? 90;
+        this.entityDamage[EntityType.BABY_LAVA] = this.config.damage_baby_lava ?? 70;
+        this.entityDamage[EntityType.FLAME] = this.config.damage_flame ?? 50;
+
+        // Ocean mobs damage
+        this.entityDamage[EntityType.KRAKEN] = this.config.damage_kraken ?? 80;
+        this.entityDamage[EntityType.PIRANHA] = this.config.damage_piranha ?? 40;
+    }
+
+    public setupRadius() {
+        this.entityRadius[EntityType.WALL] = 45;
+        this.entityRadius[EntityType.STONE_WALL] = 45;
+        this.entityRadius[EntityType.GOLD_WALL] = 45;
+        this.entityRadius[EntityType.DIAMOND_WALL] = 45;
+        this.entityRadius[EntityType.AMETHYST_WALL] = 45;
+        this.entityRadius[EntityType.REIDITE_WALL] = 45;
+
+        this.entityRadius[EntityType.WOOD_DOOR] = 45;
+        this.entityRadius[EntityType.STONE_DOOR] = 45;
+        this.entityRadius[EntityType.GOLD_DOOR] = 45;
+        this.entityRadius[EntityType.DIAMOND_DOOR] = 45;
+        this.entityRadius[EntityType.AMETHYST_DOOR] = 45;
+        this.entityRadius[EntityType.REIDITE_DOOR] = 45;
+
+        this.entityRadius[EntityType.SPIKE] = 35;
+        this.entityRadius[EntityType.STONE_SPIKE] = 35;
+        this.entityRadius[EntityType.GOLD_SPIKE] = 35;
+        this.entityRadius[EntityType.DIAMOND_SPIKE] = 35;
+        this.entityRadius[EntityType.AMETHYST_SPIKE] = 35;
+        this.entityRadius[EntityType.REIDITE_SPIKE] = 35;
+
+        this.entityRadius[EntityType.WOOD_DOOR_SPIKE] = 35;
+        this.entityRadius[EntityType.STONE_DOOR_SPIKE] = 35;
+        this.entityRadius[EntityType.GOLD_DOOR_SPIKE] = 35;
+        this.entityRadius[EntityType.DIAMOND_DOOR_SPIKE] = 35;
+        this.entityRadius[EntityType.AMETHYST_DOOR_SPIKE] = 35;
+        this.entityRadius[EntityType.REIDITE_DOOR_SPIKE] = 35;
+
+        this.entityRadius[EntityType.EXTRACTOR_MACHINE_STONE] = 45;
+        this.entityRadius[EntityType.EXTRACTOR_MACHINE_GOLD] = 45;
+        this.entityRadius[EntityType.EXTRACTOR_MACHINE_DIAMOND] = 45;
+        this.entityRadius[EntityType.EXTRACTOR_MACHINE_AMETHYST] = 45;
+        this.entityRadius[EntityType.EXTRACTOR_MACHINE_REIDITE] = 45;
+
+        this.entityRadius[EntityType.WORKBENCH] = 35;
+        this.entityRadius[EntityType.FURNACE] = 55;
+    }
+
+    public setupCollide() {
+        this.entityCollide[EntityType.WALL] = true;
+        this.entityCollide[EntityType.STONE_WALL] = true;
+        this.entityCollide[EntityType.GOLD_WALL] = true;
+        this.entityCollide[EntityType.DIAMOND_WALL] = true;
+        this.entityCollide[EntityType.AMETHYST_WALL] = true;
+        this.entityCollide[EntityType.REIDITE_WALL] = true;
+
+        this.entityCollide[EntityType.WOOD_DOOR] = true;
+        this.entityCollide[EntityType.STONE_DOOR] = true;
+        this.entityCollide[EntityType.GOLD_DOOR] = true;
+        this.entityCollide[EntityType.DIAMOND_DOOR] = true;
+        this.entityCollide[EntityType.AMETHYST_DOOR] = true;
+        this.entityCollide[EntityType.REIDITE_DOOR] = true;
+
+        this.entityCollide[EntityType.SPIKE] = true;
+        this.entityCollide[EntityType.STONE_SPIKE] = true;
+        this.entityCollide[EntityType.GOLD_SPIKE] = true;
+        this.entityCollide[EntityType.DIAMOND_SPIKE] = true;
+        this.entityCollide[EntityType.AMETHYST_SPIKE] = true;
+        this.entityCollide[EntityType.REIDITE_SPIKE] = true;
+
+        this.entityCollide[EntityType.WOOD_DOOR_SPIKE] = true;
+        this.entityCollide[EntityType.STONE_DOOR_SPIKE] = true;
+        this.entityCollide[EntityType.GOLD_DOOR_SPIKE] = true;
+        this.entityCollide[EntityType.DIAMOND_DOOR_SPIKE] = true;
+        this.entityCollide[EntityType.AMETHYST_DOOR_SPIKE] = true;
+        this.entityCollide[EntityType.REIDITE_DOOR_SPIKE] = true;
+
+        this.entityCollide[EntityType.EXTRACTOR_MACHINE_STONE] = true;
+        this.entityCollide[EntityType.EXTRACTOR_MACHINE_GOLD] = true;
+        this.entityCollide[EntityType.EXTRACTOR_MACHINE_DIAMOND] = true;
+        this.entityCollide[EntityType.EXTRACTOR_MACHINE_AMETHYST] = true;
+        this.entityCollide[EntityType.EXTRACTOR_MACHINE_REIDITE] = true;
+
+
+        this.entityCollide[EntityType.RESURRECTION] = true;
+        this.entityCollide[EntityType.EMERALD_MACHINE] = true;
+        this.entityCollide[EntityType.WINDMILL] = true;
+        this.entityCollide[EntityType.WELL] = true;
+        this.entityCollide[EntityType.BREAD_OVEN] = true;
+        this.entityCollide[EntityType.WORKBENCH] = true;
+        this.entityCollide[EntityType.CHEST] = true;
+        this.entityCollide[EntityType.FURNACE] = true;
     }
 
     public setupHealth() {
@@ -149,7 +223,6 @@ export class ConfigSystem {
         this.health[EntityType.GARLIC_SEED] = 700;
         this.health[EntityType.THORNBUSH_SEED] = 700;
         this.health[EntityType.BED] = 400;
-        this.health[EntityType.GARLAND] = 0;
         this.health[EntityType.TOMATO_SEED] = 700;
         this.health[EntityType.CARROT_SEED] = 700;
         this.health[EntityType.WOOD_DOOR_SPIKE] = this.config.wood_spike_door_life ?? 100;
@@ -175,27 +248,19 @@ export class ConfigSystem {
         this.health[EntityType.FLAME] = this.config.flame_life ?? 240;
         this.health[EntityType.LAVA_DRAGON] = this.config.lava_dragon_life ?? 245;
         this.health[EntityType.BOAR] = this.config.boar_life ?? 300;
-        this.health[EntityType.CRAB_BOSS] = this.config.speed_king_crab ?? 240;
-        this.health[EntityType.BABY_DRAGON] = this.config.speed_baby_dragon ?? 250;
-        this.health[EntityType.BABY_LAVA] = this.config.speed_baby_lava ?? 270;
-        this.health[EntityType.HAWK] = this.config.speed_hawk ?? 300;
-        this.health[EntityType.VULTURE] = this.config.speed_vulture ?? 250;
-        this.health[EntityType.SAND_WORM] = this.config.speed_sand_worm ?? 250;
-        this.health[EntityType.BABY_MAMMOTH] = this.config.speed_baby_mammoth ?? 230;
-        this.health[EntityType.MAMMOTH] = this.config.speed_mammoth ?? 230;
-        this.health[EntityType.WHEAT_MOB] = 0;
-        this.health[EntityType.RABBIT] = this.config.speed_rabbit ?? 320;
+        this.health[EntityType.CRAB_BOSS] = this.config.king_crab_life ?? 240;
+        this.health[EntityType.BABY_DRAGON] = this.config.baby_dragon_life ?? 250;
+        this.health[EntityType.BABY_LAVA] = this.config.baby_lava_life ?? 270;
+        this.health[EntityType.HAWK] = this.config.hawk_life ?? 300;
+        this.health[EntityType.VULTURE] = this.config.vulture_life ?? 250;
+        this.health[EntityType.SAND_WORM] = this.config.sand_worm_life ?? 250;
+        this.health[EntityType.BABY_MAMMOTH] = this.config.baby_mammoth_life ?? 230;
+        this.health[EntityType.MAMMOTH] = this.config.mammoth_life ?? 230;
+        this.health[EntityType.RABBIT] = this.config.rabbit_life ?? 320;
         this.health[EntityType.TREASURE_CHEST] = this.config.treasure_life ?? 300;
         this.health[EntityType.DEAD_BOX] = 300;
-        this.health[EntityType.PUMPKIN_MOB] = 0;
-        this.health[EntityType.GARLIC_MOB] = 0;
-        this.health[EntityType.THORNBUSH_MOB] = 0;
         this.health[EntityType.CRATE] = 30;
         this.health[EntityType.GIFT] = 30;
-        this.health[EntityType.PENGUIN] = this.config.speed_penguin ?? 320;
-        this.health[EntityType.ALOE_VERA_MOB] = 0;
-        this.health[EntityType.FIREFLY] = 0;
-        this.health[EntityType.SPELL] = 0;
-        this.health[EntityType.FRUIT] = 0;
+        this.health[EntityType.PENGUIN] = this.config.penguin_life ?? 320;
     }
 }

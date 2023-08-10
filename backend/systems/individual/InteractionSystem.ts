@@ -38,9 +38,22 @@ export class InteractionSystem {
             if (player.pet.id == id) player.pet = getDefaultPet();
             else player.pet = item;
         } else if(this.isFood(name)){
-            player.gauges.hunger = Math.min(100, player.gauges.hunger + item.value);
             if(item.poison) player.client.sendBinary(player.healthSystem.damage(this.server.config.damage_raw_food, ActionType.HURT));
-            player.client.sendU8([ClientPackets.GAUGES_FOOD, player.gauges.hunger]);
+            if(item.value) {
+                player.gauges.hunger = Math.min(100, player.gauges.hunger + item.value);
+                player.client.sendU8([ClientPackets.GAUGES_FOOD, player.gauges.hunger]);
+            }
+
+            if(item.water) {
+                player.gauges.thirst = Math.min(100, player.gauges.thirst + item.water);
+                player.client.sendU8([ClientPackets.GAUGES_WATER, player.gauges.thirst]);
+            }
+
+            if(item.heal_boost) {
+                player.gauges.bandage = Math.min(this.server.config.bandage_stack_limit, player.gauges.bandage + item.heal_boost);
+                player.client.sendU8([ClientPackets.BANDAGE, player.gauges.bandage]);
+            }
+
             player.client.sendBinary(player.inventory.removeItem(id, 1));
         } else if(canWeapon) {
             player.right = {

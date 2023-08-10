@@ -8,12 +8,7 @@ const InventoryType_1 = require("../../enums/InventoryType");
 const Vector_1 = require("../../modules/Vector");
 const ActionType_1 = require("../../enums/ActionType");
 const DeathReason_1 = require("../../enums/DeathReason");
-const Wall_1 = require("../../entities/buildings/Wall");
-const Spike_1 = require("../../entities/buildings/Spike");
-const Fire_1 = require("../../entities/buildings/Fire");
-const Bridge_1 = require("../../entities/buildings/Bridge");
-const Door_1 = require("../../entities/buildings/Door");
-const Workbench_1 = require("../../entities/buildings/Workbench");
+const Building_1 = require("../../entities/Building");
 class CombatSystem {
     server;
     constructor(server) {
@@ -32,8 +27,11 @@ class CombatSystem {
             const offset = ["tool", "hammer"].includes(player.right.type) ? 50 : player.right.type === "weapon" ? 65 : 20;
             const offsetX = offset * Math.cos((player.angle / 255) * (Math.PI * 2));
             const offsetY = offset * Math.sin((player.angle / 255) * (Math.PI * 2));
+            player.action |= ActionType_1.ActionType.ATTACK;
             const shake = new BinaryWriter_1.BinaryWriter();
+            const shakeBuildings = new BinaryWriter_1.BinaryWriter();
             shake.writeUInt16(ClientPackets_1.ClientPackets.HITTEN);
+            shakeBuildings.writeUInt16(ClientPackets_1.ClientPackets.HITTEN_OTHER);
             for (const chunk of chunks) {
                 for (const tile of chunk.tiles) {
                     const distance = tile.realPosition.distance(player.position.add(new Vector_1.Vector(offsetX, offsetY)));
@@ -49,6 +47,9 @@ class CombatSystem {
                         }
                         if (tile.count <= 0) {
                             player.client.sendU8([ClientPackets_1.ClientPackets.EMPTY_RES]);
+                            continue;
+                        }
+                        if (player.inventory.isFull()) {
                             continue;
                         }
                         player.client.sendBinary(player.inventory.giveItem(InventoryType_1.InventoryType[tile.resource], harvest));
@@ -69,21 +70,17 @@ class CombatSystem {
                             entity.client.sendBinary(entity.healthSystem.damage(player.right.damage + entity.helmet.defense + (entity.right.defense ? entity.right.defense : 0), ActionType_1.ActionType.HURT, player));
                             return;
                         }
-                        if (this.isBuilding(entity)) {
+                        if (entity instanceof Building_1.Building) {
                             if (player.right.type === "hammer") {
                                 entity.healthSystem.damage(player.right.building_damage, ActionType_1.ActionType.HURT, player);
                             }
                             else {
                                 entity.healthSystem.damage(~~(player.right.damage / 4), ActionType_1.ActionType.HURT, player);
                             }
-                            const writer = new BinaryWriter_1.BinaryWriter();
-                            writer.writeUInt16(ClientPackets_1.ClientPackets.HITTEN_OTHER);
-                            writer.writeUInt16(entity.id);
-                            writer.writeUInt8(entity.id);
-                            writer.writeUInt8(player.angle);
-                            player.client.sendBinary(writer.toBuffer());
+                            shakeBuildings.writeUInt16(entity.id);
+                            shakeBuildings.writeUInt16(player.angle);
                             // entity.info = entity.healthSystem.health / entity.healthSystem.maxHealth * 100;
-                            return;
+                            continue;
                         }
                         entity.healthSystem.damage(player.right.damage, ActionType_1.ActionType.HURT, player);
                     }
@@ -92,10 +89,10 @@ class CombatSystem {
             if (shake.toBuffer().length > 3) {
                 this.server.broadcast(shake.toBuffer(), true);
             }
+            if (shakeBuildings.toBuffer().length > 2) {
+                this.server.broadcast(shakeBuildings.toBuffer(), true);
+            }
         }
-    }
-    isBuilding(entity) {
-        return entity instanceof Wall_1.Wall || entity instanceof Spike_1.Spike || entity instanceof Fire_1.Fire || entity instanceof Bridge_1.Bridge || entity instanceof Door_1.Door || entity instanceof Workbench_1.Workbench;
     }
 }
 exports.CombatSystem = CombatSystem;

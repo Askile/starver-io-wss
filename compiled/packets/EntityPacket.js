@@ -37,7 +37,7 @@ class EntityPacket {
             ENTITY.action !== entity.action ||
             ENTITY.angle !== entity.angle ||
             ENTITY.extra !== entity.extra))) {
-            writer.writeUInt8(id);
+            writer.writeUInt8(type ? 0 : id);
             writer.writeUInt8(angle);
             writer.writeUInt16((isInsideCameraExtended && !isInsideCamera) ? ActionType_1.ActionType.DELETE : action);
             writer.writeUInt16(type);
@@ -45,7 +45,7 @@ class EntityPacket {
             writer.writeUInt16(position.y);
             writer.writeUInt16(!type ? 0 : id);
             writer.writeUInt16(info);
-            writer.writeUInt16(speed);
+            writer.writeUInt16(speed * 1000);
             writer.writeUInt16(extra);
             this.player.entities[id] = {};
             this.player.entities[id].position = Object.assign({}, entity.position);

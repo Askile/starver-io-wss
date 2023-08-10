@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tile = void 0;
 const Vector_1 = require("../../modules/Vector");
+const TileType_1 = require("../../enums/TileType");
 class Tile {
     type;
     collide = true;
@@ -25,7 +26,7 @@ class Tile {
         this.subtype = data.subtype ?? 0;
         this.position = position;
         this.realPosition = position.multiply(100).add(new Vector_1.Vector(50, 50));
-        if (!this.radius) {
+        if (!this.radius || this.type === TileType_1.TileType.LAVA) {
             this.collide = false;
         }
         switch (this.resource) {

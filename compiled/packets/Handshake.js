@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Handshake = void 0;
 const defaultValues_1 = require("../default/defaultValues");
 const ClientStringPackets_1 = require("../enums/packets/ClientStringPackets");
+const ClientPackets_1 = require("../enums/packets/ClientPackets");
 const MAX_VALUES = {
     SKIN: 174,
     ACCESSORY: 94,
@@ -85,9 +86,9 @@ class Handshake {
             return [id, data.nickname, data.level, stats.score, cosmetics.skin, cosmetics.accessory, cosmetics.book, cosmetics.bag];
         });
         const inventory = new Array(255).fill(null);
+        const items = Array.from(player.inventory.items.keys());
+        const counts = Array.from(player.inventory.items.values());
         for (let i = 0; i < player.inventory.items.size; i++) {
-            const items = Array.from(player.inventory.items.keys());
-            const counts = Array.from(player.inventory.items.values());
             inventory[items[i]] = counts[i];
         }
         if (isRestore) {
@@ -124,6 +125,9 @@ class Handshake {
             0,
             0 // TODO: Blizzard
         ]);
+        if (1) {
+            player.client.sendU8([ClientPackets_1.ClientPackets.GET_BAG]);
+        }
     }
     broadcastCosmetics(player) {
         this.server.broadcast(JSON.stringify([2, player.id, player.data.nickname, player.data.level, player.cosmetics.skin, player.cosmetics.accessory, player.cosmetics.bag, player.cosmetics.book]));

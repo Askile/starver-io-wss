@@ -36,14 +36,18 @@ export class Player extends Entity {
     public lastWeaponUse: number = 0;
     public lastHelmetUse: number = 0;
 
+    public lavaBiome: boolean = false;
     public island: boolean = false;
     public workbench: boolean = false;
     public fire: boolean = false;
+    public onFire: boolean = false;
     public lava: boolean = false;
     public spike: boolean = false;
     public water: boolean = false;
     public well: boolean = false;
     public attack: boolean = false;
+    public winter: boolean = false;
+    public desert: boolean = false;
 
     public buildings: any = [];
     public entities: any = [];
@@ -58,7 +62,6 @@ export class Player extends Entity {
         super(EntityType.PLAYERS, client.server);
 
         this.client = client;
-        this.radius = 25;
 
         this.cosmetics = getDefaultPlayerCosmetics();
         this.data = getDefaultPlayerData();
@@ -100,10 +103,14 @@ export class Player extends Entity {
         new DeadBox(this.server, this);
 
         for (const building of this.buildings) building.delete();
+
         this.delete();
         this.buildings = [];
         this.server.players = this.server.players.filter(player => player !== this);
+
         this.gauges.timer.clearInterval();
+        this.gauges.healthTimer.clearInterval();
+
         this.client.sendBinary(writer.toBuffer());
         if (this.client.isActive) {
             this.client.socket.close();

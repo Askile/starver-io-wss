@@ -14,12 +14,14 @@ class Entity {
     velocity;
     server;
     lastAttack = 0;
-    collide = false;
+    collide;
     healthSystem;
+    damage;
     direction;
     radius;
     type;
     id;
+    pid;
     speed;
     action;
     angle;
@@ -28,20 +30,22 @@ class Entity {
     constructor(type, server) {
         this.server = server;
         this.type = type;
-        this.healthSystem = new HealthSystem_1.HealthSystem(this, this.server.configSystem?.health[type]);
         this.id = server.entityPool.createId();
-        this.speed = this.server.configSystem.speed[type] * 1000 ?? 0;
-        this.radius = 0;
+        this.healthSystem = new HealthSystem_1.HealthSystem(this, this.server.configSystem?.health[type]);
+        this.speed = this.server.configSystem.speed[type] ?? 0;
+        this.damage = this.server.configSystem.entityDamage[type] ?? 0;
+        this.radius = this.server.configSystem.entityRadius[type] ?? 0;
+        this.collide = this.server.configSystem.entityCollide[type] ?? 0;
+        this.pid = 0;
         this.angle = 0;
         this.action = 0;
         this.info = 0;
         this.extra = 0;
+        this.direction = 0;
         this.position = new Vector_1.Vector(0, 0);
         this.velocity = new Vector_1.Vector(0, 0);
-        this.direction = 0;
     }
     onDead(damager) { }
-    onTick() { }
     onDamage(damager) { }
     delete() {
         this.server.entityPool.deleteId(this.id);

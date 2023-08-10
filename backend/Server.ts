@@ -20,7 +20,13 @@ import {CombatSystem} from "./systems/server/CombatSystem";
 import {ConfigSystem} from "./systems/server/ConfigSystem";
 import {InteractionSystem} from "./systems/individual/InteractionSystem";
 import {MobSystem} from "./systems/server/MobSystem";
+import Cfg from "./JSON/Cfg.json";
+import {GameMode} from "./enums/GameMode";
+import {StorageSystem} from "./systems/server/StorageSystem";
 
+Math.clamp = (variable: number, min: number, max: number) => {
+    return Math.max(min, Math.min(variable, max));
+};
 export class Server {
     public players: Player[] = [];
     public entities: Entity[] = [];
@@ -40,7 +46,7 @@ export class Server {
     public timeSystem: TimeSystem;
     public kitSystem: KitSystem;
     public eventSystem: EventSystem;
-    public commandSystem: CommandSystem;
+    public storageSystem: StorageSystem;
     public buildingSystem: BuildingSystem;
     public combatSystem: CombatSystem;
     public configSystem: ConfigSystem;
@@ -50,10 +56,10 @@ export class Server {
 
     private ticker: Ticker;
 
-    constructor(config: Config, public path: string, public port: number, mode: number) {
+    constructor(public path: string, public port: number, mode: number) {
         this.playerPool = new IdPool(1, 100);
         this.entityPool = new IdPool(101, 60000);
-        this.config = config;
+        this.config = Cfg as any;
         this.configSystem = new ConfigSystem(this.config);
 
         this.wss = new WebSocketServer(path, this);
@@ -68,11 +74,11 @@ export class Server {
         this.kitSystem = new KitSystem(this.config);
         this.spawnSystem = new SpawnSystem(this.map);
         this.eventSystem = new EventSystem(this);
-        this.commandSystem = new CommandSystem();
         this.combatSystem = new CombatSystem(this);
         this.buildingSystem = new BuildingSystem(this);
         this.interactionSystem = new InteractionSystem(this);
         this.mobSystem = new MobSystem(this);
+        this.storageSystem = new StorageSystem(this);
 
         this.mode = mode;
 
@@ -88,4 +94,9 @@ export class Server {
             client.socket.send(message, isBinary);
         }
     }
+
+    public findEntityById(id: number) {
+        return this.entities.find(entity => entity.id === id);
+    }
 }
+new Server("Europe-1", 80, GameMode.normal);

@@ -15,13 +15,18 @@ class Inventory {
         this.items = new Map();
         this.size = size;
     }
-    addInventory(inventory) {
+    addInventory(inventory, bound = Infinity) {
         const writer = new BinaryWriter_1.BinaryWriter();
+        let isFill = false;
         writer.writeUInt16(ClientPackets_1.ClientPackets.GATHER);
         for (const item of inventory.items) {
-            const buffer = this.giveItem(item[0], item[1])?.slice(2);
-            console.log(...buffer);
+            const buffer = this.giveItem(item[0], Math.min(item[1], bound))?.slice(2);
+            if (!buffer.length)
+                isFill = true;
             writer.writeUInt8(...buffer);
+        }
+        if (isFill && this.entity instanceof Player_1.Player) {
+            this.entity.client.sendU8([ClientPackets_1.ClientPackets.INV_FULL]);
         }
         return writer.toBuffer();
     }
@@ -81,6 +86,9 @@ class Inventory {
         const writer = new BinaryWriter_1.BinaryWriter(1);
         writer.writeUInt8(ClientPackets_1.ClientPackets.CLEAN_INVENTORY);
         return writer.toBuffer();
+    }
+    isFull() {
+        return this.items.size > this.size;
     }
     unEquipItem(id) {
         if (!(this.entity instanceof Player_1.Player))

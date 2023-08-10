@@ -3,14 +3,9 @@ import { Vector } from "../../modules/Vector";
 import {EntityType} from "../../enums/EntityType";
 import {Player} from "../../entities/Player";
 import {InventoryType} from "../../enums/InventoryType";
-import {Fire} from "../../entities/buildings/Fire";
-import {Workbench} from "../../entities/buildings/Workbench";
-import {Wall} from "../../entities/buildings/Wall";
-import {Spike} from "../../entities/buildings/Spike";
-import {Door} from "../../entities/buildings/Door";
 import {ClientPackets} from "../../enums/packets/ClientPackets";
-import {Bridge} from "../../entities/buildings/Bridge";
 import {TileType} from "../../enums/TileType";
+import {Building} from "../../entities/Building";
 
 export class BuildingSystem {
     private readonly server: Server;
@@ -32,20 +27,7 @@ export class BuildingSystem {
 
         if((isGrid !== 0 && isGrid !== 1) || angle < 0 || angle > 255 || !type) return;
 
-        let entity = null as any;
-        if(this.isFire(type)) {
-            entity = new Fire(type, this.server);
-        } else if (this.isWorkbench(type)) {
-            entity = new Workbench(type, this.server);
-        } else if (this.isWall(type)) {
-            entity = new Wall(type, this.server);
-        } else if (this.isSpike(type)) {
-            entity = new Spike(type, this.server);
-        } else if (this.isDoor(type)) {
-            entity = new Door(type, this.server);
-        } else if (this.isBridge(type)){
-            entity = new Bridge(type, this.server);
-        }
+        let entity = new Building(type, this.server);
 
         entity.angle = angle;
         entity.position = this.getOffsetVector(player.position, 120, angle);
@@ -124,15 +106,11 @@ export class BuildingSystem {
         ].includes(type);
     }
 
-    private isFire(type: number) {
-        return [EntityType.FIRE, EntityType.BIG_FIRE, EntityType.FURNACE].includes(type);
-    }
-
-    private isWorkbench(type: number) {
-        return [EntityType.WORKBENCH].includes(type);
-    }
-
     private isBridge(type: number) {
         return [EntityType.BRIDGE].includes(type);
+    }
+
+    private isChest(type: number) {
+        return [EntityType.CHEST].includes(type);
     }
 }

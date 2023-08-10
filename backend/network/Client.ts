@@ -4,7 +4,6 @@ import {Player} from "../entities/Player";
 import {Server} from "../Server";
 import {Handshake} from "../packets/Handshake";
 import NanoTimer from "nanotimer";
-import {EntityType} from "../enums/EntityType";
 import {Crate} from "../entities/Crate";
 import {ActionType} from "../enums/ActionType";
 import {ServerPackets} from "../enums/packets/ServerPackets";
@@ -92,6 +91,14 @@ export class Client {
         // if (this.packetsQty[3] > 10) return this.socket.close();
         // if (this.packetsQty[PACKET_TYPE] > 30) return this.socket.close();
 
+        if(this.player.isCrafting && [
+                ServerPackets.ATTACK, ServerPackets.INTERACTION,
+                ServerPackets.CRAFT, ServerPackets.RECYCLE_START,
+                ServerPackets.DROP_ONE_ITEM, ServerPackets.DROP_ITEM,
+                ServerPackets.GIVE_ITEM, ServerPackets.TAKE_ITEM,
+                ServerPackets.LOCK_CHEST, ServerPackets.BUILD
+        ].includes(PACKET_TYPE)) return;
+
         switch (PACKET_TYPE) {
             case ServerPackets.CHAT:
                 this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]), false, this.socket);
@@ -103,18 +110,14 @@ export class Client {
                 this.player.angle = Number(PACKET) % 255;
                 break;
             case ServerPackets.ATTACK:
-                if(this.player.isCrafting) break;
                 this.player.attack = true;
                 this.player.angle = Number(PACKET) % 255;
-                this.player.action |= ActionType.ATTACK;
                 this.server.combatSystem.handleAttack(this.player);
                 break;
             case ServerPackets.INTERACTION:
-                if(this.player.isCrafting) break;
                 this.server.interactionSystem.request(this.player, PACKET);
                 break;
             case ServerPackets.DROP_ONE_ITEM:
-                if(this.player.isCrafting) break;
                 if (this.player.inventory.items.has(PACKET))
                     new Crate(this.server, {
                         owner: this.player,
@@ -124,22 +127,27 @@ export class Client {
                 this.sendBinary(this.player.inventory.deleteItem(PACKET));
                 break;
             case ServerPackets.CRAFT:
-                if(this.player.isCrafting) break;
                 this.server.craftSystem.handleCraft(this.player, PACKET);
                 break;
+            case ServerPackets.GIVE_ITEM:
+                this.server.storageSystem.giveChestItem(this.player, PACKET_DATA);
+                break;
+            case ServerPackets.TAKE_ITEM:
+                this.server.storageSystem.takeChestItem(this.player, PACKET_DATA);
+                break;
             case ServerPackets.RECYCLE_START:
-                if(this.player.isCrafting) break;
                 this.server.craftSystem.handleRecycle(this.player, PACKET);
                 break;
             case ServerPackets.BUILD:
-                if(this.player.isCrafting) break;
                 this.server.buildingSystem.request(this.player, PACKET_DATA);
                 break;
             case ServerPackets.STOP_ATTACK:
                 this.player.attack = false;
                 break;
+            case ServerPackets.LOCK_CHEST:
+                this.server.storageSystem.lockChest(this.player, PACKET);
+                break;
             case ServerPackets.DROP_ITEM:
-                if(this.player.isCrafting) break;
                 if (this.player.inventory.items.has(PACKET))
                     new Crate(this.server, {
                         owner: this.player,

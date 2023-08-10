@@ -1,11 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StateManager = void 0;
-const Fire_1 = require("../buildings/Fire");
-const Workbench_1 = require("../buildings/Workbench");
-const Well_1 = require("../buildings/Well");
 const ClientPackets_1 = require("../../enums/packets/ClientPackets");
 const TileType_1 = require("../../enums/TileType");
+const EntityType_1 = require("../../enums/EntityType");
 class StateManager {
     player;
     constructor(player) {
@@ -17,7 +15,9 @@ class StateManager {
         const playerChunk = this.player.server.map.getChunk(this.player.position.x, this.player.position.y);
         const biomes = this.player.server.map.getBiomesAtEntityPosition(this.player);
         let isFire = false;
+        let onFire = false;
         let isLava = false;
+        let isLavaBiome = false;
         let isIsland = false;
         let isWorkbench = false;
         let isBed = false;
@@ -25,34 +25,47 @@ class StateManager {
         let isBridge = false;
         let isWell = false;
         let isWater = false;
+        let isWinter = false;
+        let isDesert = false;
         for (const entity of entities) {
             const dist = entity.position.distance(this.player.position);
-            if (entity instanceof Fire_1.Fire && dist < 180) {
+            if (entity.type === EntityType_1.EntityType.FIRE && dist < 180) {
                 isFire = true;
+                if (dist < 50)
+                    onFire = true;
             }
-            else if (entity instanceof Workbench_1.Workbench && dist < 180) {
+            else if (entity.type === EntityType_1.EntityType.WORKBENCH && dist < 180) {
                 isWorkbench = true;
             }
-            else if (entity instanceof Well_1.Well && dist < 180) {
+            else if (entity.type === EntityType_1.EntityType.WELL && dist < 180) {
                 isWell = true;
+            }
+        }
+        for (const tile of tiles) {
+            const dist = tile.realPosition.distance(this.player.position);
+            if (tile.type === TileType_1.TileType.LAVA && dist < tile.radius) {
+                isLava = true;
             }
         }
         for (const tile of playerChunk.tiles) {
             if (tile.type === "iblk")
                 isIsland = true;
-        }
-        if (!biomes.length && !isIsland) {
-            isWater = true;
-        }
-        for (const tile of playerChunk.tiles) {
             if (tile.type === TileType_1.TileType.RIVER) {
                 isWater = true;
             }
         }
+        if (!biomes.length && !isIsland) {
+            isWater = true;
+        }
+        if (biomes.length == 1) {
+            isDesert = biomes.includes("DESERT");
+            isWinter = biomes.includes("WINTER") || biomes.includes("DRAGON");
+            isLavaBiome = biomes.includes("LAVA");
+        }
         if (isWorkbench !== this.player.workbench) {
             this.player.client.sendU8([ClientPackets_1.ClientPackets.WORKBENCH, Number(isWorkbench)]);
         }
-        if (isFire !== this.player.fire) {
+        if (isFire !== this.player.fire || isLava !== this.player.lava) {
             this.player.client.sendU8([ClientPackets_1.ClientPackets.FIRE, Number(isFire)]);
         }
         if (isWater !== this.player.water) {
@@ -64,6 +77,11 @@ class StateManager {
         this.player.water = isWater;
         this.player.workbench = isWorkbench;
         this.player.fire = isFire;
+        this.player.onFire = onFire;
+        this.player.desert = isDesert;
+        this.player.winter = isWinter;
+        this.player.lavaBiome = isLavaBiome;
+        this.player.lava = isLava;
     }
 }
 exports.StateManager = StateManager;

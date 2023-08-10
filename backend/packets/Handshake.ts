@@ -1,9 +1,10 @@
 import {getDefaultCamera} from "../default/defaultValues";
 import {Client} from "../network/Client";
 import {ClientStringPackets} from "../enums/packets/ClientStringPackets";
-import {GameMode} from "../enums/GameMode";
 import {Player} from "../entities/Player";
 import {Server} from "../Server";
+import {InventoryType} from "../enums/InventoryType";
+import {ClientPackets} from "../enums/packets/ClientPackets";
 
 const MAX_VALUES = {
     SKIN: 174,
@@ -93,9 +94,9 @@ export class Handshake {
             return [id, data.nickname, data.level, stats.score, cosmetics.skin, cosmetics.accessory, cosmetics.book, cosmetics.bag];
         });
         const inventory = new Array(255).fill(null);
+        const items = Array.from(player.inventory.items.keys()) as any;
+        const counts = Array.from(player.inventory.items.values()) as any;
         for (let i = 0; i < player.inventory.items.size; i++) {
-            const items = Array.from(player.inventory.items.keys()) as any;
-            const counts = Array.from(player.inventory.items.values()) as any;
             inventory[items[i]] = counts[i];
         }
 
@@ -134,6 +135,10 @@ export class Handshake {
             0,  // TODO: Sandstorm
             0   // TODO: Blizzard
         ]);
+
+        if(1) {
+            player.client.sendU8([ClientPackets.GET_BAG]);
+        }
 
     }
 

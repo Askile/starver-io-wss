@@ -17,7 +17,8 @@ export function getDefaultHelmet(): any {
     return {
         type: "helmet",
         id: 0,
-        defense: 0
+        defense: 0,
+        mob_defense: 0
     };
 }
 
@@ -26,7 +27,11 @@ export function getDefaultItem(): any {
         type: "hand",
         id: 7,
         damage: 5,
-        harvest: 1
+        harvest: 1,
+        defense: 0,
+        poison: 0,
+        mob_defense: 0,
+        heal_boost: 0
     };
 }
 
@@ -54,6 +59,6 @@ export function getDefaultPlayerData(): PlayerData {
     return {
         nickname: "unnamed",
         token: "",
-        level: 69
+        level: 0
     };
 }

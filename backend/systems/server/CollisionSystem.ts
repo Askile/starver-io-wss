@@ -1,7 +1,7 @@
 import {Server} from "../../Server";
 import {Vector} from "../../modules/Vector";
 import {Player} from "../../entities/Player";
-import {Wolf} from "../../entities/Wolf";
+import {Animal} from "../../entities/Animal";
 
 export class CollisionSystem {
     private server: Server;
@@ -26,9 +26,9 @@ export class CollisionSystem {
 
     public tick() {
         for (const entity of this.server.entities) {
-            if(!(entity instanceof Player) && !(entity instanceof Wolf)) continue;
+            if(!(entity instanceof Player) && !(entity instanceof Animal)) continue;
             const tiles = this.server.map.getTiles(entity.position.x, entity.position.y, 3);
-            const entities = this.server.map.getEntities(entity.position.x, entity.position.y, 2);
+            const entities = this.server.map.getEntities(entity.position.x, entity.position.y, 3);
 
             for (const tile of tiles) {
                 if(!tile.collide) continue;

@@ -320,6 +320,43 @@
       "subtype": 0,
       "radius": 0,
       "id": 0
+    },
+    {
+      "type": "la",
+      "subtype": 0,
+      "radius": 200,
+      "id": 0
+    },
+    {
+      "type": "la",
+      "subtype": 1,
+      "radius": 115,
+      "id": 0
+    },
+    {
+      "type": "la",
+      "subtype": 2,
+      "radius": 85,
+      "id": 0
+    },
+    {
+      "type": "la",
+      "subtype": 3,
+      "radius": 180,
+      "id": 0
+    },
+    {
+      "type": "la",
+      "subtype": 4,
+      "radius": 115,
+      "id": 0
+    }
+  ,
+    {
+      "type": "la",
+      "subtype": 5,
+      "radius": 80,
+      "id": 0
     }
   ]
 }

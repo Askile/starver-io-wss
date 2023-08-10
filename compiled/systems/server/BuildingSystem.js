@@ -4,14 +4,9 @@ exports.BuildingSystem = void 0;
 const Vector_1 = require("../../modules/Vector");
 const EntityType_1 = require("../../enums/EntityType");
 const InventoryType_1 = require("../../enums/InventoryType");
-const Fire_1 = require("../../entities/buildings/Fire");
-const Workbench_1 = require("../../entities/buildings/Workbench");
-const Wall_1 = require("../../entities/buildings/Wall");
-const Spike_1 = require("../../entities/buildings/Spike");
-const Door_1 = require("../../entities/buildings/Door");
 const ClientPackets_1 = require("../../enums/packets/ClientPackets");
-const Bridge_1 = require("../../entities/buildings/Bridge");
 const TileType_1 = require("../../enums/TileType");
+const Building_1 = require("../../entities/Building");
 class BuildingSystem {
     server;
     constructor(server) {
@@ -30,25 +25,7 @@ class BuildingSystem {
         const isGrid = data[2];
         if ((isGrid !== 0 && isGrid !== 1) || angle < 0 || angle > 255 || !type)
             return;
-        let entity = null;
-        if (this.isFire(type)) {
-            entity = new Fire_1.Fire(type, this.server);
-        }
-        else if (this.isWorkbench(type)) {
-            entity = new Workbench_1.Workbench(type, this.server);
-        }
-        else if (this.isWall(type)) {
-            entity = new Wall_1.Wall(type, this.server);
-        }
-        else if (this.isSpike(type)) {
-            entity = new Spike_1.Spike(type, this.server);
-        }
-        else if (this.isDoor(type)) {
-            entity = new Door_1.Door(type, this.server);
-        }
-        else if (this.isBridge(type)) {
-            entity = new Bridge_1.Bridge(type, this.server);
-        }
+        let entity = new Building_1.Building(type, this.server);
         entity.angle = angle;
         entity.position = this.getOffsetVector(player.position, 120, angle);
         if (isGrid || this.isBridge(type)) {
@@ -110,14 +87,11 @@ class BuildingSystem {
             EntityType_1.EntityType.REIDITE_DOOR
         ].includes(type);
     }
-    isFire(type) {
-        return [EntityType_1.EntityType.FIRE, EntityType_1.EntityType.BIG_FIRE, EntityType_1.EntityType.FURNACE].includes(type);
-    }
-    isWorkbench(type) {
-        return [EntityType_1.EntityType.WORKBENCH].includes(type);
-    }
     isBridge(type) {
         return [EntityType_1.EntityType.BRIDGE].includes(type);
+    }
+    isChest(type) {
+        return [EntityType_1.EntityType.CHEST].includes(type);
     }
 }
 exports.BuildingSystem = BuildingSystem;

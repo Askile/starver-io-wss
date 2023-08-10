@@ -1,5 +1,6 @@
 import {Vector} from "../../modules/Vector";
 import {Entity} from "../../entities/Entity";
+import {TileType} from "../../enums/TileType";
 
 export class Tile {
     public type: string;
@@ -28,7 +29,7 @@ export class Tile {
         this.position = position;
         this.realPosition = position.multiply(100).add(new Vector(50, 50));
 
-        if(!this.radius) {
+        if(!this.radius || this.type === TileType.LAVA) {
             this.collide = false;
         }
 

@@ -24,14 +24,18 @@ class Player extends Entity_1.Entity {
     lastBuildingStamp = 0;
     lastWeaponUse = 0;
     lastHelmetUse = 0;
+    lavaBiome = false;
     island = false;
     workbench = false;
     fire = false;
+    onFire = false;
     lava = false;
     spike = false;
     water = false;
     well = false;
     attack = false;
+    winter = false;
+    desert = false;
     buildings = [];
     entities = [];
     isCrafting = false;
@@ -42,7 +46,6 @@ class Player extends Entity_1.Entity {
     constructor(client) {
         super(EntityType_1.EntityType.PLAYERS, client.server);
         this.client = client;
-        this.radius = 25;
         this.cosmetics = (0, defaultValues_1.getDefaultPlayerCosmetics)();
         this.data = (0, defaultValues_1.getDefaultPlayerData)();
         this.stats = (0, defaultValues_1.getDefaultPlayerStats)();
@@ -77,6 +80,7 @@ class Player extends Entity_1.Entity {
         this.buildings = [];
         this.server.players = this.server.players.filter(player => player !== this);
         this.gauges.timer.clearInterval();
+        this.gauges.healthTimer.clearInterval();
         this.client.sendBinary(writer.toBuffer());
         if (this.client.isActive) {
             this.client.socket.close();
