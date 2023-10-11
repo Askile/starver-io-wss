@@ -27,23 +27,21 @@ exports.WebSocketServer = void 0;
 const uWS = __importStar(require("uWebSockets.js"));
 const Client_1 = require("./Client");
 const Logger_1 = require("../modules/Logger");
-const IdPool_1 = require("../modules/IdPool");
 class WebSocketServer {
     server;
     logger = new Logger_1.Logger("./logs", { console: true, file: true });
     clients = new Map();
     app = uWS.App();
-    socketsPool = new IdPool_1.IdPool(1, 1000);
-    constructor(path, server) {
+    constructor(server) {
         this.server = server;
-        this.setupWebSocket(path);
+        this.setupWebSocket();
         this.startListening();
     }
-    setupWebSocket(path) {
-        this.app.ws("/" + path, {
+    setupWebSocket() {
+        this.app.ws("/", {
             idleTimeout: 0,
             maxBackpressure: 1024,
-            maxPayloadLength: 100,
+            maxPayloadLength: 5000,
             compression: uWS.DEDICATED_COMPRESSOR_3KB,
             open: this.handleWebSocketOpen.bind(this),
             message: this.handleWebSocketMessage.bind(this),
@@ -52,6 +50,7 @@ class WebSocketServer {
     }
     handleWebSocketOpen(ws) {
         const client = new Client_1.Client(ws, this.server);
+        this.logger.info("Opened");
         this.clients.set(ws, client);
     }
     handleWebSocketMessage(ws, message, isBinary) {

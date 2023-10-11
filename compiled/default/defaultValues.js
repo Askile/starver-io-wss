@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDefaultPlayerData = exports.getDefaultPlayerCosmetics = exports.getDefaultPet = exports.getDefaultItem = exports.getDefaultHelmet = exports.getDefaultPlayerStats = exports.getDefaultCamera = void 0;
+exports.getDefaultPlayerData = exports.getDefaultPlayerCosmetics = exports.getDefaultPlayerStats = exports.getDefaultCamera = void 0;
 function getDefaultCamera() {
     return {
         width: 1920,
@@ -16,37 +16,6 @@ function getDefaultPlayerStats() {
     };
 }
 exports.getDefaultPlayerStats = getDefaultPlayerStats;
-function getDefaultHelmet() {
-    return {
-        type: "helmet",
-        id: 0,
-        defense: 0,
-        mob_defense: 0
-    };
-}
-exports.getDefaultHelmet = getDefaultHelmet;
-function getDefaultItem() {
-    return {
-        type: "hand",
-        id: 7,
-        damage: 5,
-        harvest: 1,
-        defense: 0,
-        poison: 0,
-        mob_defense: 0,
-        heal_boost: 0
-    };
-}
-exports.getDefaultItem = getDefaultItem;
-function getDefaultPet() {
-    return {
-        type: "pet",
-        id: 0,
-        speed: 0.23,
-        tame_chance: 0.01
-    };
-}
-exports.getDefaultPet = getDefaultPet;
 function getDefaultPlayerCosmetics() {
     return {
         skin: 0,
@@ -62,6 +31,7 @@ function getDefaultPlayerData() {
     return {
         nickname: "unnamed",
         token: "",
+        token_id: "",
         level: 0
     };
 }

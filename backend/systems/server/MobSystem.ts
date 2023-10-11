@@ -1,155 +1,181 @@
 import {Server} from "../../Server";
-import {EntityType} from "../../enums/EntityType";
-import {Entity} from "../../entities/Entity";
-import {Player} from "../../entities/Player";
+import {EntityType} from "../../enums/types/EntityType";
 import {Animal} from "../../entities/Animal";
+import {BiomeType} from "../../enums/types/BiomeType";
+import {TileType} from "../../enums/types/TileType";
 
 export class MobSystem {
     public server: Server;
+    public hasForestBiome: boolean;
+    public hasWinterBiome: boolean;
+    public hasDragonCave: boolean;
+    public hasLavaBiome: boolean;
+    public hasDesertBiome: boolean;
+    public hasIslandBiome: boolean;
 
-    public wolfs: Animal[] = [];
-    public spiders: Animal[] = [];
-    public rabbits: Animal[] = [];
-    public foxes: Animal[] = [];
-    public bears: Animal[] = [];
-    public dragons: Animal[] = [];
-    public lava_dragons: Animal[] = [];
+    public animalCounter: number[] = new Array(100).fill(0);
 
-    public lastPushStamp: number = 0;
     constructor(server: Server) {
         this.server = server;
-    }
+        const biomes = server.map.biomes.map(biome => biome.type);
 
-    private getTarget(entity: Entity): Entity | undefined {
-        const entities = this.server.map.getEntities(entity.position.x, entity.position.y, 3);
-        if(entities.length === 0) return;
-        let target = undefined;
-        let distance = 0;
-
-        for (const unit of entities) {
-            if(!(unit instanceof Player)) continue;
-
-            const dist = unit.position.distance(entity.position);
-            if(distance <= dist && dist < 180) {
-                distance = dist;
-                target = unit;
-            }
-        }
-
-        return target;
+        this.hasForestBiome = biomes.includes(BiomeType.FOREST);
+        this.hasWinterBiome = biomes.includes(BiomeType.WINTER);
+        this.hasLavaBiome = biomes.includes(BiomeType.LAVA);
+        this.hasDragonCave = biomes.includes(BiomeType.DRAGON);
+        this.hasDesertBiome = biomes.includes(BiomeType.DESERT);
+        this.hasIslandBiome = server.map.tiles.findIndex(tile => tile.type === TileType.SAND) !== -1;
     }
 
     public tick() {
+        if(this.hasForestBiome) {
+            while (this.animalCounter[EntityType.WOLF] < this.server.config.max_wolf) {
+                const entity = new Animal(EntityType.WOLF, this.server);
 
-        while (this.wolfs.length < this.server.config.max_wolf) {
-            const entity = new Animal(EntityType.WOLF, this.server);
-            entity.position = this.server.spawnSystem.getSpawnPoint("FOREST");
+                this.server.entities.push(entity);
+            }
 
-            this.server.entities.push(entity);
-            this.wolfs.push(entity);
+            while (this.animalCounter[EntityType.SPIDER] < this.server.config.max_spider) {
+                const entity = new Animal(EntityType.SPIDER, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.RABBIT] < this.server.config.max_rabbit) {
+                const entity = new Animal(EntityType.RABBIT, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.BOAR] < this.server.config.max_boar) {
+                const entity = new Animal(EntityType.BOAR, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.HAWK] < this.server.config.max_hawk) {
+                const entity = new Animal(EntityType.HAWK, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.WHEAT_MOB] < this.server.config.max_wheat) {
+                const entity = new Animal(EntityType.WHEAT_MOB, this.server);
+
+                entity.position = this.server.spawnSystem.getSpawnPoint("FOREST");
+
+                entity.realPosition.set(entity.position);
+
+                this.server.entities.push(entity);
+            }
         }
 
-        while (this.spiders.length < this.server.config.max_spider) {
-            const entity = new Animal(EntityType.SPIDER, this.server);
-            entity.position = this.server.spawnSystem.getSpawnPoint("FOREST");
+        while (this.animalCounter[EntityType.PIRANHA] < this.server.config.max_piranha) {
+            const entity = new Animal(EntityType.PIRANHA, this.server);
 
             this.server.entities.push(entity);
-            this.spiders.push(entity);
         }
 
-        while (this.rabbits.length < this.server.config.max_rabbit) {
-            const entity = new Animal(EntityType.RABBIT, this.server);
-            entity.position = this.server.spawnSystem.getSpawnPoint("FOREST");
+        while (this.animalCounter[EntityType.KRAKEN] < this.server.config.max_kraken) {
+            const entity = new Animal(EntityType.KRAKEN, this.server);
 
             this.server.entities.push(entity);
-            this.rabbits.push(entity);
         }
 
-        while (this.foxes.length < this.server.config.max_fox) {
-            const entity = new Animal(EntityType.FOX, this.server);
-            entity.position = this.server.spawnSystem.getSpawnPoint("WINTER");
+        if(this.hasWinterBiome) {
+            while (this.animalCounter[EntityType.FOX] < this.server.config.max_fox) {
+                const entity = new Animal(EntityType.FOX, this.server);
 
-            this.server.entities.push(entity);
-            this.foxes.push(entity);
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.BEAR] < this.server.config.max_bear) {
+                const entity = new Animal(EntityType.BEAR, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.PENGUIN] < this.server.config.max_penguin) {
+                const entity = new Animal(EntityType.PENGUIN, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.BABY_MAMMOTH] < this.server.config.max_baby_mammoth) {
+                const entity = new Animal(EntityType.BABY_MAMMOTH, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.MAMMOTH] < this.server.config.max_mammoth) {
+                const entity = new Animal(EntityType.MAMMOTH, this.server);
+
+                this.server.entities.push(entity);
+            }
         }
 
-        while (this.bears.length < this.server.config.max_bear) {
-            const entity = new Animal(EntityType.BEAR, this.server);
-            entity.position = this.server.spawnSystem.getSpawnPoint("WINTER");
+        if(this.hasDragonCave) {
+            while (this.animalCounter[EntityType.DRAGON] < this.server.config.max_dragon) {
+                const entity = new Animal(EntityType.DRAGON, this.server);
 
-            this.server.entities.push(entity);
-            this.bears.push(entity);
+                this.server.entities.push(entity);
+            }
+            while (this.animalCounter[EntityType.BABY_DRAGON] < this.server.config.max_baby_dragon) {
+                const entity = new Animal(EntityType.BABY_DRAGON, this.server);
+
+                this.server.entities.push(entity);
+            }
         }
 
-        while (this.dragons.length < this.server.config.max_dragon) {
-            const entity = new Animal(EntityType.DRAGON, this.server);
-            entity.position = this.server.spawnSystem.getSpawnPoint("DRAGON");
+        if(this.hasDesertBiome) {
+            while (this.animalCounter[EntityType.SAND_WORM] < this.server.config.max_sand_worm) {
+                const entity = new Animal(EntityType.SAND_WORM, this.server);
 
-            this.server.entities.push(entity);
-            this.dragons.push(entity);
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.VULTURE] < this.server.config.max_vulture) {
+                const entity = new Animal(EntityType.VULTURE, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.ALOE_VERA_MOB] < 100) {
+                const entity = new Animal(EntityType.ALOE_VERA_MOB, this.server);
+
+                this.server.entities.push(entity);
+            }
         }
 
-        while (this.lava_dragons.length < this.server.config.max_lava_dragon) {
-            const entity = new Animal(EntityType.LAVA_DRAGON, this.server);
-            entity.position = this.server.spawnSystem.getSpawnPoint("LAVA");
+        if(this.hasLavaBiome) {
+            while (this.animalCounter[EntityType.LAVA_DRAGON] < this.server.config.max_lava_dragon) {
+                const entity = new Animal(EntityType.LAVA_DRAGON, this.server);
 
-            this.server.entities.push(entity);
-            this.lava_dragons.push(entity);
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.BABY_LAVA] < this.server.config.max_baby_lava) {
+                const entity = new Animal(EntityType.BABY_LAVA, this.server);
+
+                this.server.entities.push(entity);
+            }
+
+            while (this.animalCounter[EntityType.FLAME] < this.server.config.max_flame) {
+                const entity = new Animal(EntityType.FLAME, this.server);
+
+                this.server.entities.push(entity);
+            }
         }
 
-            // for (const wolf of this.wolfs) {
-            //     if(Date.now() - wolf.lastPush <= this.server.config.damage_speed_wolf) continue;
-            //     wolf.lastPush = Date.now();
-            //     const target = this.getTarget(wolf);
-            //     const biome = this.server.map.biomes.find(biome => biome.type === "FOREST") as Biome;
-            //
-            //     if (target instanceof Player) {
-            //         if(wolf.position.distance(target.position) < 100) {
-            //             target.helmet.mob_defense = target.helmet.mob_defense || 0;
-            //             target.right.mob_defense = target.right.mob_defense || 0;
-            //             target.client.sendBinary(target.healthSystem.damage(40 + target.helmet.mob_defense + target.right.mob_defense, ActionType.HURT, wolf));
-            //         }
-            //
-            //         wolf.angle = (((Math.atan2(target.position.y - wolf.position.y, target.position.x - wolf.position.x) + (Math.PI * 2)) % (Math.PI * 2)) * 255) / (Math.PI * 2) - 64;
-            //
-            //         wolf.position.x = Math.clamp(target.position.x, biome.position.x, biome.position.x + biome.size.x);
-            //         wolf.position.y = Math.clamp(target.position.y, biome.position.y, biome.position.y + biome.size.y);
-            //     } else {
-            //         const newPosition = new Vector(
-            //             wolf.position.x + ~~(Math.random() * 280) - 140,
-            //             wolf.position.y + ~~(Math.random() * 280) - 140
-            //         )
-            //
-            //         wolf.angle = (((Math.atan2(newPosition.y - wolf.position.y, newPosition.x - wolf.position.x) + (Math.PI * 2)) % (Math.PI * 2)) * 255) / (Math.PI * 2) - 64;
-            //
-            //         wolf.position.x = Math.clamp(newPosition.x, biome.position.x, biome.position.x + biome.size.x);
-            //         wolf.position.y = Math.clamp(newPosition.y, biome.position.y, biome.position.y + biome.size.y);
-            //     }
-            //     this.lastPushStamp = Date.now();
-            // }
-            // for (const spider of this.spiders) {
-            //     const target = this.getTarget(spider);
-            //
-            //     if (target instanceof Player) {
-            //         if(spider.position.distance(target.position) < 50) {
-            //             target.client.sendBinary(target.healthSystem.damage(40, ActionType.HURT, spider));
-            //         }
-            //         spider.angle = (((Math.atan2(target.position.y - spider.position.y, target.position.x - spider.position.x) + (Math.PI * 2)) % (Math.PI * 2)) * 255) / (Math.PI * 2) - 64;
-            //
-            //         spider.position.x = target.position.x;
-            //         spider.position.y = target.position.y;
-            //     } else {
-            //         const newPosition = new Vector(
-            //             spider.position.x + ~~(Math.random() * 300) - 150,
-            //             spider.position.y + ~~(Math.random() * 300) - 150
-            //         )
-            //
-            //         spider.angle = (((Math.atan2(newPosition.y - spider.position.y, newPosition.x - spider.position.x) + (Math.PI * 2)) % (Math.PI * 2)) * 255) / (Math.PI * 2) - 64;
-            //
-            //         spider.position.x = newPosition.x;
-            //         spider.position.y = newPosition.y;
-            //     }
-            //
-            // }
+        if(this.hasIslandBiome) {
+            while (this.animalCounter[EntityType.TREASURE_CHEST] < this.server.config.max_treasure) {
+                const entity = new Animal(EntityType.TREASURE_CHEST, this.server);
+                entity.position = this.server.spawnSystem.getSpawnPoint("ISLAND");
+
+                entity.realPosition.set(entity.position);
+
+                this.server.entities.push(entity);
+            }
+        }
     }
 }

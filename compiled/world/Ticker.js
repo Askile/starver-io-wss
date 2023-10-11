@@ -5,45 +5,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Ticker = void 0;
 const nanotimer_1 = __importDefault(require("nanotimer"));
-const ServerConfig_json_1 = __importDefault(require("../JSON/ServerConfig.json"));
 const EntityPacket_1 = require("../packets/EntityPacket");
-const ActionType_1 = require("../enums/ActionType");
+const Player_1 = require("../entities/Player");
+const Animal_1 = require("../entities/Animal");
 class Ticker {
     server;
     constructor(server) {
         this.server = server;
         new nanotimer_1.default().setInterval(() => {
             this.server.map.updateEntitiesInChunks();
-            this.server.movement.tick();
-            this.server.collision.tick();
             this.server.timeSystem.tick();
             this.server.mobSystem.tick();
             this.server.combatSystem.tick();
-        }, [], 1 / ServerConfig_json_1.default.engine_tps + "s");
-        new nanotimer_1.default().setInterval(() => {
-            for (const player of this.server.players) {
-                player.stateManager.tick();
-                new EntityPacket_1.EntityPacket(player, false);
+            this.server.eventSystem.tick();
+            for (const entity of this.server.entities) {
+                entity.onTick();
+                if (entity instanceof Animal_1.Animal || entity instanceof Player_1.Player) {
+                    entity.movement.tick();
+                }
+                if (entity instanceof Player_1.Player) {
+                    new EntityPacket_1.EntityPacket(entity);
+                    this.server.collision.updateState(entity);
+                }
             }
-            this.entityTick();
-        }, [], 1 / ServerConfig_json_1.default.network_tps + "s");
+            for (const entity of this.server.entities) {
+                entity.lastTick();
+            }
+        }, [], 1 / this.server.settings.tps + "s");
         new nanotimer_1.default().setInterval(() => {
             this.server.leaderboard.tick();
-        }, [], 1 / ServerConfig_json_1.default.leaderboard_tps + "s");
-    }
-    entityTick() {
-        for (const entity of this.server.entities) {
-            if (entity.action & ActionType_1.ActionType.ATTACK)
-                entity.action -= ActionType_1.ActionType.ATTACK;
-            if (entity.action & ActionType_1.ActionType.HUNGER)
-                entity.action -= ActionType_1.ActionType.HUNGER;
-            if (entity.action & ActionType_1.ActionType.COLD)
-                entity.action -= ActionType_1.ActionType.COLD;
-            if (entity.action & ActionType_1.ActionType.HEAL)
-                entity.action -= ActionType_1.ActionType.HEAL;
-            if (entity.action & ActionType_1.ActionType.HURT)
-                entity.action -= ActionType_1.ActionType.HURT;
-        }
+        }, [], "1s");
     }
 }
 exports.Ticker = Ticker;

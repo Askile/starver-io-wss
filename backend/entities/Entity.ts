@@ -1,17 +1,40 @@
 import {Vector} from "../modules/Vector";
 import {Server} from "../Server";
-import ServerConfig from "../JSON/ServerConfig.json";
-import NanoTimer from "nanotimer";
 import {HealthSystem} from "../systems/individual/HealthSystem";
-import {ActionType} from "../enums/ActionType";
+import {ActionType} from "../enums/types/ActionType";
+import {BiomeType} from "../enums/types/BiomeType";
+import {EntityPacket} from "../packets/EntityPacket";
 
 export class Entity {
+    public realPosition: Vector;
     public position: Vector;
     public velocity: Vector;
     public server: Server;
 
     public lastAttack: number = 0;
     public collide: boolean;
+    public isCollide: boolean = false;
+
+    public createdAt: number = Date.now();
+
+    public lavaBiome: boolean = false;
+    public island: boolean = false;
+    public bridge: boolean = false;
+    public roof: boolean = false;
+    public lava: boolean = false;
+    public water: boolean = false;
+    public attack: boolean = false;
+    public winter: boolean = false;
+    public desert: boolean = false;
+    public beach: boolean = false;
+    public lake: boolean = false;
+    public biomeIn: BiomeType = BiomeType.FOREST;
+    public forest: boolean = false;
+    public bed: boolean = false;
+    public tower: boolean = false;
+    public infire: boolean = false;
+    public plot: boolean = false;
+    public seed: boolean = false;
 
     public healthSystem: HealthSystem;
 
@@ -26,10 +49,11 @@ export class Entity {
     public angle: number;
     public extra: number;
     public info: number;
+
     constructor(type: number, server: Server) {
         this.server = server;
         this.type = type;
-        this.id = server.entityPool.createId();
+        this.id = 0;
 
         this.healthSystem = new HealthSystem(this, this.server.configSystem?.health[type]);
         this.speed = this.server.configSystem.speed[type] ?? 0;
@@ -44,20 +68,43 @@ export class Entity {
         this.extra = 0;
 
         this.direction = 0;
+
+        this.realPosition = new Vector(0, 0);
         this.position = new Vector(0, 0);
         this.velocity = new Vector(0, 0);
     }
 
     public onDead(damager?: Entity) {}
     public onDamage(damager?: Entity) {}
+    public onTick() {}
+    public onReceiveItem(id: number, count: number) {}
+
+    public lastTick() {
+        this.position = this.position.clamp(0, 0, this.server.map.width - 1, this.server.map.height - 1);
+
+        if (this.action & ActionType.WEB) this.action &= ~ActionType.WEB;
+        if (this.action & ActionType.HEAL) this.action &= ~ActionType.HEAL;
+        if (this.action & ActionType.ATTACK) this.action &= ~ActionType.ATTACK;
+        if (this.action & ActionType.HUNGER) this.action &= ~ActionType.HUNGER;
+        if (this.action & ActionType.COLD) this.action &= ~ActionType.COLD;
+        if (this.action & ActionType.HURT) this.action &= ~ActionType.HURT;
+    }
+
+    public updateSpeed() {
+        this.speed = this.server.configSystem.speed[this.type];
+    }
 
     public delete() {
         this.server.entityPool.deleteId(this.id);
         this.action = ActionType.DELETE;
 
-        new NanoTimer().setTimeout(() => {
-                this.server.entities = this.server.entities.filter((entity) => entity != this);
-        }, [], 1 / ServerConfig.network_tps + "s");
+        const players = this.server.map.getPlayersInDistance(this.realPosition, 2200);
+
+        for (const player of players) {
+            new EntityPacket(player);
+        }
+
+        this.server.entities = this.server.entities.filter((entity) => entity != this);
     }
 
 }

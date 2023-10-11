@@ -5,14 +5,18 @@ import {Server} from "../Server";
 import {Handshake} from "../packets/Handshake";
 import NanoTimer from "nanotimer";
 import {Crate} from "../entities/Crate";
-import {ActionType} from "../enums/ActionType";
 import {ServerPackets} from "../enums/packets/ServerPackets";
 import {ClientPackets} from "../enums/packets/ClientPackets";
+import {ClientStringPackets} from "../enums/packets/ClientStringPackets";
+import {Logger} from "../modules/Logger";
 
+const logger = new Logger("./logs", {
+    console: true,
+    file: false
+})
 export class Client {
     public socket: WebSocket<any>;
     public packetsQty: number[] = new Array(36).fill(0);
-    public packetsSize: number[] = new Array(36).fill(0);
 
     public isActive: boolean = true;
     public server: Server;
@@ -22,13 +26,9 @@ export class Client {
         this.server = server;
         this.socket = socket;
 
-        new NanoTimer().setInterval(
-            () => {
-                this.packetsQty.fill(0);
-            },
-            [],
-            "1s"
-        );
+        new NanoTimer().setInterval(() => {
+            this.packetsQty.fill(0);
+        },[], "1s");
     }
 
     public onMessage(buffer: ArrayBuffer, isBinary: boolean) {
@@ -46,35 +46,41 @@ export class Client {
                 this.socket.close();
                 return;
             } else if (typeof PACKET_TYPE === "string") {
-                if (PACKET_DATA.length !== 15) {
+                if (PACKET_DATA.length !== 14) {
                     this.socket.close();
                     return;
                 }
-                const handshake = new Handshake([PACKET_TYPE, ...PACKET_DATA], this);
-                const player = this.server.players.find(player => player.data.token === handshake.token);
 
-                if(player) {
-                    if(player.client.isActive) {
-                        player.client.sendBinary(new Uint8Array([ClientPackets.STEAL_TOKEN]));
-                        if(player.client.isActive) player.client.socket.close();
-                    }
-                    this.player = player;
-                    player.client = this;
-                    handshake.response(this.player, true);
-                    return;
-                }
+                logger.info([PACKET_TYPE, ...PACKET_DATA]);
                 if(this.server.players.length >= 99) {
                     return this.sendBinary(new Uint8Array([ClientPackets.FULL]))
                 }
+                const handshake = new Handshake([PACKET_TYPE, ...PACKET_DATA], this);
+                const player = this.server.findPlayerByToken(handshake.token as any, handshake.token_id as any);
+                if (player) {
+                    player.client.sendU8([ClientPackets.STEAL_TOKEN]);
+                    if(player.client.isActive) player.client.socket.close();
 
-                this.player = new Player(this);
+                    player.client = this;
+                    player.updatePool = new Array(1000).fill(0);
+                    this.player = player;
 
-                handshake.setupPlayer(this.player);
+                    handshake.restoreResponse(player);
+                } else {
 
-                this.server.players.push(this.player);
-                this.server.entities.push(this.player);
+                    const tokenScore = this.server.tokenSystem.getToken(handshake.token as any) || this.server.tokenSystem.createToken(handshake.token as any);
+                    if (tokenScore) this.server.tokenSystem.joinToken(tokenScore, handshake.token_id as any);
 
-                handshake.response(this.player);
+                    this.player = new Player(this, tokenScore);
+
+                    handshake.setupPlayer(this.player);
+
+                    this.server.players.push(this.player);
+                    this.server.entities.push(this.player);
+
+                    handshake.response(this.player);
+                }
+
                 handshake.broadcastCosmetics(this.player);
 
             }
@@ -83,13 +89,13 @@ export class Client {
         } catch (error) {}
     }
 
-    public receivePacket(PACKET_TYPE: number, PACKET: any, PACKET_DATA: number[]) {
+    public receivePacket(PACKET_TYPE: number, PACKET: any, PACKET_DATA: any) {
         this.packetsQty[PACKET_TYPE]++;
-        this.packetsSize[PACKET_TYPE] += PACKET_DATA.length;
 
-        // if (this.packetsQty[0] > 5) return this.socket.close();
-        // if (this.packetsQty[3] > 10) return this.socket.close();
-        // if (this.packetsQty[PACKET_TYPE] > 30) return this.socket.close();
+        if (!Number.isInteger(PACKET_TYPE) && PACKET_TYPE > 40 || PACKET_TYPE < 0) return;
+        if (this.packetsQty[0] > 5) return this.socket.close();
+        if (this.packetsQty[3] > 10) return this.socket.close();
+        if (this.packetsQty[PACKET_TYPE] > 30) return this.socket.close();
 
         if(this.player.isCrafting && [
                 ServerPackets.ATTACK, ServerPackets.INTERACTION,
@@ -101,7 +107,7 @@ export class Client {
 
         switch (PACKET_TYPE) {
             case ServerPackets.CHAT:
-                this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]), false, this.socket);
+                this.server.broadcast(JSON.stringify([ClientStringPackets.CHAT, this.player.id, PACKET]), false, this.socket);
                 break;
             case ServerPackets.MOVEMENT:
                 this.player.direction = PACKET;
@@ -129,11 +135,17 @@ export class Client {
             case ServerPackets.CRAFT:
                 this.server.craftSystem.handleCraft(this.player, PACKET);
                 break;
+            case ServerPackets.UNLOCK_CHEST:
+                this.server.storageSystem.unlockChest(this.player);
+                break;
+            case ServerPackets.LOCK_CHEST:
+                this.server.storageSystem.lockChest(this.player);
+                break;
             case ServerPackets.GIVE_ITEM:
                 this.server.storageSystem.giveChestItem(this.player, PACKET_DATA);
                 break;
             case ServerPackets.TAKE_ITEM:
-                this.server.storageSystem.takeChestItem(this.player, PACKET_DATA);
+                this.server.storageSystem.takeChestItem(this.player);
                 break;
             case ServerPackets.RECYCLE_START:
                 this.server.craftSystem.handleRecycle(this.player, PACKET);
@@ -144,8 +156,11 @@ export class Client {
             case ServerPackets.STOP_ATTACK:
                 this.player.attack = false;
                 break;
-            case ServerPackets.LOCK_CHEST:
-                this.server.storageSystem.lockChest(this.player, PACKET);
+            case ServerPackets.CHOOSE_KIT:
+                this.server.kitSystem.buy(this.player, PACKET);
+                break;
+            case ServerPackets.CLAIM_QUEST_REWARD:
+                this.server.questSystem.gainQuest(this.player, PACKET);
                 break;
             case ServerPackets.DROP_ITEM:
                 if (this.player.inventory.items.has(PACKET))
@@ -159,7 +174,50 @@ export class Client {
             case ServerPackets.CANCEL_CRAFT:
                 this.server.craftSystem.stopCraft(this.player);
                 break;
+            case ServerPackets.JOIN_TEAM:
+                this.server.totemSystem.joinTeam(this.player);
+                break;
+            case ServerPackets.LEAVE_TEAM:
+                this.server.totemSystem.leaveTeam(this.player);
+                break;
+            case ServerPackets.KICK_TEAM:
+                this.server.totemSystem.kickTeam(this.player, PACKET);
+                break;
+            case ServerPackets.LOCK_TEAM:
+                this.server.totemSystem.lockTeam(this.player);
+                break;
+            case ServerPackets.MARKET:
+                this.server.marketSystem.buy(this.player, PACKET_DATA);
+                break;
             case ServerPackets.CONSOLE:
+                this.server.commandSystem.handleCommand(this.player, PACKET);
+                break;
+            case ServerPackets.GIVE_WELL:
+                this.server.storageSystem.giveWell(this.player);
+                break;
+            case ServerPackets.TAKE_BREAD_OVEN:
+                this.server.storageSystem.takeBread(this.player);
+                break;
+            case ServerPackets.GIVE_FLOUR_OVEN:
+                this.server.storageSystem.giveFlourOven(this.player, PACKET);
+                break;
+            case ServerPackets.GIVE_WOOD_OVEN:
+                this.server.storageSystem.giveWoodOven(this.player, PACKET);
+                break;
+            case ServerPackets.GIVE_FURNACE:
+                this.server.storageSystem.giveFurnace(this.player, PACKET);
+                break;
+            case ServerPackets.TAKE_FLOUR:
+                this.server.storageSystem.takeFlour(this.player);
+                break;
+            case ServerPackets.GIVE_WHEAT:
+                this.server.storageSystem.giveWheat(this.player, PACKET);
+                break;
+            case ServerPackets.TAKE_EXTRACTOR:
+                this.server.storageSystem.takeResourceExtractor(this.player);
+                break;
+            case ServerPackets.GIVE_WOOD_EXTRACTOR:
+                this.server.storageSystem.giveWoodExtractor(this.player, PACKET);
                 break;
         }
     }

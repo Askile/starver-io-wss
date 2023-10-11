@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthSystem = void 0;
 const BinaryWriter_1 = require("../../modules/BinaryWriter");
 const ClientPackets_1 = require("../../enums/packets/ClientPackets");
-const ActionType_1 = require("../../enums/ActionType");
+const ActionType_1 = require("../../enums/types/ActionType");
+const Player_1 = require("../../entities/Player");
 class HealthSystem {
     entity;
     health;
@@ -23,11 +24,18 @@ class HealthSystem {
      * @returns {Buffer} - The buffer with data about the current health to be sent to the client.
      */
     damage(amount, action, damager) {
+        if (amount < 0)
+            return this.getHealthBuffer();
         this.health = Math.max(0, this.health - Math.max(amount, 0));
-        if (!(this.entity.action & action))
+        if (!(this.entity.action & action)) {
             this.entity.action |= action;
+        }
         this.entity.onDamage(damager);
         if (this.health <= 0) {
+            if (damager instanceof Player_1.Player && this.entity instanceof Player_1.Player) {
+                damager.kills++;
+                damager.server.eventSystem.onKill(damager);
+            }
             this.entity.onDead(damager);
             this.entity.delete();
         }
@@ -42,9 +50,11 @@ class HealthSystem {
      * @returns {Buffer} - The buffer with data about the current health to be sent to the client.
      */
     heal(amount) {
+        if (!amount)
+            return this.getHealthBuffer();
         this.health = Math.min(this.maxHealth, this.health + amount / 2);
         if (this.oldHealth === this.health)
-            return undefined;
+            return this.getHealthBuffer();
         if (!(this.entity.action & ActionType_1.ActionType.HEAL))
             this.entity.action |= ActionType_1.ActionType.HEAL;
         this.oldHealth = this.health;

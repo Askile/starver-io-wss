@@ -31,11 +31,10 @@ class TimeSystem {
         return Date.now() - this.clock;
     }
     send() {
-        const writer = new BinaryWriter_1.BinaryWriter();
+        const writer = new BinaryWriter_1.BinaryWriter(2);
         writer.writeUInt8(ClientPackets_1.ClientPackets.GET_TIME);
         writer.writeUInt8(this.time);
         this.server.broadcast(writer.toBuffer(), true);
     }
 }
 exports.TimeSystem = TimeSystem;
-// writer.writeUInt8(1 или 0);

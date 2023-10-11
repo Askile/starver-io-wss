@@ -1,15 +1,19 @@
-// TODO
 import {Server} from "../../Server";
 import {Player} from "../../entities/Player";
 import {BinaryWriter} from "../../modules/BinaryWriter";
 import {ClientPackets} from "../../enums/packets/ClientPackets";
-import {InventoryType} from "../../enums/InventoryType";
-import {Vector} from "../../modules/Vector";
-import {ActionType} from "../../enums/ActionType";
-import {Crate} from "../../entities/Crate";
+import {ItemType} from "../../enums/types/ItemType";
+import {ActionType} from "../../enums/types/ActionType";
 import {DeathReason} from "../../enums/DeathReason";
-import {Entity} from "../../entities/Entity";
 import {Building} from "../../entities/Building";
+import {Utils} from "../../modules/Utils";
+import {Animal} from "../../entities/Animal";
+import {BehaviourType} from "../../enums/types/BehaviourType";
+import {WorldTime} from "../../enums/WorldTime";
+import {TileType} from "../../enums/types/TileType";
+import {Tile} from "../../world/map/Tile";
+import {Entity} from "../../entities/Entity";
+import {Bullet} from "../../entities/Bullet";
 
 export class CombatSystem {
     private server: Server;
@@ -24,101 +28,102 @@ export class CombatSystem {
     }
 
     public handleAttack(player: Player) {
-        if(Date.now() - player.lastAttack > 500 && player.attack) {
-            player.lastAttack = Date.now();
+        const now = Date.now();
+        if(now - player.lastAttack < 500 || !player.attack) return;
 
-            const chunks = this.server.map.getChunks(player.position.x, player.position.y, 3);
-            const radius = ["tool", "hammer"].includes(player.right.type)  ? 45 : player.right.type === "weapon" ? 45 : 20;
-            const offset = ["tool", "hammer"].includes(player.right.type) ? 50 : player.right.type === "weapon" ? 65 : 20;
+        player.lastAttack = now;
+        player.action |= ActionType.ATTACK;
 
-            const offsetX = offset * Math.cos((player.angle / 255) * (Math.PI * 2));
-            const offsetY = offset * Math.sin((player.angle / 255) * (Math.PI * 2));
+        if(player.right.isBow()) {
+            const type = Utils.getArrowType(player);
+            if(type !== -1) {
+                player.client.sendBinary(player.inventory.removeItem(type[1], 1));
+                new Bullet(this.server, player, type[0]);
+            }
+            return;
+        }
 
-            player.action |= ActionType.ATTACK;
+        const hitPosition = Utils.getOffsetVector(player.realPosition, player.right.offset, player.angle);
+        const damaged = this.server.map.queryCircle(hitPosition, player.right.radius);
 
-            const shake = new BinaryWriter();
-            const shakeBuildings = new BinaryWriter();
-            shake.writeUInt16(ClientPackets.HITTEN);
-            shakeBuildings.writeUInt16(ClientPackets.HITTEN_OTHER);
+        const writer = new BinaryWriter();
 
-            for (const chunk of chunks) {
-                for (const tile of chunk.tiles) {
+        writer.writeUInt16(ClientPackets.HITTEN);
 
-                    const distance = tile.realPosition.distance(player.position.add(new Vector(offsetX, offsetY)));
-                    const totalRadius = tile.radius + radius;
+        let empty = false;
+        let dontHarvest = false;
 
-                    if (distance < totalRadius) {
-                        let harvest = Math.max(0, player.right.harvest + 1 - tile.hard);
+        if (player.right.dig && !player.water) {
+            const item: number = (player.beach || player.island || player.desert) ? ItemType.SAND : (player.lavaBiome || player.forest) ? ItemType.GROUND : player.winter ? ItemType.ICE : 0;
+            const reward = Utils.getShovelTreasure(this.server.configSystem.dropChance);
+            item && player.client.sendBinary(player.inventory.giveItem(item, player.right.dig));
+            reward !== -1 && player.client.sendBinary(player.inventory.giveItem(reward, player.right.dig));
+        }
 
-                        if (tile.hard === -1) harvest = 1;
+        for (const unit of damaged) {
+            if (unit === player) continue;
+            if (unit instanceof Tile && unit.collide) {
+                empty = damaged.length > 1;
+                dontHarvest = damaged.length > 1;
+                let harvest = Math.max(0, player.right.harvest + 1 - unit.hard) * this.server.config.harvest;
 
-                        shake.writeUInt16(...tile.shake(player.angle));
+                unit.type === TileType.CACTUS && player.client.sendBinary(player.healthSystem.damage(20, ActionType.HURT))
 
-                        if (!harvest) {
-                            player.client.sendU8([ClientPackets.DONT_HARVEST]);
-                            continue;
+                if (unit.hard === -1) harvest = 1;
+
+                unit.angle = player.angle;
+                writer.writeUInt16(...unit.shake());
+
+                if (harvest) dontHarvest = false;
+                if (unit.count > 0) empty = false;
+
+                unit.dig(player, harvest);
+            } else if (unit instanceof Entity) {
+                if (unit instanceof Building) {
+                    player.right.id === ItemType.WRENCH ? unit.healthSystem.heal(player.right.building_damage) : unit.healthSystem.damage(player.right.building_damage, 0, player);
+                } else {
+                    if (unit instanceof Player) {
+                        const isHood = [ItemType.HOOD, ItemType.WINTER_HOOD].includes(player.helmet.id);
+                        
+                        const peasant = unit.helmet.id === ItemType.WINTER_PEASANT || (player.helmet.id === ItemType.HOOD && unit.helmet.id === ItemType.PEASANT);
+                        if (
+                            player.right.id === ItemType.HAND && isHood && !peasant && !player.fire && !unit.fire &&
+                            this.server.timeSystem.time === WorldTime.NIGHT &&
+                            now - player.lastHood > (player.helmet.id === ItemType.WINTER_HOOD ? 4000 : 8000)
+                        ) {
+                            const items = unit.inventory.toArray().filter(([id, count]) => ![unit.right.id, unit.helmet.id].includes(id));
+                            if (items.length > 0) {
+                                const [id, c] = Utils.getRandomFromArray(items);
+                                
+                                const count = Math.min(255, c);
+                                
+                                player.client.sendBinary(player.inventory.giveItem(id, count));
+                                unit.client.sendBinary(unit.inventory.removeItem(id, count));
+                                player.ruinQuests();
+                                player.lastHood = now;
+                            }   
                         }
+                        unit.reason = DeathReason.PLAYER;
+                        unit.client.sendBinary(unit.healthSystem.damage(player.right.damage + unit.defense * ((player.totem && player.totem.data.includes(unit.id)) ? .3 : 1), ActionType.HURT, player));
+                        
+                        continue;
+                    }
 
-                        if(tile.count <= 0) {
-                            player.client.sendU8([ClientPackets.EMPTY_RES]);
-                            continue;
+                    unit.healthSystem.damage(player.right.damage, ActionType.HURT, player);
+                    if (unit instanceof Animal) {
+                        if (unit.behaviour === BehaviourType.NEUTRAL) {
+                            unit.info = 1;
+                            unit.lastAngry = now;
                         }
-
-                        if(player.inventory.isFull()) {
-                            continue;
-                        }
-
-                        player.client.sendBinary(player.inventory.giveItem(InventoryType[tile.resource as any] as any, harvest));
-
-                        tile.count = Math.clamp(tile.count - harvest, 0, tile.limit);
-
-                        if(tile.entity) tile.entity.info = tile.count;
-
-                        player.stats.score += harvest * (tile.hard === -1 ? 1 : tile.hard);
                     }
                 }
-
-                for (const entity of chunk.entities) {
-                    if(entity === player) continue;
-
-                    const distance = entity.position.distance(player.position.add(new Vector(offsetX, offsetY)));
-                    const totalRadius = entity.radius + radius;
-                    if (distance < totalRadius) {
-                        if(entity instanceof Player) {
-                            entity.reason = DeathReason.PLAYER;
-                            entity.client.sendBinary(entity.healthSystem.damage(player.right.damage + entity.helmet.defense + (entity.right.defense ? entity.right.defense : 0), ActionType.HURT, player));
-                            return;
-                        }
-
-                        if(entity instanceof Building) {
-                            if(player.right.type === "hammer") {
-                                entity.healthSystem.damage(player.right.building_damage, ActionType.HURT, player);
-                            } else {
-                                entity.healthSystem.damage(~~(player.right.damage / 4), ActionType.HURT, player);
-                            }
-
-
-                            shakeBuildings.writeUInt16(entity.id);
-                            shakeBuildings.writeUInt16(player.angle);
-
-
-                            // entity.info = entity.healthSystem.health / entity.healthSystem.maxHealth * 100;
-
-                            continue;
-                        }
-
-                        entity.healthSystem.damage(player.right.damage, ActionType.HURT, player);
-                    }
-                }
-            }
-
-            if (shake.toBuffer().length > 3) {
-                this.server.broadcast(shake.toBuffer(), true);
-            }
-
-            if (shakeBuildings.toBuffer().length > 2) {
-                this.server.broadcast(shakeBuildings.toBuffer(), true);
             }
         }
+
+        empty && player.client.sendU8([ClientPackets.EMPTY_RES]);
+        dontHarvest && player.client.sendU8([ClientPackets.DONT_HARVEST]);
+        
+        if(writer.toBuffer().length > 2)
+            this.server.broadcast(writer.toBuffer(), true);
     }
 }

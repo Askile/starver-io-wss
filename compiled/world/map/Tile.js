@@ -2,25 +2,30 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tile = void 0;
 const Vector_1 = require("../../modules/Vector");
-const TileType_1 = require("../../enums/TileType");
+const TileType_1 = require("../../enums/types/TileType");
+const ItemType_1 = require("../../enums/types/ItemType");
 class Tile {
     type;
     collide = true;
     entity;
+    angle;
     subtype;
     radius;
     limit;
     hard = 0;
+    meta;
     id;
     resource;
     position;
     realPosition;
     count;
-    constructor(position, data) {
+    constructor(position, meta, data) {
+        this.angle = 0;
         this.type = data.type;
         this.id = data.id ?? 0;
         this.radius = data.radius;
         this.resource = data.resource ?? "NONE";
+        this.meta = meta ?? 0;
         this.limit = data.limit ?? 0;
         this.count = data.limit ?? 0;
         this.subtype = data.subtype ?? 0;
@@ -29,6 +34,7 @@ class Tile {
         if (!this.radius || this.type === TileType_1.TileType.LAVA) {
             this.collide = false;
         }
+        //if (this.type == TileType.RIVER && this.meta == 1) console.log(this.type, this.meta);
         switch (this.resource) {
             case "WOOD":
                 this.hard = 1;
@@ -46,16 +52,28 @@ class Tile {
                 this.hard = 5;
                 break;
             case "REIDITE":
+            case "EMERALD":
                 this.hard = 6;
                 break;
-            case "PLANT":
+            case "BERRY":
             case "CACTUS":
                 this.hard = -1;
                 break;
         }
     }
-    shake(angle) {
-        return [this.position.x, this.position.y, angle, this.id];
+    dig(player, harvest) {
+        if (this.resource === "NONE")
+            return;
+        if (harvest) {
+            player.client.sendBinary(player.inventory.giveItem(ItemType_1.ItemType[this.resource], Math.min(harvest, this.count)));
+            player.score += harvest * (this.hard === -1 ? 2 : this.hard);
+        }
+        this.count = Math.clamp(this.count - Math.min(harvest, this.count), 0, this.limit);
+        if (this.entity)
+            this.entity.info = this.count;
+    }
+    shake() {
+        return [this.position.x, this.position.y, this.angle, this.id];
     }
 }
 exports.Tile = Tile;

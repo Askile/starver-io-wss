@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AnimalBoxes = void 0;
-const EntityType_1 = require("./EntityType");
+const EntityType_1 = require("./types/EntityType");
 const Cosmetics_1 = require("./Cosmetics");
 exports.AnimalBoxes = [];
 exports.AnimalBoxes[EntityType_1.EntityType.WOLF] = Cosmetics_1.BOX.BOX_OF_THE_WOLF;

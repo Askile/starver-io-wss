@@ -1,7 +1,9 @@
-import { BinaryWriter } from "../../modules/BinaryWriter";
-import { ClientPackets } from "../../enums/packets/ClientPackets";
+import {BinaryWriter} from "../../modules/BinaryWriter";
+import {ClientPackets} from "../../enums/packets/ClientPackets";
 import {Entity} from "../../entities/Entity";
-import {ActionType} from "../../enums/ActionType";
+import {ActionType} from "../../enums/types/ActionType";
+import {EntityType} from "../../enums/types/EntityType";
+import {Player} from "../../entities/Player";
 
 export class HealthSystem {
     private entity: Entity;
@@ -24,11 +26,17 @@ export class HealthSystem {
      * @returns {Buffer} - The buffer with data about the current health to be sent to the client.
      */
     public damage(amount: number, action: number, damager?: Entity): Buffer {
+        if(amount < 0) return this.getHealthBuffer();
         this.health = Math.max(0, this.health - Math.max(amount, 0));
-        if(!(this.entity.action & action))
+        if(!(this.entity.action & action)) {
             this.entity.action |= action;
+        }
         this.entity.onDamage(damager);
         if(this.health <= 0) {
+            if(damager instanceof Player && this.entity instanceof Player) {
+                damager.kills++;
+                damager.server.eventSystem.onKill(damager);
+            }
             this.entity.onDead(damager);
             this.entity.delete();
         }
@@ -44,8 +52,9 @@ export class HealthSystem {
      * @returns {Buffer} - The buffer with data about the current health to be sent to the client.
      */
     public heal(amount: number): Buffer {
+        if(!amount) return this.getHealthBuffer();
         this.health = Math.min(this.maxHealth, this.health + amount / 2);
-        if(this.oldHealth === this.health) return undefined as any;
+        if(this.oldHealth === this.health) return this.getHealthBuffer();
         if(!(this.entity.action & ActionType.HEAL))
             this.entity.action |= ActionType.HEAL;
 

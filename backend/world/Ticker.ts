@@ -1,8 +1,9 @@
 import {Server} from "../Server";
 import NanoTimer from "nanotimer";
-import ServerConfig from "../JSON/ServerConfig.json";
 import {EntityPacket} from "../packets/EntityPacket";
-import {ActionType} from "../enums/ActionType";
+import {ActionType} from "../enums/types/ActionType";
+import {Player} from "../entities/Player";
+import {Animal} from "../entities/Animal";
 
 export class Ticker {
     private server: Server;
@@ -11,33 +12,31 @@ export class Ticker {
 
         new NanoTimer().setInterval(() => {
             this.server.map.updateEntitiesInChunks();
-            this.server.movement.tick();
-            this.server.collision.tick();
             this.server.timeSystem.tick();
             this.server.mobSystem.tick();
             this.server.combatSystem.tick();
-        },[],1 / ServerConfig.engine_tps + "s");
+            this.server.eventSystem.tick();
+            
+            for (const entity of this.server.entities) {
+                entity.onTick();
 
-        new NanoTimer().setInterval(() => {
-            for (const player of this.server.players) {
-                player.stateManager.tick();
-                new EntityPacket(player, false);
+                if(entity instanceof Animal || entity instanceof Player) {
+                    entity.movement.tick();
+                }
+
+                if(entity instanceof Player) {
+                    new EntityPacket(entity);
+                    this.server.collision.updateState(entity);
+                }
             }
-            this.entityTick();
-        }, [], 1 / ServerConfig.network_tps + "s");
+
+            for (const entity of this.server.entities) {
+                entity.lastTick();
+            }
+        },[],1 / this.server.settings.tps + "s");
 
         new NanoTimer().setInterval(() => {
             this.server.leaderboard.tick();
-        }, [], 1 / ServerConfig.leaderboard_tps + "s");
-    }
-
-    private entityTick() {
-        for (const entity of this.server.entities) {
-            if (entity.action & ActionType.ATTACK) entity.action -= ActionType.ATTACK;
-            if (entity.action & ActionType.HUNGER) entity.action -= ActionType.HUNGER;
-            if (entity.action & ActionType.COLD) entity.action -= ActionType.COLD;
-            if (entity.action & ActionType.HEAL) entity.action -= ActionType.HEAL;
-            if (entity.action & ActionType.HURT) entity.action -= ActionType.HURT;
-        }
+        }, [], "1s");
     }
 }

@@ -7,39 +7,54 @@ import {Map} from "./world/Map";
 import {Leaderboard} from "./leaderboard/Leaderboard";
 import * as uWS from "uWebSockets.js";
 import {CollisionSystem} from "./systems/server/CollisionSystem";
-import {MovementSystem} from "./systems/server/MovementSystem";
 import {CraftSystem} from "./systems/server/CraftSystem";
 import {SpawnSystem} from "./systems/server/SpawnSystem";
-import { TimeSystem } from "./systems/server/TimeSystem";
-import { KitSystem } from "./systems/server/KitSystem";
-import { EventSystem } from "./systems/server/EventSystem";
-import { CommandSystem } from "./systems/server/CommandSystem";
-import {MapGenerator} from "./world/MapGenerator";
+import {TimeSystem} from "./systems/server/TimeSystem";
+import {KitSystem} from "./systems/server/KitSystem";
+import {EventSystem} from "./systems/server/EventSystem";
+import {CommandSystem} from "./systems/server/CommandSystem";
 import {BuildingSystem} from "./systems/server/BuildingSystem";
 import {CombatSystem} from "./systems/server/CombatSystem";
 import {ConfigSystem} from "./systems/server/ConfigSystem";
 import {InteractionSystem} from "./systems/individual/InteractionSystem";
 import {MobSystem} from "./systems/server/MobSystem";
 import Cfg from "./JSON/Cfg.json";
+import ServerConfig from "./JSON/ServerConfig.json";
 import {GameMode} from "./enums/GameMode";
 import {StorageSystem} from "./systems/server/StorageSystem";
+import {QuestSystem} from "./systems/server/QuestSystem";
+import {MarketSystem} from "./systems/server/MarketSystem";
+import {TokenSystem} from "./systems/server/TokenSystem";
+import {TotemSystem} from "./systems/server/TotemSystem";
+import {Logger} from "./modules/Logger";
 
 Math.clamp = (variable: number, min: number, max: number) => {
     return Math.max(min, Math.min(variable, max));
-};
+}
+
+Math.random_clamp = (min: number, max: number) => {
+    return Math.floor(min + Math.random() * (max + 1 - min));
+}
+
+Math.PI2 = Math.PI * 2;
+
 export class Server {
-    public players: Player[] = [];
-    public entities: Entity[] = [];
+    public players: Player[];
+    public entities: Entity[];
     public playerPool: IdPool;
     public entityPool: IdPool;
     public wss: WebSocketServer;
     public config: Config;
+    public settings: Settings;
 
+    public url: string;
     public mode: number;
+    public port: number;
 
     public map: Map;
+    public logger: Logger;
     public leaderboard: Leaderboard;
-    public movement: MovementSystem;
+
     public collision: CollisionSystem;
     public craftSystem: CraftSystem;
     public spawnSystem: SpawnSystem;
@@ -47,43 +62,59 @@ export class Server {
     public kitSystem: KitSystem;
     public eventSystem: EventSystem;
     public storageSystem: StorageSystem;
-    public buildingSystem: BuildingSystem;
+    public commandSystem: CommandSystem;
     public combatSystem: CombatSystem;
     public configSystem: ConfigSystem;
-    public interactionSystem: InteractionSystem;
     public mobSystem: MobSystem;
-    public mapGenerator: MapGenerator;
+    public questSystem: QuestSystem;
+    public marketSystem: MarketSystem;
+    public tokenSystem: TokenSystem;
+    public totemSystem: TotemSystem;
+    public buildingSystem: BuildingSystem;
+    public interactionSystem: InteractionSystem;
 
     private ticker: Ticker;
 
-    constructor(public path: string, public port: number, mode: number) {
+    constructor(mode: number) {
         this.playerPool = new IdPool(1, 100);
-        this.entityPool = new IdPool(101, 60000);
+        this.entityPool = new IdPool(101, 65500);
         this.config = Cfg as any;
+        this.settings = ServerConfig as any;
         this.configSystem = new ConfigSystem(this.config);
 
-        this.wss = new WebSocketServer(path, this);
+        this.entities = [];
+        this.players = [];
+
+        this.url = `http${this.settings.production ? "s" : ""}://${this.settings.url}/`;
+        this.mode = mode;
+        this.port = this.settings.production ? 80 : 443;
+
+        this.wss = new WebSocketServer(this);
         this.map = new Map(this);
-        this.mapGenerator = new MapGenerator(this, 100);
+        this.logger = new Logger("../logs", {
+            console: true,
+            file: true
+        });
 
         this.leaderboard = new Leaderboard(this);
-        this.movement = new MovementSystem(this);
         this.collision = new CollisionSystem(this);
         this.timeSystem = new TimeSystem(this);
         this.craftSystem = new CraftSystem(this.config);
         this.kitSystem = new KitSystem(this.config);
-        this.spawnSystem = new SpawnSystem(this.map);
         this.eventSystem = new EventSystem(this);
         this.combatSystem = new CombatSystem(this);
-        this.buildingSystem = new BuildingSystem(this);
         this.interactionSystem = new InteractionSystem(this);
         this.mobSystem = new MobSystem(this);
         this.storageSystem = new StorageSystem(this);
-
-        this.mode = mode;
+        this.commandSystem = new CommandSystem(this);
+        this.questSystem = new QuestSystem();
+        this.marketSystem = new MarketSystem();
+        this.tokenSystem = new TokenSystem(this);
+        this.totemSystem = new TotemSystem(this);
+        this.spawnSystem = new SpawnSystem(this.map);
+        this.buildingSystem = new BuildingSystem(this);
 
         this.ticker = new Ticker(this);
-
     }
 
     public broadcast(message: any, isBinary: boolean = false, selfSocket: uWS.WebSocket<any> | undefined = undefined) {
@@ -95,8 +126,35 @@ export class Server {
         }
     }
 
+    public findPlayerByToken(token: string, token_id: string) {
+        return this.players.find(player => player.data.token === token && player.data.token_id === token_id);
+    }
+
+    public findPlayerById(id: number) {
+        return this.players.find(player => player.id === id);
+    }
+
     public findEntityById(id: number) {
         return this.entities.find(entity => entity.id === id);
     }
+
+    public async updatePlayerCount() {
+        const response = await fetch(this.url + "updatePlayerCount");
+    }
+
+    public async updateAccountData(player: Player) {
+        await fetch(this.url + "updateAccountData", {
+            method: "PUT",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify({
+                l: player.account.name,
+                p: this.settings.master_password,
+                s: player.score,
+                k: player.kills,
+                t: player.time
+            })
+        });
+    }
 }
-new Server("Europe-1", 80, GameMode.normal);
+
+new Server(GameMode.normal);

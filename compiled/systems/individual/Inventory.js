@@ -3,9 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Inventory = void 0;
 const BinaryWriter_1 = require("../../modules/BinaryWriter");
 const ClientPackets_1 = require("../../enums/packets/ClientPackets");
-const defaultValues_1 = require("../../default/defaultValues");
 const Player_1 = require("../../entities/Player");
-const InventoryType_1 = require("../../enums/InventoryType");
+const ItemType_1 = require("../../enums/types/ItemType");
 class Inventory {
     items;
     entity;
@@ -15,12 +14,12 @@ class Inventory {
         this.items = new Map();
         this.size = size;
     }
-    addInventory(inventory, bound = Infinity) {
+    addInventory(inventory, bound = Infinity, double = false) {
         const writer = new BinaryWriter_1.BinaryWriter();
         let isFill = false;
         writer.writeUInt16(ClientPackets_1.ClientPackets.GATHER);
         for (const item of inventory.items) {
-            const buffer = this.giveItem(item[0], Math.min(item[1], bound))?.slice(2);
+            const buffer = this.giveItem(item[0], Math.min(double ? item[1] * 2 : item[1], bound))?.slice(2);
             if (!buffer.length)
                 isFill = true;
             writer.writeUInt8(...buffer);
@@ -30,22 +29,29 @@ class Inventory {
         }
         return writer.toBuffer();
     }
+    containsItem(itemID, count = 1) {
+        const item = this.items.get(itemID);
+        if (!item)
+            return false;
+        return item >= count;
+    }
     giveItem(id, count) {
-        if (this.items.has(id)) {
+        if (id === ItemType_1.ItemType.BAG && this.entity instanceof Player_1.Player) {
+            this.size = 16;
+            this.entity.updateInfo();
+            return new Uint8Array([ClientPackets_1.ClientPackets.GET_BAG]);
+        }
+        else if (this.items.has(id)) {
             const itemQty = this.items.get(id);
             this.items.set(id, itemQty + count);
         }
         else if (this.items.size + 1 <= this.size) {
-            if (id === InventoryType_1.InventoryType.BAG) {
-                this.size = 16;
-                return new Uint8Array([ClientPackets_1.ClientPackets.GET_BAG]);
-            }
-            else
-                this.items.set(id, count);
+            this.items.set(id, count);
         }
         else {
             return new Uint8Array([ClientPackets_1.ClientPackets.INV_FULL]);
         }
+        this.entity.onReceiveItem(id, count);
         const writer = new BinaryWriter_1.BinaryWriter(3);
         writer.writeUInt16(ClientPackets_1.ClientPackets.GATHER);
         writer.writeUInt16(id);
@@ -64,16 +70,28 @@ class Inventory {
                 this.items.set(id, newQty);
             }
             const writer = new BinaryWriter_1.BinaryWriter();
-            writer.writeUInt16(ClientPackets_1.ClientPackets.DELETE_SINGLE_INV);
-            writer.writeUInt16(id);
-            writer.writeUInt16(count);
+            if (count <= 255) {
+                writer.writeUInt8(ClientPackets_1.ClientPackets.DECREASE_ITEM);
+                writer.writeUInt8(id);
+                writer.writeUInt8(count);
+            }
+            else {
+                writer.writeUInt8(ClientPackets_1.ClientPackets.DECREASE_ITEM_2);
+                writer.writeUInt8(id);
+                writer.writeUInt8(count >> 8);
+                writer.writeUInt8(count % 256);
+            }
             return writer.toBuffer();
         }
+    }
+    itemCount(id) {
+        return this.items.get(id) ?? 0;
     }
     deleteItem(id) {
         if (this.items.has(id)) {
             this.items.delete(id);
-            this.unEquipItem(id);
+            if (this.entity instanceof Player_1.Player)
+                this.unEquipItem(id);
             const writer = new BinaryWriter_1.BinaryWriter(2);
             writer.writeUInt8(ClientPackets_1.ClientPackets.DELETE_INV_OK);
             writer.writeUInt8(id);
@@ -87,30 +105,37 @@ class Inventory {
         writer.writeUInt8(ClientPackets_1.ClientPackets.CLEAN_INVENTORY);
         return writer.toBuffer();
     }
-    isFull() {
-        return this.items.size > this.size;
-    }
     unEquipItem(id) {
         if (!(this.entity instanceof Player_1.Player))
             return;
-        if (this.entity.helmet.id == id) {
-            this.entity.helmet = (0, defaultValues_1.getDefaultHelmet)();
+        if (this.entity.helmet.id === id) {
+            this.entity.helmet = this.entity.server.interactionSystem.items[ItemType_1.ItemType.HAND];
         }
-        if (this.entity.pet.id == id) {
-            this.entity.pet = (0, defaultValues_1.getDefaultPet)();
+        if (this.entity.right.id === id) {
+            this.entity.right = this.entity.server.interactionSystem.items[ItemType_1.ItemType.HAND];
         }
-        if (this.entity.right.id == id) {
-            this.entity.right = (0, defaultValues_1.getDefaultItem)();
+        if (this.entity.vehicle.id === id) {
+            this.entity.vehicle = this.entity.server.interactionSystem.items[ItemType_1.ItemType.HAND];
         }
         this.entity.updateInfo();
     }
     unEquipInventory() {
         if (!(this.entity instanceof Player_1.Player))
             return;
-        this.entity.helmet = (0, defaultValues_1.getDefaultHelmet)();
-        this.entity.pet = (0, defaultValues_1.getDefaultPet)();
-        this.entity.right = (0, defaultValues_1.getDefaultItem)();
+        this.entity.helmet = this.entity.server.interactionSystem.items[ItemType_1.ItemType.HAND];
+        this.entity.right = this.entity.server.interactionSystem.items[ItemType_1.ItemType.HAND];
+        this.entity.vehicle = this.entity.server.interactionSystem.items[ItemType_1.ItemType.HAND];
         this.entity.updateInfo();
+    }
+    serialize() {
+        let array = [];
+        Array.from(this.items.entries()).forEach(([item, count]) => {
+            array[item] = count;
+        });
+        return array;
+    }
+    toArray() {
+        return Array.from(this.items);
     }
 }
 exports.Inventory = Inventory;

@@ -1,86 +1,65 @@
 import {Server} from "../../Server";
 import {Player} from "../../entities/Player";
-import Items from "../../JSON/Items.json";
-import {InventoryType} from "../../enums/InventoryType";
-import {getDefaultHelmet, getDefaultItem, getDefaultPet} from "../../default/defaultValues";
-import {ClientPackets} from "../../enums/packets/ClientPackets";
-import {ActionType} from "../../enums/ActionType";
+import {ItemType} from "../../enums/types/ItemType";
+import {Item} from "../../entities/Item";
 
 export class InteractionSystem {
     private server: Server;
-    private readonly items: any;
+    public items: Item[];
     constructor(server: Server) {
         this.server = server;
-        this.items = Items;
+        this.items = [];
+
+        for (let i = 0; i < Object.values(ItemType).length / 2; i++) {
+            this.items[i] = new Item(i, server.configSystem);
+        }
     }
 
     public request(player: Player, id: number) {
-        const name = InventoryType[id];
+        const item = this.items[id];
 
-        if(!player.inventory.items.has(id) && id !== InventoryType.HAND) return;
         const canWeapon = Date.now() - player.lastWeaponUse >= this.server.config.weapon_delay;
         const canEquip = Date.now() - player.lastHelmetUse >= this.server.config.helmet_delay;
 
-        const item = this.items[name];
+        if(!item.equal(ItemType.HAND) && (!item || !player.inventory.containsItem(id, 1))) return;
 
-        if(id === InventoryType.HAND && canWeapon) {
-            player.right = getDefaultItem();
-        } else if(this.isInHand(name) && canWeapon) {
-            player.right = item;
-            if(this.isWeapon(name)) player.lastWeaponUse = Date.now();
-        } else if(this.isHelmet(name) && canEquip) {
-            if (player.helmet.id == id) player.helmet = getDefaultHelmet();
-            else {
+        if(item.isHat()) {
+            if ((item.isCooldown() || player.helmet.isCooldown()) && !canEquip) return;
+            if(!player.helmet.equal(id)) {
                 player.helmet = item;
-                player.lastHelmetUse = Date.now();
-            }
-        } else if(this.isPet(name)) {
-            if (player.pet.id == id) player.pet = getDefaultPet();
-            else player.pet = item;
-        } else if(this.isFood(name)){
-            if(item.poison) player.client.sendBinary(player.healthSystem.damage(this.server.config.damage_raw_food, ActionType.HURT));
-            if(item.value) {
-                player.gauges.hunger = Math.min(100, player.gauges.hunger + item.value);
-                player.client.sendU8([ClientPackets.GAUGES_FOOD, player.gauges.hunger]);
+                if(item.isCooldown()) player.lastHelmetUse = Date.now();
+            } else player.helmet = this.items[ItemType.HAND];
+        } else if(item.isFood()) {
+            if (item.id === ItemType.BANDAGE && player.gauges.bandage === player.server.config.bandage_stack_limit) return;
+
+            if (item.equal(ItemType.BOTTLE_FULL)) {
+                player.client.sendBinary(player.inventory.giveItem(ItemType.BOTTLE_EMPTY, 1));
             }
 
-            if(item.water) {
-                player.gauges.thirst = Math.min(100, player.gauges.thirst + item.water);
-                player.client.sendU8([ClientPackets.GAUGES_WATER, player.gauges.thirst]);
-            }
+            player.gauges.hunger += item.food;
+            player.gauges.thirst += item.water;
+            player.gauges.bandage += item.heal;
+            player.gauges.cold -= item.cold;
+            
+            player.client.sendBinary(player.inventory.removeItem(item.id, 1));
+            
+            player.gauges.clamp();
+            player.gauges.updateClientGauges();
+        } else if (item.isVehicle()) {
+            if(player.vehicle.equal(item.id)) {
+                player.vehicle = this.items[ItemType.HAND];
+            } else player.vehicle = item;
+        } else if (item.isEquipment()) {
+            if((item.isSlowDown() || player.right.isSlowDown()) && !canWeapon) return;
 
-            if(item.heal_boost) {
-                player.gauges.bandage = Math.min(this.server.config.bandage_stack_limit, player.gauges.bandage + item.heal_boost);
-                player.client.sendU8([ClientPackets.BANDAGE, player.gauges.bandage]);
-            }
-
-            player.client.sendBinary(player.inventory.removeItem(id, 1));
-        } else if(canWeapon) {
-            player.right = {
-                type: "unknown",
-                id
-            }
+            player.right = item;
+            if (item.isSlowDown()) player.lastWeaponUse = Date.now();
+        } else if (item.equal(ItemType.HAND) && canWeapon) {
+            player.right = this.items[ItemType.HAND];
         }
 
         player.updateInfo();
     }
 
-    private isInHand(name: string) {
-        return ["weapon", "shield", "tool", "hammer"].includes(this.items[name].type);
-    }
 
-    private isFood(name: string) {
-        return this.items[name].type == "food";
-    }
-
-    private isPet(name: string) {
-        return this.items[name].type === "pet";
-    }
-
-    private isWeapon(name: string) {
-        return this.items[name].type === "weapon";
-    }
-    private isHelmet(name: string) {
-        return this.items[name].type === "helmet";
-    }
 }

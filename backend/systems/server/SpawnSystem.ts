@@ -1,6 +1,7 @@
 import {Map} from "../../world/Map";
 import {Biome} from "../../world/map/Biome";
 import {Vector} from "../../modules/Vector";
+import {TileType} from "../../enums/types/TileType";
 
 export class SpawnSystem {
     private map: Map;
@@ -10,23 +11,42 @@ export class SpawnSystem {
 
     public getSpawnPoint(biomeName: string) {
         const biome = this.getRandomBiome(biomeName);
-        if(!biome) return new Vector(0, 0)
+        if(!biome && biomeName !== "ISLAND") return new Vector(0, 0);
+
         let attempt = 10000;
-        let position = new Vector(0, 0);
-        while (attempt) {
-            attempt--;
+        let position = Vector.zero();
 
-            position = new Vector(
-                biome.position.x + ~~(Math.random() * biome.size.x),
-                biome.position.y + ~~(Math.random() * biome.size.y)
-            )
+        if(biomeName === "ISLAND") {
+            while (attempt) {
+                attempt--;
 
-            const tiles = this.map.getTiles(position.x, position.y, 1);
-            const entities = this.map.getEntities(position.x, position.y, 2);
-            if(tiles.length === 0 && entities.length === 0) {
-                attempt = 0;
+                position.x = Math.random_clamp(10000, this.map.width - 1);
+                position.y = Math.random_clamp(5000, this.map.height - 1);
+
+                let chunk = this.map.getChunk(position.x, position.y);
+                if(!chunk || !chunk.tiles) continue;
+                const tile = chunk.tiles.find(tile => tile.type === TileType.SAND);
+
+                if(tile) {
+                    attempt = 0;
+                }
+            }
+        } else {
+            while (attempt) {
+                attempt--;
+
+                position.x = Math.random_clamp(biome.position.x, biome.position.x + biome.size.x);
+                position.y = Math.random_clamp(biome.position.y, biome.position.y + biome.size.y);
+
+                const tiles = this.map.getTiles(position.x, position.y, 2);
+                const entities = this.map.getEntities(position.x, position.y, 2);
+
+                if(tiles.length === 0 && entities.length === 0) {
+                    attempt = 0;
+                }
             }
         }
+
         return position;
     }
 

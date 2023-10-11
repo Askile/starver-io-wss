@@ -1,97 +1,87 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BuildingSystem = void 0;
-const Vector_1 = require("../../modules/Vector");
-const EntityType_1 = require("../../enums/EntityType");
-const InventoryType_1 = require("../../enums/InventoryType");
+const EntityType_1 = require("../../enums/types/EntityType");
+const ItemType_1 = require("../../enums/types/ItemType");
 const ClientPackets_1 = require("../../enums/packets/ClientPackets");
-const TileType_1 = require("../../enums/TileType");
 const Building_1 = require("../../entities/Building");
+const Utils_1 = require("../../modules/Utils");
+const TileType_1 = require("../../enums/types/TileType");
 class BuildingSystem {
     server;
     constructor(server) {
         this.server = server;
     }
     request(player, data) {
-        if (data.length < 3 || Date.now() - player.lastBuildingStamp <= 1000)
+        if (data.length < 3 || Date.now() - player.lastBuildingStamp <= this.server.config.build_delay)
             return;
         for (let i = 0; i < data.length; i++) {
             if (!Number.isInteger(data[i]))
                 return;
         }
         const id = data[0];
-        const type = EntityType_1.EntityType[InventoryType_1.InventoryType[id]];
+        const type = EntityType_1.EntityType[ItemType_1.ItemType[id]];
         const angle = data[1];
         const isGrid = data[2];
-        if ((isGrid !== 0 && isGrid !== 1) || angle < 0 || angle > 255 || !type)
+        if ((isGrid !== 0 && isGrid !== 1) || angle < 0 || angle > 255 || !type || !player.inventory.containsItem(id, 1))
             return;
-        let entity = new Building_1.Building(type, this.server);
-        entity.angle = angle;
-        entity.position = this.getOffsetVector(player.position, 120, angle);
-        if (isGrid || this.isBridge(type)) {
-            entity.angle = 0;
-            entity.position.x = Math.floor(entity.position.x / 100) * 100 + 50;
-            entity.position.y = Math.floor(entity.position.y / 100) * 100 + 50;
-        }
-        const tiles = this.server.map.getTiles(entity.position.x, entity.position.y, 3);
-        const entities = this.server.map.getEntities(entity.position.x, entity.position.y, 3);
-        for (const tile of tiles) {
-            const distance = tile.realPosition.distance(entity.position);
-            if (!this.isBridge(entity.type) && tile.type === TileType_1.TileType.RIVER && tile.position.x === ~~(entity.position.x / 100) && tile.position.y === ~~(entity.position.y / 100))
-                return;
-            if (!this.isBridge(entity.type) && distance < tile.radius + 35)
-                return;
-        }
-        for (const unit of entities) {
-            if (unit.position.distance(entity.position) < unit.radius + entity.radius)
-                return;
-        }
-        if (!this.server.map.getBiomesAtEntityPosition(entity).length)
+        if (player.totem?.data.length > 0 && type === EntityType_1.EntityType.TOTEM)
             return;
+        if (player.machine && type === EntityType_1.EntityType.EMERALD_MACHINE)
+            return;
+        let building = new Building_1.Building(type, player, this.server);
+        building.angle = angle;
+        building.position = Utils_1.Utils.getOffsetVector(player.realPosition, 120, angle);
+        this.server.collision.updateState(building);
+        if (isGrid || building.isGrid() || (building.isSeed() && building.plot)) {
+            building.angle = 0;
+            building.position.x = Math.floor(building.position.x / 100) * 100 + 50;
+            building.position.y = Math.floor(building.position.y / 100) * 100 + 50;
+        }
+        const entities = this.server.map.getEntities(building.position.x, building.position.y, 3);
+        const tiles = this.server.map.getTiles(building.position.x, building.position.y, 3);
+        if (!building.isGrid() && building.water && !building.bridge && !building.island)
+            return;
+        if (building.isSeed() && !building.plot && (building.water || building.winter || building.lavaBiome || building.desert))
+            return;
+        if (building.roof && building.type === EntityType_1.EntityType.ROOF)
+            return;
+        if (building.bridge && building.type === EntityType_1.EntityType.BRIDGE)
+            return;
+        if (building.tower && building.type === EntityType_1.EntityType.WOOD_TOWER)
+            return;
+        if (building.bed && building.type === EntityType_1.EntityType.BED)
+            return;
+        if (building.plot && building.type === EntityType_1.EntityType.PLOT)
+            return;
+        if (building.isSeed() && (building.plot && building.seed) || (building.bridge && building.seed))
+            return;
+        if (building.type === EntityType_1.EntityType.EMERALD_MACHINE && !building.island && building.water)
+            return;
+        if (!building.isGrid() && !(building.isSeed() && building.plot) || [EntityType_1.EntityType.BED, EntityType_1.EntityType.PLOT].includes(building.type)) {
+            for (const entity of entities) {
+                const dist = entity.position.distance(building.position);
+                if ((building.bridge && !building.infire) && !entity.collide && entity.type !== EntityType_1.EntityType.PLOT)
+                    continue;
+                if (dist < entity.radius + 45)
+                    return;
+            }
+            for (const tile of tiles) {
+                const dist = tile.realPosition.distance(building.position);
+                if (tile.type === TileType_1.TileType.SAND)
+                    continue;
+                if (building.bridge && !tile.collide)
+                    continue;
+                if (dist < tile.radius + building.radius)
+                    return;
+            }
+        }
         player.lastBuildingStamp = Date.now();
         player.inventory.removeItem(id, 1);
         player.client.sendU8([ClientPackets_1.ClientPackets.ACCEPT_BUILD, id]);
-        player.buildings.push(entity);
-        this.server.entities.push(entity);
-    }
-    getOffsetVector(v, distanceToMove, angle) {
-        return v.add(new Vector_1.Vector(distanceToMove * Math.cos((angle / 255) * (Math.PI * 2)), distanceToMove * Math.sin((angle / 255) * (Math.PI * 2))));
-    }
-    isSpike(type) {
-        return [
-            EntityType_1.EntityType.SPIKE,
-            EntityType_1.EntityType.STONE_SPIKE,
-            EntityType_1.EntityType.GOLD_SPIKE,
-            EntityType_1.EntityType.DIAMOND_SPIKE,
-            EntityType_1.EntityType.AMETHYST_SPIKE,
-            EntityType_1.EntityType.REIDITE_SPIKE
-        ].includes(type);
-    }
-    isWall(type) {
-        return [
-            EntityType_1.EntityType.WALL,
-            EntityType_1.EntityType.STONE_WALL,
-            EntityType_1.EntityType.GOLD_WALL,
-            EntityType_1.EntityType.DIAMOND_WALL,
-            EntityType_1.EntityType.AMETHYST_WALL,
-            EntityType_1.EntityType.REIDITE_WALL
-        ].includes(type);
-    }
-    isDoor(type) {
-        return [
-            EntityType_1.EntityType.WOOD_DOOR,
-            EntityType_1.EntityType.STONE_DOOR,
-            EntityType_1.EntityType.GOLD_DOOR,
-            EntityType_1.EntityType.DIAMOND_DOOR,
-            EntityType_1.EntityType.AMETHYST_DOOR,
-            EntityType_1.EntityType.REIDITE_DOOR
-        ].includes(type);
-    }
-    isBridge(type) {
-        return [EntityType_1.EntityType.BRIDGE].includes(type);
-    }
-    isChest(type) {
-        return [EntityType_1.EntityType.CHEST].includes(type);
+        player.buildings.push(building);
+        building.onPlaced();
+        this.server.entities.push(building);
     }
 }
 exports.BuildingSystem = BuildingSystem;

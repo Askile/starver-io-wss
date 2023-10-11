@@ -23,6 +23,10 @@ export class Vector {
         );
     }
 
+    public angle(v: Vector) {
+        return Math.atan2(this.y - v.y, this.x - v.x);
+    }
+
     public add(v: Vector) {
         return new Vector(this.x + v.x, this.y + v.y);
     }
@@ -37,5 +41,50 @@ export class Vector {
     }
     public equal(v: Vector) {
         return this.x === v.x && this.y === v.y;
+    }
+    public build(delta: number, angle: number) {
+        return new Vector(Math.cos(angle) * delta, Math.sin(angle) * delta);
+    }
+    public magnitude() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+    public normalize() {
+        const length = this.magnitude();
+        if(length === 0) {
+            return new Vector(0, 0);
+        }
+        return new Vector(this.x / length, this.y / length);
+    }
+    public clamp(minX: number, minY: number, maxX: number, maxY: number) {
+        return new Vector(Math.max(minX, Math.min(maxX, this.x)), Math.max(minY, Math.min(maxY, this.y)))
+    }
+    public floor() {
+        return new Vector(Math.floor(this.x), Math.floor(this.y));
+    }
+    public clone() {
+        return new Vector(this.x, this.y);
+    }
+    public set(v: Vector) {
+        this.x = v.x;
+        this.y = v.y;
+    }
+    public sign(n: number) {
+        if(n < 0) return -1;
+        else return 1;
+    }
+    public scalar_product(v1: Vector, v2: Vector) {
+        return v1.x * v2.x + v1.y * v2.y;
+    }
+    public cross_product(v1: Vector, v2: Vector) {
+        return v1.x * v2.y - v1.y * v2.x;
+    }
+    public get_angle(v1: Vector, v2: Vector) {
+        return Math.acos(this.scalar_product(v1, v2) / (v1.magnitude() * v2.magnitude())) * this.sign(this.cross_product(v1, v2));
+    }
+    public get_std_angle(v: Vector) {
+        return this.get_angle(new Vector(1, 0), this.subtract(v));
+    }
+    public static zero() {
+        return new Vector(0, 0);
     }
 }

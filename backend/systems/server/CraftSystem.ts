@@ -1,114 +1,94 @@
 // TODO Crafts
 import {Player} from "../../entities/Player";
-import {InventoryType} from "../../enums/InventoryType";
-import {CraftType} from "../../enums/CraftType";
+import {ItemType} from "../../enums/types/ItemType";
 import NanoTimer from "nanotimer";
 import {ClientPackets} from "../../enums/packets/ClientPackets";
-import {getDefaultRecipes} from "../../default/defaultRecipes";
+import {RECIPES} from "../../default/defaultRecipes";
+import {Utils} from "../../modules/Utils";
 
 export class CraftSystem {
     public recipes: Recipe[];
-    public readonly recipesToSend: any[] = [];
+    public newRecipes: Recipe[];
     constructor(config: Config) {
-        this.recipes = getDefaultRecipes() as any;
-        
+        this.recipes = RECIPES;
+        this.newRecipes = [];
+
         if(config.important.recipes) {
-            for (const recipe of config.important.recipes) {
-                const id = this.findCraftId(recipe.item);
-                this.recipes[id] = recipe;
+            for (let recipe of config.important.recipes as any) {
+                recipe = Utils.convertRecipe(recipe);
+                this.recipes[recipe.id] = recipe;
+                this.newRecipes[recipe.id] = recipe;
             }
         }
 
         if(config.instant_craft == 1) {
             for (const recipe of this.recipes) {
-                recipe.time = 0;
+                if(recipe) recipe.time = 0;
             }
         }
-
-        this.recipesToSend = this.recipes.map(recipe => {
-            return {
-                item: this.findCraftId(recipe.item),
-                recipe: recipe.recipe.map(r => [this.findInventoryId(r[0].toUpperCase()), r[1]]),
-                fire: recipe.fire,
-                water: recipe.water,
-                workbench: recipe.workbench,
-                well: recipe.well,
-                time: recipe.time
-            }
-        });
-
     }
 
     public handleCraft(player: Player, id: number) {
         if(!this.recipes[id]) return;
-
         const craft = this.recipes[id];
-        let time = craft.time;
+        const time = player.right.equal(ItemType.BOOK) ? craft.time / 3 : craft.time;
 
-        if(craft.workbench && !player.workbench) return;
-        if(craft.fire && !player.fire) return;
-        if(craft.water && !player.water) return;
-        if(craft.well && !player.well) return;
+        if(
+            craft.w && !player.workbench ||
+            craft.f && !player.fire ||
+            craft.o && !player.water ||
+            craft.e && !player.well
+        ) return;
 
-        for (const ingredient of craft.recipe) {
-            const ide = InventoryType[ingredient[0].toUpperCase() as any] as any;
-            const count = ingredient[1];
+        for (const [id, count] of craft.r) {
+            if(!player.inventory.containsItem(id, count))
+                return;
 
-            if(!player.inventory.items.has(ide) || player.inventory.items.get(ide) as any < count) {
-                break;
-            }
-
-            player.inventory.removeItem(ide, count);
+            player.inventory.removeItem(id, count);
         }
 
-        if(player.right.id === InventoryType.BOOK) {
-            time /= 3;
-        }
+        player.isCrafting = true;
 
         player.client.sendU8([ClientPackets.BUILD_OK, id]);
-        player.isCrafting = true;
         new NanoTimer().setTimeout(() => {
             if(!player.isCrafting) return;
 
-            player.client.sendU8([ClientPackets.BUILD_STOP, InventoryType[craft.item.toUpperCase() as any] as any]);
-            player.inventory.giveItem(InventoryType[craft.item.toUpperCase() as any] as any, 1);
-            if(craft.bonus) player.stats.score += craft.bonus;
+            player.client.sendU8([ClientPackets.BUILD_STOP, (id === ItemType.BOTTLE_FULL_2 || id === ItemType.BOTTLE_FULL_3) ? ItemType.BOTTLE_FULL : id]);
+            player.inventory.giveItem((id === ItemType.BOTTLE_FULL_2 || id === ItemType.BOTTLE_FULL_3) ? ItemType.BOTTLE_FULL : id, 1);
+            if(craft.bonus) player.score += craft.bonus;
 
             player.isCrafting = false;
         }, [], time + "s");
     }
 
     public handleRecycle(player: Player, id: number){
-        const craftId = CraftType[InventoryType[id as any] as any] as any;
-        if(!this.recipes[craftId]) return;
+        if(!this.recipes[id]) return;
+        const craft = this.recipes[id];
+        const time = player.right.equal(ItemType.BOOK) ? craft.time / 1.5 : craft.time;
 
-        const craft = this.recipes[craftId];
-        let time = craft.time;
+        if(
+            !player.inventory.containsItem(id, 1) ||
+            craft.w && !player.workbench ||
+            craft.f && !player.fire ||
+            craft.o && !player.water ||
+            craft.e && !player.well
+        ) return;
 
-        if(!player.inventory.items.has(id)) return;
-        if(craft.workbench && !player.workbench) return;
-        if(craft.fire && !player.fire) return;
-        if(craft.water && !player.water) return;
-        if(craft.well && !player.well) return;
-
-        if(player.right.id === InventoryType.BOOK) {
-            time /= 1.5;
-        }
-
-        player.client.sendU8([ClientPackets.RECYCLE_OK, craftId]);
-        player.client.sendBinary(player.inventory.removeItem(id, 1));
         player.isCrafting = true;
+
+        player.client.sendU8([ClientPackets.RECYCLE_OK, id]);
+        player.client.sendBinary(player.inventory.removeItem(id, 1));
 
         new NanoTimer().setTimeout(() => {
             if(!player.isCrafting) return;
-            player.client.sendBinary(new Uint8Array([ClientPackets.RECYCLE_STOP, craftId]));
-            for (const ingredient of craft.recipe) {
-                const id = InventoryType[ingredient[0].toUpperCase() as any] as any;
-                const count = ingredient[1];
+
+            for (const [id, count] of craft.r) {
+                if (count === 1) continue;
 
                 player.inventory.giveItem(id, count * 0.8);
             }
 
+            player.client.sendBinary(new Uint8Array([ClientPackets.RECYCLE_STOP, id]));
             player.isCrafting = false;
         }, [], time / 8 + "s");
     }
@@ -116,13 +96,5 @@ export class CraftSystem {
     public stopCraft(player: Player) {
         player.isCrafting = false;
         player.client.sendU8([ClientPackets.CANCEL_CRAFT]);
-    }
-
-    private findInventoryId(itemName: string) {
-        return InventoryType[itemName.toUpperCase() as "BAG"] as number;
-    }
-
-    private findCraftId(itemName: string) {
-        return CraftType[itemName.toUpperCase() as "BAG"] as number;
     }
 }

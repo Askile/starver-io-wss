@@ -2,7 +2,6 @@ import * as uWS from "uWebSockets.js";
 import {Client} from "./Client";
 import {Server} from "../Server";
 import {Logger} from "../modules/Logger";
-import {IdPool} from "../modules/IdPool";
 import {WebSocket} from "uWebSockets.js";
 
 export class WebSocketServer {
@@ -10,20 +9,19 @@ export class WebSocketServer {
     private logger: Logger = new Logger("./logs", {console: true, file: true});
     public clients: Map<WebSocket<any>, Client> = new Map();
     public app: uWS.TemplatedApp = uWS.App();
-    public socketsPool: IdPool = new IdPool(1, 1000);
 
-    constructor(path: string, server: Server) {
+    constructor(server: Server) {
         this.server = server;
 
-        this.setupWebSocket(path);
+        this.setupWebSocket();
         this.startListening();
     }
 
-    private setupWebSocket(path: string) {
-        this.app.ws("/" + path, {
+    private setupWebSocket() {
+        this.app.ws("/", {
             idleTimeout: 0,
             maxBackpressure: 1024,
-            maxPayloadLength: 100,
+            maxPayloadLength: 5000,
             compression: uWS.DEDICATED_COMPRESSOR_3KB,
             open: this.handleWebSocketOpen.bind(this),
             message: this.handleWebSocketMessage.bind(this),
@@ -33,6 +31,7 @@ export class WebSocketServer {
 
     private handleWebSocketOpen(ws: uWS.WebSocket<any>) {
         const client = new Client(ws, this.server);
+        this.logger.info("Opened");
         this.clients.set(ws, client);
     }
 

@@ -1,14 +1,20 @@
-declare interface LoggerOptions {
-    console: boolean;
-    file: boolean;
-}
 declare interface Math {
     clamp: (variable: number, min: number, max: number) => number;
+    random_clamp: (min: number, max: number) => number;
+    PI2: number;
 }
 
 declare interface Camera {
     width: number;
     height: number;
+}
+
+declare interface Settings {
+    url: string;
+    production: boolean;
+    version: number;
+    tps: number;
+    master_password: string;
 }
 
 declare interface PlayerStats {
@@ -25,10 +31,10 @@ declare interface PlayerCosmetics {
     crate: number;
     dead: number;
 }
-
 declare interface PlayerData {
     nickname: string;
     token: string;
+    token_id: string;
     level: number;
 }
 declare interface Config {
@@ -334,6 +340,7 @@ declare interface Config {
     pirate_sword_damage: number;
     dragon_sword_damage: number;
     lava_sword_damage: number;
+    cursed_sword_damage: number;
     wood_spear_damage: number;
     stone_spear_damage: number;
     gold_spear_damage: number;
@@ -767,18 +774,16 @@ declare interface Important {
 }
 
 declare interface Recipe {
-    item: string;
-    recipe: [string, number][];
-    water: number;
-    workbench: number;
-    fire: number;
-    well: number;
+    r: [number, number][];
+    w: number;
+    o: number;
+    f: number;
+    e: number;
     time: number;
     bonus: number;
 }
 
 declare interface Event {
-    // @ts-ignore
     type: string;
     score?: number;
     repeat: number;

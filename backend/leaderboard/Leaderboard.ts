@@ -21,13 +21,13 @@ export class Leaderboard {
 
     public tick() {
         const writer = new BinaryWriter();
-        const leaderboard = this.server.players.sort((a, b) => b.stats.score - a.stats.score).slice(0, 10);
+        const leaderboard = this.server.players.sort((a, b) => b.score - a.score).slice(0, 10);
 
         writer.writeUInt16(ClientPackets.LEADERBOARD);
 
         for (const player of leaderboard) {
             writer.writeUInt16(player.id);
-            writer.writeUInt16(this.restore_number(player.stats.score));
+            writer.writeUInt16(this.restore_number(player.score));
         }
 
         this.server.broadcast(writer.toBuffer(), true);

@@ -33,8 +33,8 @@ export class TimeSystem {
         return Date.now() - this.clock;
     }
 
-    private send() {
-        const writer = new BinaryWriter();
+    public send() {
+        const writer = new BinaryWriter(2);
 
         writer.writeUInt8(ClientPackets.GET_TIME);
         writer.writeUInt8(this.time);
@@ -43,8 +43,3 @@ export class TimeSystem {
     }
 
 }
-
-
-
-
-// writer.writeUInt8(1 или 0);

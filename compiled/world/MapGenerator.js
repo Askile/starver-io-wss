@@ -16,7 +16,7 @@ class MapGenerator {
         this.server = server;
         this.seed = seed;
         this.state = seed ? seed : Math.floor(Math.random() * (this.m - 1));
-        if (!this.server.config.important.custom_map.length) {
+        if (!this.server.map.tiles.length) {
             this.server.map.biomes.push(new Biome_1.Biome("FOREST", new Vector_1.Vector(200, 200), new Vector_1.Vector(15000, 15000)));
             this.addForest(1.5);
         }
@@ -74,7 +74,7 @@ class MapGenerator {
                 continue;
             const object = Resouces_json_1.objects.find((object) => object.type === type && object.subtype === subtype);
             if (object) {
-                tiles[i][j].tiles.push(new Tile_1.Tile(new Vector_1.Vector(j, i), object));
+                tiles[i][j].tiles.push(new Tile_1.Tile(new Vector_1.Vector(j, i), 0, object));
             }
             k++;
         }

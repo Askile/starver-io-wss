@@ -1,4 +1,5 @@
-import {EntityType} from "../../enums/EntityType";
+import {EntityType} from "../../enums/types/EntityType";
+import {ItemType} from "../../enums/types/ItemType";
 
 export class ConfigSystem {
     public speed: number[];
@@ -7,26 +8,494 @@ export class ConfigSystem {
     public entityRadius: number[];
     public entityCollide: boolean[];
     public entityDamage: number[];
+    public entityOnHitDamage: number[];
+
+    public itemDamage: number[];
+    public itemDefense: number[];
+    public itemMobDefense: number[];
+    public itemBuildingDamage: number[];
+    public itemHarvest: number[];
+    public itemDig: number[];
+    public itemRadius: number[];
+    public itemOffset: number[];
+    public itemColdValue: number[];
+    public itemWaterValue: number[];
+    public itemHealValue: number[];
+    public itemFoodValue: number[];
+
+    public treasureDropChance: number[];
+    public dropChance: number[];
+
+    public seedBirth: number[];
+    public seedLife: number[];
+    public seedFruitsCount: number[];
+    public seedFruits: number[];
+
+    public seedGrowth: number[];
+    public seedDrain: number[];
 
     public config: Config;
     constructor(config: Config) {
         this.config = config;
 
-        this.speed = new Array(100).fill(0);
-        this.health = new Array(100).fill(0);
-        this.entityDamage = new Array(100).fill(0);
-        this.entityRadius = new Array(100).fill(25);
-        this.entityCollide = new Array(100).fill(false);
+        const EntityIndex = Object.values(EntityType)[Object.values(EntityType).length - 1] as number;
+        const ItemIndex = Object.values(ItemType)[Object.values(ItemType).length - 1] as number;
 
+        this.speed = new Array(EntityIndex).fill(0);
+        this.health = new Array(EntityIndex).fill(0);
+        this.entityDamage = new Array(EntityIndex).fill(0);
+        this.entityOnHitDamage = new Array(EntityIndex).fill(0);
+        this.entityRadius = new Array(EntityIndex).fill(25);
+        this.entityCollide = new Array(EntityIndex).fill(false);
+        this.seedBirth = new Array(EntityIndex).fill(0);
+        this.seedGrowth = new Array(EntityIndex).fill(0);
+        this.seedDrain = new Array(EntityIndex).fill(0);
+        this.seedLife = new Array(EntityIndex).fill(0);
+        this.seedFruitsCount = new Array(EntityIndex).fill(0);
+        this.seedFruits = new Array(EntityIndex).fill(0);
+
+        this.itemDefense = new Array(ItemIndex).fill(0);
+        this.itemMobDefense = new Array(ItemIndex).fill(0);
+        this.itemDamage = new Array(ItemIndex).fill(0);
+        this.itemBuildingDamage = new Array(ItemIndex).fill(0);
+        this.itemHarvest = new Array(ItemIndex).fill(0);
+        this.itemDig = new Array(ItemIndex).fill(0);
+        this.itemRadius = new Array(ItemIndex).fill(0);
+        this.itemOffset = new Array(ItemIndex).fill(0);
+        this.itemColdValue = new Array(ItemIndex).fill(0);
+        this.itemFoodValue = new Array(ItemIndex).fill(0);
+        this.itemWaterValue = new Array(ItemIndex).fill(0);
+        this.itemHealValue = new Array(ItemIndex).fill(0);
+
+        this.dropChance = new Array(ItemIndex).fill(0);
+        this.treasureDropChance = new Array(ItemIndex).fill(0);
+
+        this.setupChances();
+        this.setupItems();
         this.setupDamage();
         this.setupSpeed();
         this.setupCollide();
         this.setupRadius();
         this.setupHealth();
+        this.setupSeeds();
+    }
+
+    public setupItems() {
+        
+        this.itemDefense[ItemType.WOOD_HELMET]             = this.config.wood_helmet_defense ?? -1;
+        this.itemDefense[ItemType.STONE_HELMET]            = this.config.stone_helmet_defense ?? -2;
+        this.itemDefense[ItemType.GOLD_HELMET]             = this.config.gold_helmet_defense ?? -4;
+        this.itemDefense[ItemType.DIAMOND_HELMET]          = this.config.diamond_helmet_defense ?? -5;
+        this.itemDefense[ItemType.CRAB_HELMET]             = this.config.crab_helmet_defense ?? -5;
+        this.itemDefense[ItemType.AMETHYST_HELMET]         = this.config.amethyst_helmet_defense ?? -6;
+        this.itemDefense[ItemType.REIDITE_HELMET]          = this.config.reidite_helmet_defense ?? -7;
+        this.itemDefense[ItemType.DRAGON_HELMET]           = this.config.dragon_helmet_defense ?? -8;
+        this.itemDefense[ItemType.LAVA_HELMET]             = this.config.lava_helmet_defense ?? -9;
+
+        this.itemDefense[ItemType.STONE_SHIELD]            = this.config.stone_shield_defense ?? 0;
+        this.itemDefense[ItemType.GOLD_SHIELD]             = this.config.gold_shield_defense ?? 0;
+        this.itemDefense[ItemType.DIAMOND_SHIELD]          = this.config.diamond_shield_defense ?? 0;
+        this.itemDefense[ItemType.AMETHYST_SHIELD]         = this.config.amethyst_shield_defense ?? 0;
+        this.itemDefense[ItemType.REIDITE_SHIELD]          = this.config.reidite_shield_defense ?? 0;
+
+        this.itemDefense[ItemType.HOOD]                    = this.config.hood_defense ?? 0;
+        this.itemDefense[ItemType.WINTER_HOOD]             = this.config.winter_hood_defense ?? 0;
+        this.itemDefense[ItemType.PEASANT]                 = this.config.peasant_defense ?? 0;
+        this.itemDefense[ItemType.WINTER_PEASANT]          = this.config.winter_peasant_defense ?? 0;
+        
+        this.itemDefense[ItemType.DIVING_MASK]             = this.config.diving_mask_defense ?? 2;
+        this.itemDefense[ItemType.SUPER_DIVING_SUIT]       = this.config.super_diving_suit_defense ?? 4;
+
+        this.itemDefense[ItemType.DIAMOND_PROTECTION]      = this.config.warm_protection_defense ?? 2;
+        this.itemDefense[ItemType.AMETHYST_PROTECTION]     = this.config.warm_protection2_defense ?? 4;
+        this.itemDefense[ItemType.REIDITE_PROTECTION]      = this.config.warm_protection3_defense ?? 6;
+
+        this.itemDefense[ItemType.EARMUFFS]                = this.config.earmuff_defense ?? 0;
+        this.itemDefense[ItemType.COAT]                    = this.config.coat_defense ?? 0;
+        this.itemDefense[ItemType.CAP_SCARF]               = this.config.scarf_defense ?? 0;
+        this.itemDefense[ItemType.FUR_HAT]                 = this.config.fur_hat_defense ?? 0;
+        
+        this.itemDefense[ItemType.CROWN_GREEN]             = this.config.green_crown_defense ?? 4;
+        this.itemDefense[ItemType.CROWN_BLUE]              = this.config.blue_crown_defense ?? 4;
+        this.itemDefense[ItemType.CROWN_ORANGE]            = this.config.orange_crown_defense ?? 4;
+
+        this.itemDefense[ItemType.EXPLORER_HAT]            = this.config.explorer_hat_defense ?? 0;
+        this.itemDefense[ItemType.PIRATE_HAT]              = this.config.pirate_hat_defense ?? 0;
+
+        this.itemMobDefense[ItemType.EXPLORER_HAT]         = this.config.explorer_hat_mob_defense ?? 0;
+        this.itemMobDefense[ItemType.PIRATE_HAT]           = this.config.pirate_hat_mob_defense ?? 0;
+
+        this.itemMobDefense[ItemType.CROWN_GREEN]          = this.config.green_crown_mob_defense ?? 4;
+        this.itemMobDefense[ItemType.CROWN_BLUE]           = this.config.blue_crown_mob_defense ?? 4;
+        this.itemMobDefense[ItemType.CROWN_ORANGE]         = this.config.orange_crown_mob_defense ?? 4;
+
+        this.itemMobDefense[ItemType.EARMUFFS]             = this.config.earmuff_mob_defense ?? 0;
+        this.itemMobDefense[ItemType.COAT]                 = this.config.coat_mob_defense ?? 0;
+        this.itemMobDefense[ItemType.CAP_SCARF]            = this.config.scarf_mob_defense ?? 0;
+        this.itemMobDefense[ItemType.FUR_HAT]              = this.config.fur_hat_mob_defense ?? 0;
+        
+        this.itemMobDefense[ItemType.DIAMOND_PROTECTION]   = this.config.warm_protection_mob_defense ?? 8;
+        this.itemMobDefense[ItemType.AMETHYST_PROTECTION]  = this.config.warm_protection2_mob_defense ?? 13;
+        this.itemMobDefense[ItemType.REIDITE_PROTECTION]   = this.config.warm_protection3_mob_defense ?? 19;
+
+        this.itemMobDefense[ItemType.DIVING_MASK]          = this.config.diving_mask_mob_defense ?? 2;
+        this.itemMobDefense[ItemType.SUPER_DIVING_SUIT]    = this.config.super_diving_suit_mob_defense ?? 16;
+
+        this.itemMobDefense[ItemType.HOOD]                 = this.config.hood_mob_defense ?? 0;
+        this.itemMobDefense[ItemType.WINTER_HOOD]          = this.config.winter_hood_mob_defense ?? 0;
+        this.itemMobDefense[ItemType.PEASANT]              = this.config.peasant_mob_defense ?? 0;
+        this.itemMobDefense[ItemType.WINTER_PEASANT]       = this.config.winter_peasant_mob_defense ?? 0;
+
+        this.itemMobDefense[ItemType.STONE_SHIELD]         = this.config.stone_shield_defense_monster ?? 0;
+        this.itemMobDefense[ItemType.GOLD_SHIELD]          = this.config.gold_shield_defense_monster ?? 0;
+        this.itemMobDefense[ItemType.DIAMOND_SHIELD]       = this.config.diamond_shield_defense_monster ?? 0;
+        this.itemMobDefense[ItemType.AMETHYST_SHIELD]      = this.config.amethyst_shield_defense_monster ?? 0;
+        this.itemMobDefense[ItemType.REIDITE_SHIELD]       = this.config.reidite_shield_defense_monster ?? 0;
+        
+        this.itemMobDefense[ItemType.WOOD_HELMET]          = this.config.wood_helmet_mob_defense ?? -4;
+        this.itemMobDefense[ItemType.STONE_HELMET]         = this.config.stone_helmet_mob_defense ?? -8;
+        this.itemMobDefense[ItemType.GOLD_HELMET]          = this.config.gold_helmet_mob_defense ?? -13;
+        this.itemMobDefense[ItemType.DIAMOND_HELMET]       = this.config.diamond_helmet_mob_defense ?? -19;
+        this.itemMobDefense[ItemType.CRAB_HELMET]          = this.config.crab_helmet_defense ?? -19;
+        this.itemMobDefense[ItemType.AMETHYST_HELMET]      = this.config.amethyst_helmet_mob_defense ?? -23;
+        this.itemMobDefense[ItemType.REIDITE_HELMET]       = this.config.reidite_helmet_mob_defense ?? -25;
+        this.itemMobDefense[ItemType.DRAGON_HELMET]        = this.config.dragon_helmet_mob_defense ?? -27;
+        this.itemMobDefense[ItemType.LAVA_HELMET]          = this.config.lava_helmet_mob_defense ?? -30;
+
+        this.itemDamage[ItemType.HAND]                     = this.config.hand_damage ?? 5;
+        this.itemDamage[ItemType.MACHETE]                  = this.config.hand_damage ?? 5;
+ 
+        this.itemDamage[ItemType.WOOD_SWORD]               = this.config.wood_sword_damage ?? 12;
+        this.itemDamage[ItemType.STONE_SWORD]              = this.config.stone_sword_damage ?? 19;
+        this.itemDamage[ItemType.GOLD_SWORD]               = this.config.gold_sword_damage ?? 22;
+        this.itemDamage[ItemType.DIAMOND_SWORD]            = this.config.diamond_sword_damage ?? 24;
+        this.itemDamage[ItemType.PIRATE_SWORD]             = this.config.pirate_sword_damage ?? 24;
+        this.itemDamage[ItemType.AMETHYST_SWORD]           = this.config.amethyst_sword_damage ?? 27;
+        this.itemDamage[ItemType.REIDITE_SWORD]            = this.config.reidite_sword_damage ?? 30;
+        this.itemDamage[ItemType.DRAGON_SWORD]             = this.config.dragon_sword_damage ?? 30;
+        this.itemDamage[ItemType.LAVA_SWORD]               = this.config.lava_sword_damage ?? 33;
+        this.itemDamage[ItemType.CURSED_SWORD]             = this.config.cursed_sword_damage ?? 1000;
+ 
+        this.itemDamage[ItemType.WOOD_SPEAR]               = this.config.wood_spear_damage ?? 10;
+        this.itemDamage[ItemType.CRAB_SPEAR]               = this.config.crab_spear_damage ?? 14;
+        this.itemDamage[ItemType.STONE_SPEAR]              = this.config.stone_spear_damage ?? 14;
+        this.itemDamage[ItemType.GOLD_SPEAR]               = this.config.gold_spear_damage ?? 15;
+        this.itemDamage[ItemType.DIAMOND_SPEAR]            = this.config.diamond_spear_damage ?? 17;
+        this.itemDamage[ItemType.AMETHYST_SPEAR]           = this.config.amethyst_spear_damage ?? 18;
+        this.itemDamage[ItemType.REIDITE_SPEAR]            = this.config.reidite_spear_damage ?? 22;
+        this.itemDamage[ItemType.DRAGON_SPEAR]             = this.config.dragon_spear_damage ?? 22;
+        this.itemDamage[ItemType.LAVA_SPEAR]               = this.config.lava_spear_damage ?? 24;
+ 
+        this.itemDamage[ItemType.WOOD_PICK]                = 1;
+        this.itemDamage[ItemType.STONE_PICK]               = 2;
+        this.itemDamage[ItemType.GOLD_PICK]                = 3;
+        this.itemDamage[ItemType.DIAMOND_PICK]             = 4;
+        this.itemDamage[ItemType.AMETHYST_PICK]            = 5;
+        this.itemDamage[ItemType.REIDITE_PICK]             = 6;
+
+        this.itemDamage[ItemType.WOOD_SHIELD]              = 1;
+        this.itemDamage[ItemType.STONE_SHIELD]             = 2;
+        this.itemDamage[ItemType.GOLD_SHIELD]              = 3;
+        this.itemDamage[ItemType.DIAMOND_SHIELD]           = 4;
+        this.itemDamage[ItemType.AMETHYST_SHIELD]          = 5;
+        this.itemDamage[ItemType.REIDITE_SHIELD]           = 6;
+ 
+        this.itemDamage[ItemType.STONE_HAMMER]             = this.config.stone_hammer_damage ?? 2;
+        this.itemDamage[ItemType.GOLD_HAMMER]              = this.config.gold_hammer_damage ?? 3;
+        this.itemDamage[ItemType.DIAMOND_HAMMER]           = this.config.diamond_hammer_damage ?? 4;
+        this.itemDamage[ItemType.AMETHYST_HAMMER]          = this.config.amethyst_hammer_damage ?? 5;
+        this.itemDamage[ItemType.REIDITE_HAMMER]           = this.config.reidite_hammer_damage ?? 6;
+        this.itemDamage[ItemType.SUPER_HAMMER]             = this.config.super_hammer_damage ?? 12;
+ 
+        this.itemBuildingDamage[ItemType.STONE_HAMMER]     = this.config.stone_hammer_building_damage ?? 20;
+        this.itemBuildingDamage[ItemType.GOLD_HAMMER]      = this.config.gold_hammer_building_damage ?? 30;
+        this.itemBuildingDamage[ItemType.DIAMOND_HAMMER]   = this.config.diamond_hammer_building_damage ?? 40;
+        this.itemBuildingDamage[ItemType.AMETHYST_HAMMER]  = this.config.amethyst_hammer_building_damage ?? 50;
+        this.itemBuildingDamage[ItemType.REIDITE_HAMMER]   = this.config.reidite_hammer_building_damage ?? 60;
+        this.itemBuildingDamage[ItemType.SUPER_HAMMER]     = this.config.super_hammer_building_damage ?? 70;
+        this.itemBuildingDamage[ItemType.CURSED_SWORD]     = this.config.cursed_sword_damage ?? 1000;
+        this.itemBuildingDamage[ItemType.WRENCH]           = this.config.wrench ?? 70;
+ 
+        this.itemDamage[ItemType.BOOK]                     = 1;
+        this.itemDamage[ItemType.WATERING_CAN_FULL]        = 1;
+        this.itemDamage[ItemType.WRENCH]                   = 2;
+ 
+        this.itemHarvest[ItemType.HAND]                    = 1;
+        this.itemHarvest[ItemType.WOOD_PICK]               = 2;
+        this.itemHarvest[ItemType.STONE_PICK]              = 3;
+        this.itemHarvest[ItemType.GOLD_PICK]               = 4;
+        this.itemHarvest[ItemType.DIAMOND_PICK]            = 5;
+        this.itemHarvest[ItemType.AMETHYST_PICK]           = 6;
+        this.itemHarvest[ItemType.REIDITE_PICK]            = 7;
+ 
+        this.itemDig[ItemType.STONE_SHOVEL]                = 1;
+        this.itemDig[ItemType.GOLD_SHOVEL]                 = 2;
+        this.itemDig[ItemType.DIAMOND_SHOVEL]              = 3;
+        this.itemDig[ItemType.AMETHYST_SHOVEL]             = 4;
+          
+        this.itemRadius[ItemType.WOOD_SWORD]               = 45;
+        this.itemRadius[ItemType.STONE_SWORD]              = 45;
+        this.itemRadius[ItemType.GOLD_SWORD]               = 45;
+        this.itemRadius[ItemType.DIAMOND_SWORD]            = 45;
+        this.itemRadius[ItemType.AMETHYST_SWORD]           = 45;
+        this.itemRadius[ItemType.REIDITE_SWORD]            = 45;
+        this.itemRadius[ItemType.DRAGON_SWORD]             = 45;
+        this.itemRadius[ItemType.LAVA_SWORD]               = 45;
+        this.itemRadius[ItemType.CURSED_SWORD]             = 45;
+        this.itemRadius[ItemType.PIRATE_SWORD]             = 48;
+          
+        this.itemRadius[ItemType.WOOD_SPEAR]               = 60;
+        this.itemRadius[ItemType.STONE_SPEAR]              = 60;
+        this.itemRadius[ItemType.GOLD_SPEAR]               = 60;
+        this.itemRadius[ItemType.DIAMOND_SPEAR]            = 60;
+        this.itemRadius[ItemType.AMETHYST_SPEAR]           = 60;
+        this.itemRadius[ItemType.REIDITE_SPEAR]            = 60;
+        this.itemRadius[ItemType.REIDITE_SPEAR]            = 60;
+        this.itemRadius[ItemType.CRAB_SPEAR]               = 60;
+        this.itemRadius[ItemType.DRAGON_SPEAR]             = 60;
+        this.itemRadius[ItemType.LAVA_SPEAR]               = 60;
+          
+        this.itemRadius[ItemType.WOOD_PICK]                = 45;
+        this.itemRadius[ItemType.STONE_PICK]               = 45;
+        this.itemRadius[ItemType.GOLD_PICK]                = 45;
+        this.itemRadius[ItemType.DIAMOND_PICK]             = 45;
+        this.itemRadius[ItemType.AMETHYST_PICK]            = 45;
+        this.itemRadius[ItemType.REIDITE_PICK]             = 45;
+          
+        this.itemRadius[ItemType.STONE_HAMMER]             = 45;
+        this.itemRadius[ItemType.GOLD_HAMMER]              = 45;
+        this.itemRadius[ItemType.DIAMOND_HAMMER]           = 45;
+        this.itemRadius[ItemType.AMETHYST_HAMMER]          = 45;
+        this.itemRadius[ItemType.REIDITE_HAMMER]           = 45;
+        this.itemRadius[ItemType.SUPER_HAMMER]             = 45;
+
+        this.itemRadius[ItemType.STONE_SHOVEL]             = 45;
+        this.itemRadius[ItemType.GOLD_SHOVEL]              = 45;
+        this.itemRadius[ItemType.DIAMOND_SHOVEL]           = 45;
+        this.itemRadius[ItemType.AMETHYST_SHOVEL]          = 45;
+
+        this.itemRadius[ItemType.BOOK]                     = 45;
+        this.itemRadius[ItemType.WRENCH]                   = 45;
+        this.itemRadius[ItemType.WATERING_CAN_EMPTY]       = 45;
+        this.itemRadius[ItemType.WATERING_CAN_FULL]        = 45;
+        this.itemRadius[ItemType.MACHETE]                  = 45;
+          
+        this.itemRadius[ItemType.PITCHFORK]                = 90;
+        this.itemRadius[ItemType.GOLD_PITCHFORK]           = 90;
+        
+        this.itemRadius[ItemType.WOOD_SHIELD]              = 40;
+        this.itemRadius[ItemType.STONE_SHIELD]             = 40;
+        this.itemRadius[ItemType.GOLD_SHIELD]              = 40;
+        this.itemRadius[ItemType.DIAMOND_SHIELD]           = 40;
+        this.itemRadius[ItemType.AMETHYST_SHIELD]          = 40;
+        this.itemRadius[ItemType.REIDITE_SHIELD]           = 40;
+        
+        this.itemRadius[ItemType.HAND]                     = 22;
+
+        this.itemOffset[ItemType.HAND]                     = 20;
+        
+        this.itemOffset[ItemType.WOOD_SHIELD]              = 20;
+        this.itemOffset[ItemType.STONE_SHIELD]             = 20;
+        this.itemOffset[ItemType.GOLD_SHIELD]              = 20;
+        this.itemOffset[ItemType.DIAMOND_SHIELD]           = 20;
+        this.itemOffset[ItemType.AMETHYST_SHIELD]          = 20;
+        this.itemOffset[ItemType.REIDITE_SHIELD]           = 20;
+          
+        this.itemOffset[ItemType.PITCHFORK]                = 130;
+        this.itemOffset[ItemType.GOLD_PITCHFORK]           = 130;
+
+        this.itemOffset[ItemType.WRENCH]                   = 50;
+        this.itemOffset[ItemType.WATERING_CAN_EMPTY]       = 50;
+        this.itemOffset[ItemType.WATERING_CAN_FULL]        = 50;
+        this.itemOffset[ItemType.MACHETE]                  = 50;
+        this.itemOffset[ItemType.BOOK]                     = 50;
+
+        this.itemOffset[ItemType.STONE_SHOVEL]             = 50;
+        this.itemOffset[ItemType.GOLD_SHOVEL]              = 50;
+        this.itemOffset[ItemType.DIAMOND_SHOVEL]           = 50;
+        this.itemOffset[ItemType.AMETHYST_SHOVEL]          = 50;
+          
+        this.itemOffset[ItemType.STONE_HAMMER]             = 50;
+        this.itemOffset[ItemType.GOLD_HAMMER]              = 50;
+        this.itemOffset[ItemType.DIAMOND_HAMMER]           = 50;
+        this.itemOffset[ItemType.AMETHYST_HAMMER]          = 50;
+        this.itemOffset[ItemType.REIDITE_HAMMER]           = 50;
+        this.itemOffset[ItemType.SUPER_HAMMER]             = 50;
+          
+        this.itemOffset[ItemType.WOOD_PICK]                = 50;
+        this.itemOffset[ItemType.STONE_PICK]               = 50;
+        this.itemOffset[ItemType.GOLD_PICK]                = 50;
+        this.itemOffset[ItemType.DIAMOND_PICK]             = 50;
+        this.itemOffset[ItemType.AMETHYST_PICK]            = 50;
+        this.itemOffset[ItemType.REIDITE_PICK]             = 50;
+          
+        this.itemOffset[ItemType.WOOD_SPEAR]               = 110;
+        this.itemOffset[ItemType.STONE_SPEAR]              = 110;
+        this.itemOffset[ItemType.GOLD_SPEAR]               = 110;
+        this.itemOffset[ItemType.DIAMOND_SPEAR]            = 110;
+        this.itemOffset[ItemType.AMETHYST_SPEAR]           = 110;
+        this.itemOffset[ItemType.REIDITE_SPEAR]            = 110;
+        this.itemOffset[ItemType.REIDITE_SPEAR]            = 110;
+        this.itemOffset[ItemType.CRAB_SPEAR]               = 110;
+        this.itemOffset[ItemType.DRAGON_SPEAR]             = 110;
+        this.itemOffset[ItemType.LAVA_SPEAR]               = 110;
+          
+        this.itemOffset[ItemType.WOOD_SWORD]               = 65;
+        this.itemOffset[ItemType.STONE_SWORD]              = 65;
+        this.itemOffset[ItemType.GOLD_SWORD]               = 65;
+        this.itemOffset[ItemType.DIAMOND_SWORD]            = 65;
+        this.itemOffset[ItemType.AMETHYST_SWORD]           = 65;
+        this.itemOffset[ItemType.REIDITE_SWORD]            = 65;
+        this.itemOffset[ItemType.DRAGON_SWORD]             = 65;
+        this.itemOffset[ItemType.LAVA_SWORD]               = 65;
+        this.itemOffset[ItemType.CURSED_SWORD]             = 65;
+        this.itemOffset[ItemType.PIRATE_SWORD]             = 68;
+          
+        this.itemFoodValue[ItemType.BERRY]                 = 10;
+        this.itemFoodValue[ItemType.CRAB_LOOT]             = 10;
+        this.itemFoodValue[ItemType.GARLIC]                = 14;
+        this.itemFoodValue[ItemType.BREAD]                 = 15;
+        this.itemFoodValue[ItemType.MEAT]                  = 15;
+        this.itemFoodValue[ItemType.WATERMELON]            = 15;
+        this.itemFoodValue[ItemType.TOMATO]                = 16;
+        this.itemFoodValue[ItemType.FISH]                  = 18;
+        this.itemFoodValue[ItemType.CARROT]                = 20;
+        this.itemFoodValue[ItemType.CACTUS]                = 20;
+        this.itemFoodValue[ItemType.WATERMELON]            = 20;
+        this.itemFoodValue[ItemType.CRAB_STICK]            = 20;
+        this.itemFoodValue[ItemType.FISH_COOKED]           = 35;
+        this.itemFoodValue[ItemType.COOKED_MEAT]           = 35;
+        this.itemFoodValue[ItemType.COOKIE]                = 50;
+        this.itemFoodValue[ItemType.SANDWICH]              = 100;
+        this.itemFoodValue[ItemType.SUGAR_CAN]             = 100;
+        this.itemFoodValue[ItemType.CAKE]                  = 100;
+                  
+        this.itemColdValue[ItemType.ICE]                   = 20;
+ 
+        this.itemWaterValue[ItemType.WATERMELON]           = 8;
+        this.itemWaterValue[ItemType.BOTTLE_FULL]          = 50;
+ 
+        this.itemHealValue[ItemType.BANDAGE]               = this.config.bandage_heal_effect ?? 5;
+        this.itemHealValue[ItemType.ALOE_VERA]             += 1;
+        this.itemHealValue[ItemType.GARLIC]                += 1;
+    }
+
+    public setupChances() {
+        this.dropChance[ItemType.STONE] = 4;
+        this.dropChance[ItemType.GOLD] = 1;
+        this.dropChance[ItemType.DIAMOND] = 0.5;
+
+        this.treasureDropChance[ItemType.SUPER_HAMMER] = 0.05;
+        this.treasureDropChance[ItemType.SUPER_DIVING_SUIT] = 0.05;
+        this.treasureDropChance[ItemType.PIRATE_SWORD] = 0.3;
+        this.treasureDropChance[ItemType.DIVING_MASK] = 0.5;
+
+        this.treasureDropChance[ItemType.BOAT] = 1;
+        this.treasureDropChance[ItemType.PAPER] = 1;
+        this.treasureDropChance[ItemType.SAND] = 5;
+        this.treasureDropChance[ItemType.GROUND] = 5;
+
+        this.treasureDropChance[ItemType.AMETHYST_PICK] = 0.6;
+        this.treasureDropChance[ItemType.DIAMOND_PICK] = 1.2;
+        this.treasureDropChance[ItemType.GOLD_PICK] = 2;
+        this.treasureDropChance[ItemType.STONE_PICK] = 2.4;
+        this.treasureDropChance[ItemType.WOOD_PICK] = 3;
+
+        this.treasureDropChance[ItemType.AMETHYST_SWORD] = 0.6;
+        this.treasureDropChance[ItemType.DIAMOND_SWORD] = 1.2;
+        this.treasureDropChance[ItemType.GOLD_SWORD] = 2;
+        this.treasureDropChance[ItemType.STONE_SWORD] = 2.4;
+        this.treasureDropChance[ItemType.WOOD_SWORD] = 3;
+
+        this.treasureDropChance[ItemType.AMETHYST_SPEAR] = 0.6;
+        this.treasureDropChance[ItemType.DIAMOND_SPEAR] = 1.2;
+        this.treasureDropChance[ItemType.GOLD_SPEAR] = 2;
+        this.treasureDropChance[ItemType.STONE_SPEAR] = 2.4;
+        this.treasureDropChance[ItemType.WOOD_SPEAR] = 3;
+
+        this.treasureDropChance[ItemType.BREAD_OVEN] = 1;
+        this.treasureDropChance[ItemType.WINDMILL] = 1;
+        this.treasureDropChance[ItemType.FURNACE] = 1;
+        this.treasureDropChance[ItemType.WELL] = 1;
+
+        this.treasureDropChance[ItemType.REIDITE_SPIKE] = 0.05;
+        this.treasureDropChance[ItemType.REIDITE_WALL] = 0.1;
+        this.treasureDropChance[ItemType.REIDITE_DOOR] = 0.1;
+        this.treasureDropChance[ItemType.AMETHYST_SPIKE] = 0.1;
+        this.treasureDropChance[ItemType.AMETHYST_WALL] = 0.15;
+        this.treasureDropChance[ItemType.AMETHYST_DOOR] = 0.15;
+        this.treasureDropChance[ItemType.DIAMOND_SPIKE] = 0.2;
+        this.treasureDropChance[ItemType.DIAMOND_WALL] = 0.25;
+        this.treasureDropChance[ItemType.DIAMOND_DOOR] = 0.25;
+        this.treasureDropChance[ItemType.GOLD_SPIKE] = 0.25;
+        this.treasureDropChance[ItemType.GOLD_WALL] = 0.3;
+        this.treasureDropChance[ItemType.GOLD_DOOR] = 0.3;
+        this.treasureDropChance[ItemType.STONE_SPIKE] = 0.35;
+        this.treasureDropChance[ItemType.STONE_DOOR] = 0.35;
+        this.treasureDropChance[ItemType.STONE_WALL] = 0.4;
+        this.treasureDropChance[ItemType.WOOD_SPIKE] = 0.45;
+        this.treasureDropChance[ItemType.WOOD_DOOR] = 0.5;
+        this.treasureDropChance[ItemType.WOOD_WALL] = 0.5;
+    }
+
+    public setupSeeds() {
+        this.seedBirth[EntityType.BERRY_SEED] = this.config.born_berry ?? 120000; // 2 min
+        this.seedBirth[EntityType.WHEAT_SEED] = this.config.born_wheat ?? 120000;
+        this.seedBirth[EntityType.PUMPKIN_SEED] = this.config.born_pumpkin ?? 160000;
+        this.seedBirth[EntityType.CARROT_SEED] = this.config.born_carrot ?? 240000;
+        this.seedBirth[EntityType.TOMATO_SEED] = this.config.born_tomato ?? 240000;
+        this.seedBirth[EntityType.THORNBUSH_SEED] = this.config.born_thornbush ?? 240000;
+        this.seedBirth[EntityType.GARLIC_SEED] = this.config.born_garlic ?? 160000;
+        this.seedBirth[EntityType.WATERMELON_SEED] = this.config.born_watermelon ?? 120000;
+
+        this.seedDrain[EntityType.BERRY_SEED] = this.config.water_berry ?? 200000;
+        this.seedDrain[EntityType.WHEAT_SEED] = this.config.water_wheat ?? 200000;
+        this.seedDrain[EntityType.PUMPKIN_SEED] = this.config.water_pumpkin ?? 250000;
+        this.seedDrain[EntityType.CARROT_SEED] = this.config.water_carrot ?? 200000;
+        this.seedDrain[EntityType.TOMATO_SEED] = this.config.water_tomato ?? 200000;
+        this.seedDrain[EntityType.THORNBUSH_SEED] = this.config.water_thornbush ?? 240000;
+        this.seedDrain[EntityType.GARLIC_SEED] = this.config.water_garlic ?? 200000;
+        this.seedDrain[EntityType.WATERMELON_SEED] = this.config.water_watermelon ?? 200000;
+
+        this.seedGrowth[EntityType.BERRY_SEED] = this.config.grown_berry ?? 40000;
+        this.seedGrowth[EntityType.WHEAT_SEED] = this.config.grown_wheat ?? 16000;
+        this.seedGrowth[EntityType.PUMPKIN_SEED] = this.config.grown_pumpkin ?? 50000;
+        this.seedGrowth[EntityType.CARROT_SEED] = this.config.grown_carrot ?? 30000;
+        this.seedGrowth[EntityType.TOMATO_SEED] = this.config.grown_tomato ?? 30000;
+        this.seedGrowth[EntityType.THORNBUSH_SEED] = this.config.grown_thornbush ?? 15000;
+        this.seedGrowth[EntityType.GARLIC_SEED] = this.config.grown_garlic ?? 120000;
+        this.seedGrowth[EntityType.WATERMELON_SEED] = this.config.grown_watermelon ?? 40000;
+
+        this.seedLife[EntityType.BERRY_SEED] = this.config.time_life_berry ?? 384e4; // 8 days in starve
+        this.seedLife[EntityType.WHEAT_SEED] = this.config.time_life_wheat ?? 384e4;
+        this.seedLife[EntityType.PUMPKIN_SEED] = this.config.time_life_pumpkin ?? 384e4;
+        this.seedLife[EntityType.CARROT_SEED] = this.config.time_life_carrot ?? 384e4;
+        this.seedLife[EntityType.TOMATO_SEED] = this.config.time_life_tomato ?? 384e4;
+        this.seedLife[EntityType.THORNBUSH_SEED] = this.config.time_life_thornbush ?? 384e4;
+        this.seedLife[EntityType.GARLIC_SEED] = this.config.time_life_garlic ?? 384e4;
+        this.seedLife[EntityType.WATERMELON_SEED] = this.config.time_life_watermelon ?? 384e4;
+
+        this.seedFruitsCount[EntityType.BERRY_SEED] = 3;
+        this.seedFruitsCount[EntityType.WHEAT_SEED] = 1;
+        this.seedFruitsCount[EntityType.PUMPKIN_SEED] = 1;
+        this.seedFruitsCount[EntityType.CARROT_SEED] = 1;
+        this.seedFruitsCount[EntityType.TOMATO_SEED] = 3;
+        this.seedFruitsCount[EntityType.THORNBUSH_SEED] = 1;
+        this.seedFruitsCount[EntityType.GARLIC_SEED] = 1;
+        this.seedFruitsCount[EntityType.WATERMELON_SEED] = 1;
+
+        this.seedFruits[EntityType.BERRY_SEED] = ItemType.BERRY;
+        this.seedFruits[EntityType.WHEAT_SEED] = ItemType.WHEAT;
+        this.seedFruits[EntityType.PUMPKIN_SEED] = ItemType.PUMPKIN;
+        this.seedFruits[EntityType.CARROT_SEED] = ItemType.CARROT;
+        this.seedFruits[EntityType.TOMATO_SEED] = ItemType.TOMATO;
+        this.seedFruits[EntityType.THORNBUSH_SEED] = ItemType.THORNBUSH;
+        this.seedFruits[EntityType.GARLIC_SEED] = ItemType.GARLIC;
+        this.seedFruits[EntityType.WATERMELON_SEED] = ItemType.WATERMELON;
     }
 
     public setupSpeed() {
-        this.speed[EntityType.PLAYERS] = this.config.speed ?? 0.24;
+        this.speed[EntityType.PLAYER] = this.config.speed ?? 0.24;
         this.speed[EntityType.WOLF] = this.config.speed_wolf ?? 0.230;
         this.speed[EntityType.SPIDER] = this.config.speed_spider ?? 0.240;
         this.speed[EntityType.FOX] = this.config.speed_fox ?? 0.235;
@@ -51,14 +520,35 @@ export class ConfigSystem {
     }
 
     public setupDamage() {
-
         // Building damage;
-        this.entityDamage[EntityType.SPIKE] = this.config.wood_spike_damage ?? 10;
-        this.entityDamage[EntityType.STONE_SPIKE] = this.config.stone_spike_damage ?? 20;
-        this.entityDamage[EntityType.GOLD_SPIKE] = this.config.stone_spike_damage ?? 30;
-        this.entityDamage[EntityType.DIAMOND_SPIKE] = this.config.stone_spike_damage ?? 40;
-        this.entityDamage[EntityType.AMETHYST_SPIKE] = this.config.stone_spike_damage ?? 50;
-        this.entityDamage[EntityType.REIDITE_SPIKE] = this.config.stone_spike_damage ?? 60;
+        this.entityDamage[EntityType.WOOD_SPIKE] = 10;
+        this.entityDamage[EntityType.STONE_SPIKE] = 20;
+        this.entityDamage[EntityType.GOLD_SPIKE] = 30;
+        this.entityDamage[EntityType.DIAMOND_SPIKE] = 40;
+        this.entityDamage[EntityType.AMETHYST_SPIKE] = 50;
+        this.entityDamage[EntityType.REIDITE_SPIKE] = 60;
+
+        this.entityDamage[EntityType.WOOD_DOOR_SPIKE] = 5;
+        this.entityDamage[EntityType.STONE_DOOR_SPIKE] = 10;
+        this.entityDamage[EntityType.GOLD_DOOR_SPIKE] = 15;
+        this.entityDamage[EntityType.DIAMOND_DOOR_SPIKE] = 20;
+        this.entityDamage[EntityType.AMETHYST_DOOR_SPIKE] = 25;
+        this.entityDamage[EntityType.REIDITE_DOOR_SPIKE] = 30;
+
+        this.entityOnHitDamage[EntityType.WOOD_SPIKE] = this.config.wood_spike_damage ?? 2;
+        this.entityOnHitDamage[EntityType.STONE_SPIKE] = this.config.stone_spike_damage ?? 2;
+        this.entityOnHitDamage[EntityType.GOLD_SPIKE] = this.config.gold_spike_damage ?? 3;
+        this.entityOnHitDamage[EntityType.DIAMOND_SPIKE] = this.config.diamond_spike_damage ?? 4;
+        this.entityOnHitDamage[EntityType.AMETHYST_SPIKE] = this.config.amethyst_spike_damage ?? 4;
+        this.entityOnHitDamage[EntityType.REIDITE_SPIKE] = this.config.reidite_spike_damage ?? 5;
+
+        this.entityOnHitDamage[EntityType.WOOD_DOOR_SPIKE] = this.config.wood_spike_door_damage ?? 1;
+        this.entityOnHitDamage[EntityType.STONE_DOOR_SPIKE] = this.config.stone_spike_door_damage ?? 2;
+        this.entityOnHitDamage[EntityType.GOLD_DOOR_SPIKE] = this.config.gold_spike_door_damage ?? 2;
+        this.entityOnHitDamage[EntityType.DIAMOND_DOOR_SPIKE] = this.config.diamond_spike_door_damage ?? 3;
+        this.entityOnHitDamage[EntityType.AMETHYST_DOOR_SPIKE] = this.config.amethyst_spike_door_damage ?? 3;
+        this.entityOnHitDamage[EntityType.REIDITE_DOOR_SPIKE] = this.config.reidite_spike_door_damage ?? 4;
+
         this.entityDamage[EntityType.FIRE] = 40;
         this.entityDamage[EntityType.BIG_FIRE] = 40;
 
@@ -96,7 +586,7 @@ export class ConfigSystem {
     }
 
     public setupRadius() {
-        this.entityRadius[EntityType.WALL] = 45;
+        this.entityRadius[EntityType.WOOD_WALL] = 45;
         this.entityRadius[EntityType.STONE_WALL] = 45;
         this.entityRadius[EntityType.GOLD_WALL] = 45;
         this.entityRadius[EntityType.DIAMOND_WALL] = 45;
@@ -110,7 +600,7 @@ export class ConfigSystem {
         this.entityRadius[EntityType.AMETHYST_DOOR] = 45;
         this.entityRadius[EntityType.REIDITE_DOOR] = 45;
 
-        this.entityRadius[EntityType.SPIKE] = 35;
+        this.entityRadius[EntityType.WOOD_SPIKE] = 35;
         this.entityRadius[EntityType.STONE_SPIKE] = 35;
         this.entityRadius[EntityType.GOLD_SPIKE] = 35;
         this.entityRadius[EntityType.DIAMOND_SPIKE] = 35;
@@ -124,18 +614,40 @@ export class ConfigSystem {
         this.entityRadius[EntityType.AMETHYST_DOOR_SPIKE] = 35;
         this.entityRadius[EntityType.REIDITE_DOOR_SPIKE] = 35;
 
-        this.entityRadius[EntityType.EXTRACTOR_MACHINE_STONE] = 45;
-        this.entityRadius[EntityType.EXTRACTOR_MACHINE_GOLD] = 45;
-        this.entityRadius[EntityType.EXTRACTOR_MACHINE_DIAMOND] = 45;
-        this.entityRadius[EntityType.EXTRACTOR_MACHINE_AMETHYST] = 45;
-        this.entityRadius[EntityType.EXTRACTOR_MACHINE_REIDITE] = 45;
+        this.entityRadius[EntityType.STONE_EXTRACTOR] = 45;
+        this.entityRadius[EntityType.GOLD_EXTRACTOR] = 45;
+        this.entityRadius[EntityType.DIAMOND_EXTRACTOR] = 45;
+        this.entityRadius[EntityType.AMETHYST_EXTRACTOR] = 45;
+        this.entityRadius[EntityType.REIDITE_EXTRACTOR] = 45;
 
+        this.entityRadius[EntityType.BERRY_SEED] = 40;
+        this.entityRadius[EntityType.WHEAT_SEED] = 40;
+        this.entityRadius[EntityType.PUMPKIN_SEED] = 40;
+        this.entityRadius[EntityType.CARROT_SEED] = 40;
+        this.entityRadius[EntityType.TOMATO_SEED] = 40;
+        this.entityRadius[EntityType.THORNBUSH_SEED] = 40;
+        this.entityRadius[EntityType.GARLIC_SEED] = 40;
+        this.entityRadius[EntityType.WATERMELON_SEED] = 40;
+
+        this.entityRadius[EntityType.EMERALD_MACHINE] = 55;
         this.entityRadius[EntityType.WORKBENCH] = 35;
+        this.entityRadius[EntityType.WINDMILL] = 50;
         this.entityRadius[EntityType.FURNACE] = 55;
+        this.entityRadius[EntityType.WELL] = 60;
+        this.entityRadius[EntityType.BREAD_OVEN] = 60;
+        this.entityRadius[EntityType.TOTEM] = 55;
+        this.entityRadius[EntityType.WOLF] = 40;
+        this.entityRadius[EntityType.SAND_WORM] = 40;
+        this.entityRadius[EntityType.SPIDER] = 28;
+        this.entityRadius[EntityType.RABBIT] = 45;
+        this.entityRadius[EntityType.BOAR] = 65;
+        this.entityRadius[EntityType.KRAKEN] = 60;
+        this.entityRadius[EntityType.DRAGON] = 50;
+        this.entityRadius[EntityType.LAVA_DRAGON] = 60;
     }
 
     public setupCollide() {
-        this.entityCollide[EntityType.WALL] = true;
+        this.entityCollide[EntityType.WOOD_WALL] = true;
         this.entityCollide[EntityType.STONE_WALL] = true;
         this.entityCollide[EntityType.GOLD_WALL] = true;
         this.entityCollide[EntityType.DIAMOND_WALL] = true;
@@ -149,12 +661,14 @@ export class ConfigSystem {
         this.entityCollide[EntityType.AMETHYST_DOOR] = true;
         this.entityCollide[EntityType.REIDITE_DOOR] = true;
 
-        this.entityCollide[EntityType.SPIKE] = true;
+        this.entityCollide[EntityType.WOOD_SPIKE] = true;
         this.entityCollide[EntityType.STONE_SPIKE] = true;
         this.entityCollide[EntityType.GOLD_SPIKE] = true;
         this.entityCollide[EntityType.DIAMOND_SPIKE] = true;
         this.entityCollide[EntityType.AMETHYST_SPIKE] = true;
         this.entityCollide[EntityType.REIDITE_SPIKE] = true;
+
+        this.entityCollide[EntityType.TOTEM] = true;
 
         this.entityCollide[EntityType.WOOD_DOOR_SPIKE] = true;
         this.entityCollide[EntityType.STONE_DOOR_SPIKE] = true;
@@ -163,12 +677,11 @@ export class ConfigSystem {
         this.entityCollide[EntityType.AMETHYST_DOOR_SPIKE] = true;
         this.entityCollide[EntityType.REIDITE_DOOR_SPIKE] = true;
 
-        this.entityCollide[EntityType.EXTRACTOR_MACHINE_STONE] = true;
-        this.entityCollide[EntityType.EXTRACTOR_MACHINE_GOLD] = true;
-        this.entityCollide[EntityType.EXTRACTOR_MACHINE_DIAMOND] = true;
-        this.entityCollide[EntityType.EXTRACTOR_MACHINE_AMETHYST] = true;
-        this.entityCollide[EntityType.EXTRACTOR_MACHINE_REIDITE] = true;
-
+        this.entityCollide[EntityType.STONE_EXTRACTOR] = true;
+        this.entityCollide[EntityType.GOLD_EXTRACTOR] = true;
+        this.entityCollide[EntityType.DIAMOND_EXTRACTOR] = true;
+        this.entityCollide[EntityType.AMETHYST_EXTRACTOR] = true;
+        this.entityCollide[EntityType.REIDITE_EXTRACTOR] = true;
 
         this.entityCollide[EntityType.RESURRECTION] = true;
         this.entityCollide[EntityType.EMERALD_MACHINE] = true;
@@ -181,12 +694,12 @@ export class ConfigSystem {
     }
 
     public setupHealth() {
-        this.health[EntityType.PLAYERS] = 200;
+        this.health[EntityType.PLAYER] = 200;
         this.health[EntityType.FIRE] = 150;
         this.health[EntityType.WORKBENCH] = 300;
-        this.health[EntityType.SEED] = 700;
-        this.health[EntityType.WALL] = this.config.wood_wall_life ?? 1000;
-        this.health[EntityType.SPIKE] = this.config.wood_spike_life ?? 150;
+        this.health[EntityType.BERRY_SEED] = 700;
+        this.health[EntityType.WOOD_WALL] = this.config.wood_wall_life ?? 1000;
+        this.health[EntityType.WOOD_SPIKE] = this.config.wood_spike_life ?? 150;
         this.health[EntityType.BIG_FIRE] = 400;
         this.health[EntityType.STONE_WALL] = this.config.stone_wall_life ?? 1500;
         this.health[EntityType.GOLD_WALL] = this.config.gold_wall_life ?? 2000;
@@ -205,11 +718,11 @@ export class ConfigSystem {
         this.health[EntityType.AMETHYST_DOOR] = this.config.amethyst_door_life ?? 3500;
         this.health[EntityType.RESURRECTION] = 200;
         this.health[EntityType.EMERALD_MACHINE] = 1000;
-        this.health[EntityType.EXTRACTOR_MACHINE_STONE] = 2000;
-        this.health[EntityType.EXTRACTOR_MACHINE_GOLD] = 2000;
-        this.health[EntityType.EXTRACTOR_MACHINE_DIAMOND] = 2000;
-        this.health[EntityType.EXTRACTOR_MACHINE_AMETHYST] = 2000;
-        this.health[EntityType.EXTRACTOR_MACHINE_REIDITE] = 2000;
+        this.health[EntityType.STONE_EXTRACTOR] = 2000;
+        this.health[EntityType.GOLD_EXTRACTOR] = 2000;
+        this.health[EntityType.DIAMOND_EXTRACTOR] = 2000;
+        this.health[EntityType.AMETHYST_EXTRACTOR] = 2000;
+        this.health[EntityType.REIDITE_EXTRACTOR] = 2000;
         this.health[EntityType.TOTEM] = 300;
         this.health[EntityType.BRIDGE] = 1000;
         this.health[EntityType.WHEAT_SEED] = 700;

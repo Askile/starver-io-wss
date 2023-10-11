@@ -1,4 +1,4 @@
-import {EntityType} from "./EntityType";
+import {EntityType} from "./types/EntityType";
 import {BOX} from "./Cosmetics";
 
 export const AnimalBoxes: number[] = [];

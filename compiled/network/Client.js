@@ -11,10 +11,15 @@ const nanotimer_1 = __importDefault(require("nanotimer"));
 const Crate_1 = require("../entities/Crate");
 const ServerPackets_1 = require("../enums/packets/ServerPackets");
 const ClientPackets_1 = require("../enums/packets/ClientPackets");
+const ClientStringPackets_1 = require("../enums/packets/ClientStringPackets");
+const Logger_1 = require("../modules/Logger");
+const logger = new Logger_1.Logger("./logs", {
+    console: true,
+    file: false
+});
 class Client {
     socket;
     packetsQty = new Array(36).fill(0);
-    packetsSize = new Array(36).fill(0);
     isActive = true;
     server;
     player;
@@ -39,31 +44,35 @@ class Client {
                 return;
             }
             else if (typeof PACKET_TYPE === "string") {
-                if (PACKET_DATA.length !== 15) {
+                if (PACKET_DATA.length !== 14) {
                     this.socket.close();
                     return;
                 }
-                const handshake = new Handshake_1.Handshake([PACKET_TYPE, ...PACKET_DATA], this);
-                const player = this.server.players.find(player => player.data.token === handshake.token);
-                if (player) {
-                    if (player.client.isActive) {
-                        player.client.sendBinary(new Uint8Array([ClientPackets_1.ClientPackets.STEAL_TOKEN]));
-                        if (player.client.isActive)
-                            player.client.socket.close();
-                    }
-                    this.player = player;
-                    player.client = this;
-                    handshake.response(this.player, true);
-                    return;
-                }
+                logger.info([PACKET_TYPE, ...PACKET_DATA]);
                 if (this.server.players.length >= 99) {
                     return this.sendBinary(new Uint8Array([ClientPackets_1.ClientPackets.FULL]));
                 }
-                this.player = new Player_1.Player(this);
-                handshake.setupPlayer(this.player);
-                this.server.players.push(this.player);
-                this.server.entities.push(this.player);
-                handshake.response(this.player);
+                const handshake = new Handshake_1.Handshake([PACKET_TYPE, ...PACKET_DATA], this);
+                const player = this.server.findPlayerByToken(handshake.token, handshake.token_id);
+                if (player) {
+                    player.client.sendU8([ClientPackets_1.ClientPackets.STEAL_TOKEN]);
+                    if (player.client.isActive)
+                        player.client.socket.close();
+                    player.client = this;
+                    player.updatePool = new Array(1000).fill(0);
+                    this.player = player;
+                    handshake.restoreResponse(player);
+                }
+                else {
+                    const tokenScore = this.server.tokenSystem.getToken(handshake.token) || this.server.tokenSystem.createToken(handshake.token);
+                    if (tokenScore)
+                        this.server.tokenSystem.joinToken(tokenScore, handshake.token_id);
+                    this.player = new Player_1.Player(this, tokenScore);
+                    handshake.setupPlayer(this.player);
+                    this.server.players.push(this.player);
+                    this.server.entities.push(this.player);
+                    handshake.response(this.player);
+                }
                 handshake.broadcastCosmetics(this.player);
             }
             this.receivePacket(PACKET_TYPE, PACKET, PACKET_DATA);
@@ -72,10 +81,14 @@ class Client {
     }
     receivePacket(PACKET_TYPE, PACKET, PACKET_DATA) {
         this.packetsQty[PACKET_TYPE]++;
-        this.packetsSize[PACKET_TYPE] += PACKET_DATA.length;
-        // if (this.packetsQty[0] > 5) return this.socket.close();
-        // if (this.packetsQty[3] > 10) return this.socket.close();
-        // if (this.packetsQty[PACKET_TYPE] > 30) return this.socket.close();
+        if (!Number.isInteger(PACKET_TYPE) && PACKET_TYPE > 40 || PACKET_TYPE < 0)
+            return;
+        if (this.packetsQty[0] > 5)
+            return this.socket.close();
+        if (this.packetsQty[3] > 10)
+            return this.socket.close();
+        if (this.packetsQty[PACKET_TYPE] > 30)
+            return this.socket.close();
         if (this.player.isCrafting && [
             ServerPackets_1.ServerPackets.ATTACK, ServerPackets_1.ServerPackets.INTERACTION,
             ServerPackets_1.ServerPackets.CRAFT, ServerPackets_1.ServerPackets.RECYCLE_START,
@@ -86,7 +99,7 @@ class Client {
             return;
         switch (PACKET_TYPE) {
             case ServerPackets_1.ServerPackets.CHAT:
-                this.server.broadcast(JSON.stringify([0, this.player.id, PACKET]), false, this.socket);
+                this.server.broadcast(JSON.stringify([ClientStringPackets_1.ClientStringPackets.CHAT, this.player.id, PACKET]), false, this.socket);
                 break;
             case ServerPackets_1.ServerPackets.MOVEMENT:
                 this.player.direction = PACKET;
@@ -114,11 +127,17 @@ class Client {
             case ServerPackets_1.ServerPackets.CRAFT:
                 this.server.craftSystem.handleCraft(this.player, PACKET);
                 break;
+            case ServerPackets_1.ServerPackets.UNLOCK_CHEST:
+                this.server.storageSystem.unlockChest(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.LOCK_CHEST:
+                this.server.storageSystem.lockChest(this.player);
+                break;
             case ServerPackets_1.ServerPackets.GIVE_ITEM:
                 this.server.storageSystem.giveChestItem(this.player, PACKET_DATA);
                 break;
             case ServerPackets_1.ServerPackets.TAKE_ITEM:
-                this.server.storageSystem.takeChestItem(this.player, PACKET_DATA);
+                this.server.storageSystem.takeChestItem(this.player);
                 break;
             case ServerPackets_1.ServerPackets.RECYCLE_START:
                 this.server.craftSystem.handleRecycle(this.player, PACKET);
@@ -129,8 +148,11 @@ class Client {
             case ServerPackets_1.ServerPackets.STOP_ATTACK:
                 this.player.attack = false;
                 break;
-            case ServerPackets_1.ServerPackets.LOCK_CHEST:
-                this.server.storageSystem.lockChest(this.player, PACKET);
+            case ServerPackets_1.ServerPackets.CHOOSE_KIT:
+                this.server.kitSystem.buy(this.player, PACKET);
+                break;
+            case ServerPackets_1.ServerPackets.CLAIM_QUEST_REWARD:
+                this.server.questSystem.gainQuest(this.player, PACKET);
                 break;
             case ServerPackets_1.ServerPackets.DROP_ITEM:
                 if (this.player.inventory.items.has(PACKET))
@@ -144,7 +166,50 @@ class Client {
             case ServerPackets_1.ServerPackets.CANCEL_CRAFT:
                 this.server.craftSystem.stopCraft(this.player);
                 break;
+            case ServerPackets_1.ServerPackets.JOIN_TEAM:
+                this.server.totemSystem.joinTeam(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.LEAVE_TEAM:
+                this.server.totemSystem.leaveTeam(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.KICK_TEAM:
+                this.server.totemSystem.kickTeam(this.player, PACKET);
+                break;
+            case ServerPackets_1.ServerPackets.LOCK_TEAM:
+                this.server.totemSystem.lockTeam(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.MARKET:
+                this.server.marketSystem.buy(this.player, PACKET_DATA);
+                break;
             case ServerPackets_1.ServerPackets.CONSOLE:
+                this.server.commandSystem.handleCommand(this.player, PACKET);
+                break;
+            case ServerPackets_1.ServerPackets.GIVE_WELL:
+                this.server.storageSystem.giveWell(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.TAKE_BREAD_OVEN:
+                this.server.storageSystem.takeBread(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.GIVE_FLOUR_OVEN:
+                this.server.storageSystem.giveFlourOven(this.player, PACKET);
+                break;
+            case ServerPackets_1.ServerPackets.GIVE_WOOD_OVEN:
+                this.server.storageSystem.giveWoodOven(this.player, PACKET);
+                break;
+            case ServerPackets_1.ServerPackets.GIVE_FURNACE:
+                this.server.storageSystem.giveFurnace(this.player, PACKET);
+                break;
+            case ServerPackets_1.ServerPackets.TAKE_FLOUR:
+                this.server.storageSystem.takeFlour(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.GIVE_WHEAT:
+                this.server.storageSystem.giveWheat(this.player, PACKET);
+                break;
+            case ServerPackets_1.ServerPackets.TAKE_EXTRACTOR:
+                this.server.storageSystem.takeResourceExtractor(this.player);
+                break;
+            case ServerPackets_1.ServerPackets.GIVE_WOOD_EXTRACTOR:
+                this.server.storageSystem.giveWoodExtractor(this.player, PACKET);
                 break;
         }
     }

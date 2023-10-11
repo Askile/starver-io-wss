@@ -1,6 +1,7 @@
 {
-  "version": 1,
-  "network_tps": 16,
-  "engine_tps": 20,
-  "leaderboard_tps": 1
+  "production": false,
+  "tps": 16,
+  "url": "localhost",
+  "owner_login": "Not Darius",
+  "master_password": "d77b5e67-128e-4305-962e-a1c1c9f7d165"
 }

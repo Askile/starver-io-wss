@@ -1,89 +1,67 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InteractionSystem = void 0;
-const Items_json_1 = __importDefault(require("../../JSON/Items.json"));
-const InventoryType_1 = require("../../enums/InventoryType");
-const defaultValues_1 = require("../../default/defaultValues");
-const ClientPackets_1 = require("../../enums/packets/ClientPackets");
-const ActionType_1 = require("../../enums/ActionType");
+const ItemType_1 = require("../../enums/types/ItemType");
+const Item_1 = require("../../entities/Item");
 class InteractionSystem {
     server;
     items;
     constructor(server) {
         this.server = server;
-        this.items = Items_json_1.default;
+        this.items = [];
+        for (let i = 0; i < Object.values(ItemType_1.ItemType).length / 2; i++) {
+            this.items[i] = new Item_1.Item(i, server.configSystem);
+        }
     }
     request(player, id) {
-        const name = InventoryType_1.InventoryType[id];
-        if (!player.inventory.items.has(id) && id !== InventoryType_1.InventoryType.HAND)
-            return;
+        const item = this.items[id];
         const canWeapon = Date.now() - player.lastWeaponUse >= this.server.config.weapon_delay;
         const canEquip = Date.now() - player.lastHelmetUse >= this.server.config.helmet_delay;
-        const item = this.items[name];
-        if (id === InventoryType_1.InventoryType.HAND && canWeapon) {
-            player.right = (0, defaultValues_1.getDefaultItem)();
+        if (!item.equal(ItemType_1.ItemType.HAND) && (!item || !player.inventory.containsItem(id, 1)))
+            return;
+        if (item.isHat()) {
+            if ((item.isCooldown() || player.helmet.isCooldown()) && !canEquip)
+                return;
+            if (!player.helmet.equal(id)) {
+                player.helmet = item;
+                if (item.isCooldown())
+                    player.lastHelmetUse = Date.now();
+            }
+            else
+                player.helmet = this.items[ItemType_1.ItemType.HAND];
         }
-        else if (this.isInHand(name) && canWeapon) {
+        else if (item.isFood()) {
+            if (item.id === ItemType_1.ItemType.BANDAGE && player.gauges.bandage === player.server.config.bandage_stack_limit)
+                return;
+            if (item.equal(ItemType_1.ItemType.BOTTLE_FULL)) {
+                player.client.sendBinary(player.inventory.giveItem(ItemType_1.ItemType.BOTTLE_EMPTY, 1));
+            }
+            player.gauges.hunger += item.food;
+            player.gauges.thirst += item.water;
+            player.gauges.bandage += item.heal;
+            player.gauges.cold -= item.cold;
+            player.client.sendBinary(player.inventory.removeItem(item.id, 1));
+            player.gauges.clamp();
+            player.gauges.updateClientGauges();
+        }
+        else if (item.isVehicle()) {
+            if (player.vehicle.equal(item.id)) {
+                player.vehicle = this.items[ItemType_1.ItemType.HAND];
+            }
+            else
+                player.vehicle = item;
+        }
+        else if (item.isEquipment()) {
+            if ((item.isSlowDown() || player.right.isSlowDown()) && !canWeapon)
+                return;
             player.right = item;
-            if (this.isWeapon(name))
+            if (item.isSlowDown())
                 player.lastWeaponUse = Date.now();
         }
-        else if (this.isHelmet(name) && canEquip) {
-            if (player.helmet.id == id)
-                player.helmet = (0, defaultValues_1.getDefaultHelmet)();
-            else {
-                player.helmet = item;
-                player.lastHelmetUse = Date.now();
-            }
-        }
-        else if (this.isPet(name)) {
-            if (player.pet.id == id)
-                player.pet = (0, defaultValues_1.getDefaultPet)();
-            else
-                player.pet = item;
-        }
-        else if (this.isFood(name)) {
-            if (item.poison)
-                player.client.sendBinary(player.healthSystem.damage(this.server.config.damage_raw_food, ActionType_1.ActionType.HURT));
-            if (item.value) {
-                player.gauges.hunger = Math.min(100, player.gauges.hunger + item.value);
-                player.client.sendU8([ClientPackets_1.ClientPackets.GAUGES_FOOD, player.gauges.hunger]);
-            }
-            if (item.water) {
-                player.gauges.thirst = Math.min(100, player.gauges.thirst + item.water);
-                player.client.sendU8([ClientPackets_1.ClientPackets.GAUGES_WATER, player.gauges.thirst]);
-            }
-            if (item.heal_boost) {
-                player.gauges.bandage = Math.min(this.server.config.bandage_stack_limit, player.gauges.bandage + item.heal_boost);
-                player.client.sendU8([ClientPackets_1.ClientPackets.BANDAGE, player.gauges.bandage]);
-            }
-            player.client.sendBinary(player.inventory.removeItem(id, 1));
-        }
-        else if (canWeapon) {
-            player.right = {
-                type: "unknown",
-                id
-            };
+        else if (item.equal(ItemType_1.ItemType.HAND) && canWeapon) {
+            player.right = this.items[ItemType_1.ItemType.HAND];
         }
         player.updateInfo();
-    }
-    isInHand(name) {
-        return ["weapon", "shield", "tool", "hammer"].includes(this.items[name].type);
-    }
-    isFood(name) {
-        return this.items[name].type == "food";
-    }
-    isPet(name) {
-        return this.items[name].type === "pet";
-    }
-    isWeapon(name) {
-        return this.items[name].type === "weapon";
-    }
-    isHelmet(name) {
-        return this.items[name].type === "helmet";
     }
 }
 exports.InteractionSystem = InteractionSystem;

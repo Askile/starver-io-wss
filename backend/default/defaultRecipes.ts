@@ -1,2008 +1,2149 @@
-export function getDefaultRecipes() {
-    return [{
-        item: "fire",
-        recipe: [
-            ["wood", 25],
-            ["stone", 5]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 17
-    }, {
-        item: "big_fire",
-        recipe: [
-            ["fire", 1],
-            ["wood", 35],
-            ["stone", 10]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 20
-    }, {
-        item: "furnace",
-        recipe: [
-            ["wood", 150],
-            ["stone", 50],
-            ["gold", 15]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20,
-        bonus: 93
-    }, {
-        item: "workbench",
-        recipe: [
-            ["wood", 20],
-            ["stone", 10]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 6,
-        bonus: 19
-    }, {
-        item: "pick_wood",
-        recipe: [
-            ["wood", 10]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 3,
-        bonus: 8
-    }, {
-        item: "pick",
-        recipe: [
-            ["pick_wood", 1],
-            ["wood", 50],
-            ["stone", 15]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 8,
-        bonus: 31
-    }, {
-        item: "pick_gold",
-        recipe: [
-            ["wood", 40],
-            ["gold", 20],
-            ["stone", 30],
-            ["pick", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 12,
-        bonus: 51
-    }, {
-        item: "pick_diamond",
-        recipe: [
-            ["diamond", 20],
-            ["gold", 50],
-            ["stone", 80],
-            ["pick_gold", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "pick_amethyst",
-        recipe: [
-            ["diamond", 40],
-            ["gold", 60],
-            ["amethyst", 30],
-            ["pick_diamond", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "pick_reidite",
-        recipe: [
-            ["amethyst", 30],
-            ["diamond", 40],
-            ["reidite", 30],
-            ["pick_amethyst", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "hammer",
-        recipe: [
-            ["wood", 90],
-            ["stone", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 53
-    }, {
-        item: "hammer_gold",
-        recipe: [
-            ["wood", 160],
-            ["stone", 120],
-            ["gold", 80],
-            ["hammer", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 15
-    }, {
-        item: "hammer_diamond",
-        recipe: [
-            ["diamond", 80],
-            ["stone", 200],
-            ["gold", 150],
-            ["hammer_gold", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "hammer_amethyst",
-        recipe: [
-            ["diamond", 160],
-            ["amethyst", 60],
-            ["gold", 250],
-            ["hammer_diamond", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "hammer_reidite",
-        recipe: [
-            ["amethyst", 160],
-            ["reidite", 60],
-            ["diamond", 250],
-            ["hammer_amethyst", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "super_hammer",
-        recipe: [
-            ["hammer_reidite", 1],
-            ["bottle_full", 1],
-            ["kraken_skin", 1],
-            ["scales", 10],
-            ["amethyst", 20]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 120
-    }, {
-        item: "shovel",
-        recipe: [
-            ["wood", 30],
-            ["stone", 15]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 21
-    }, {
-        item: "shovel_gold",
-        recipe: [
-            ["shovel", 1],
-            ["gold", 20],
-            ["stone", 30],
-            ["wood", 40]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 47
-    }, {
-        item: "shovel_diamond",
-        recipe: [
-            ["shovel_gold", 1],
-            ["diamond", 20],
-            ["gold", 50],
-            ["stone", 80]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "shovel_amethyst",
-        recipe: [
-            ["shovel_diamond", 1],
-            ["gold", 60],
-            ["amethyst", 30],
-            ["diamond", 40]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 40
-    }, {
-        item: "watering_can",
-        recipe: [
-            ["wood", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 20
-    }, {
-        item: "watering_can_full",
-        recipe: [
-            ["watering_can", 1]
-        ],
-        fire: 0,
-        water: 1,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 10
-    }, {
-        item: "pitchfork",
-        recipe: [
-            ["wood", 100],
-            ["stone", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 51
-    }, {
-        item: "pitchfork2",
-        recipe: [
-            ["pitchfork", 1],
-            ["pitchfork_part", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "book",
-        recipe: [
-            ["paper", 4],
-            ["cord", 4],
-            ["fur_wolf", 4]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 15,
-        bonus: 430
-    }, {
-        item: "wood_spear",
-        recipe: [
-            ["wood", 40]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 18
-    }, {
-        item: "spear",
-        recipe: [
-            ["wood_spear", 1],
-            ["wood", 60],
-            ["stone", 10]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10
-    }, {
-        item: "gold_spear",
-        recipe: [
-            ["wood", 80],
-            ["gold", 30],
-            ["stone", 30],
-            ["spear", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "diamond_spear",
-        recipe: [
-            ["wood", 200],
-            ["diamond", 40],
-            ["gold", 60],
-            ["gold_spear", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 30
-    }, {
-        item: "amethyst_spear",
-        recipe: [
-            ["amethyst", 40],
-            ["diamond", 80],
-            ["gold", 90],
-            ["diamond_spear", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "reidite_spear",
-        recipe: [
-            ["reidite", 40],
-            ["amethyst", 80],
-            ["diamond", 90],
-            ["amethyst_spear", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "dragon_spear",
-        recipe: [
-            ["blue_cord", 20],
-            ["dragon_orb", 1],
-            ["amethyst", 100],
-            ["dragon_heart", 3]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 120
-    }, {
-        item: "lava_spear",
-        recipe: [
-            ["dragon_spear", 1],
-            ["lava_orb", 1],
-            ["reidite", 100],
-            ["lava_heart", 2]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 200,
-        bonus: 10000
-    }, {
-        item: "crab_spear",
-        recipe: [
-            ["wood_spear", 1],
-            ["crab_loot", 5],
-            ["cord", 6]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 30
-    }, {
-        item: "sword_wood",
-        recipe: [
-            ["wood", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 16
-    }, {
-        item: "sword",
-        recipe: [
-            ["wood", 50],
-            ["stone", 25],
-            ["sword_wood", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 38
-    }, {
-        item: "sword_gold",
-        recipe: [
-            ["wood", 60],
-            ["gold", 40],
-            ["stone", 50],
-            ["sword", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20,
-        bonus: 87
-    }, {
-        item: "sword_diamond",
-        recipe: [
-            ["diamond", 40],
-            ["gold", 60],
-            ["stone", 80],
-            ["sword_gold", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 30
-    }, {
-        item: "sword_amethyst",
-        recipe: [
-            ["diamond", 60],
-            ["gold", 100],
-            ["amethyst", 40],
-            ["sword_diamond", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "reidite_sword",
-        recipe: [
-            ["diamond", 100],
-            ["amethyst", 80],
-            ["reidite", 40],
-            ["sword_amethyst", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "seed",
-        recipe: [
-            ["plant", 3]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 11
-    }, {
-        item: "wheat_seed",
-        recipe: [
-            ["wild_wheat", 3]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "pumpkin_seed",
-        recipe: [
-            ["pumpkin", 8]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "garlic_seed",
-        recipe: [
-            ["garlic", 8]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "thornbush_seed",
-        recipe: [
-            ["thornbush", 8]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "carrot_seed",
-        recipe: [
-            ["carrot", 8]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "tomato_seed",
-        recipe: [
-            ["tomato", 8]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "watermelon_seed",
-        recipe: [
-            ["watermelon", 16]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "aloe_vera_seed",
-        recipe: [
-            ["aloe_vera", 16]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "cooked_meat",
-        recipe: [
-            ["meat", 1]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 40
-    }, {
-        item: "foodfish_cooked",
-        recipe: [
-            ["foodfish", 1]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 3
-    }, {
-        item: "bread",
-        recipe: [
-            ["flour", 3]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 3,
-        bonus: 6
-    }, {
-        item: "cookie",
-        recipe: [
-            ["flour", 3],
-            ["plant", 1]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 3
-    }, {
-        item: "cake",
-        recipe: [
-            ["flour", 5],
-            ["plant", 2],
-            ["ice", 2]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "bandage",
-        recipe: [
-            ["cord", 2]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 110
-    }, {
-        item: "wall",
-        recipe: [
-            ["wood", 20]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 14
-    }, {
-        item: "stone_wall",
-        recipe: [
-            ["wall", 1],
-            ["stone", 17]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 16
-    }, {
-        item: "gold_wall",
-        recipe: [
-            ["stone_wall", 1],
-            ["gold", 14]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 17
-    }, {
-        item: "diamond_wall",
-        recipe: [
-            ["gold_wall", 1],
-            ["diamond", 11]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "amethyst_wall",
-        recipe: [
-            ["diamond_wall", 1],
-            ["amethyst", 8]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "reidite_wall",
-        recipe: [
-            ["amethyst_wall", 1],
-            ["reidite", 5]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "wood_door",
-        recipe: [
-            ["wood", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 8,
-        bonus: 22
-    }, {
-        item: "stone_door",
-        recipe: [
-            ["wood_door", 1],
-            ["stone", 27]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 8,
-        bonus: 25
-    }, {
-        item: "gold_door",
-        recipe: [
-            ["stone_door", 1],
-            ["gold", 24]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 8,
-        bonus: 28
-    }, {
-        item: "diamond_door",
-        recipe: [
-            ["gold_door", 1],
-            ["diamond", 21]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 8
-    }, {
-        item: "amethyst_door",
-        recipe: [
-            ["diamond_door", 1],
-            ["amethyst", 18]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 8
-    }, {
-        item: "reidite_door",
-        recipe: [
-            ["amethyst_door", 1],
-            ["reidite", 15]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 8
-    }, {
-        item: "spike",
-        recipe: [
-            ["wall", 1],
-            ["wood", 40],
-            ["stone", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20,
-        bonus: 57
-    }, {
-        item: "stone_spike",
-        recipe: [
-            ["stone_wall", 1],
-            ["stone", 70]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20,
-        bonus: 61
-    }, {
-        item: "gold_spike",
-        recipe: [
-            ["gold_wall", 1],
-            ["gold", 40],
-            ["stone", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20,
-        bonus: 69
-    }, {
-        item: "diamond_spike",
-        recipe: [
-            ["diamond_wall", 1],
-            ["diamond", 40],
-            ["stone", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "amethyst_spike",
-        recipe: [
-            ["amethyst_wall", 1],
-            ["amethyst", 40],
-            ["stone", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "reidite_spike",
-        recipe: [
-            ["reidite_wall", 1],
-            ["reidite", 40],
-            ["gold", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "wood_door_spike",
-        recipe: [
-            ["wood_door", 1],
-            ["wood", 80],
-            ["stone", 60]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20,
-        bonus: 74
-    }, {
-        item: "stone_door_spike",
-        recipe: [
-            ["stone_door", 1],
-            ["stone", 140]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20,
-        bonus: 82
-    }, {
-        item: "gold_door_spike",
-        recipe: [
-            ["gold_door", 1],
-            ["gold", 80],
-            ["stone", 60]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20,
-        bonus: 98
-    }, {
-        item: "diamond_door_spike",
-        recipe: [
-            ["diamond_door", 1],
-            ["diamond", 80],
-            ["stone", 60]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "amethyst_door_spike",
-        recipe: [
-            ["amethyst_door", 1],
-            ["amethyst", 80],
-            ["stone", 60]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "reidite_door_spike",
-        recipe: [
-            ["reidite_door", 1],
-            ["reidite", 80],
-            ["gold", 60]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "chest",
-        recipe: [
-            ["wood", 25],
-            ["gold", 2]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 16
-    }, {
-        item: "explorer_hat",
-        recipe: [
-            ["paper", 1],
-            ["fur", 1],
-            ["cord", 2]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "pirate_hat",
-        recipe: [
-            ["paper", 5],
-            ["penguin_feather", 20],
-            ["blue_cord", 5],
-            ["fur", 5]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 30
-    }, {
-        item: "pilot_helmet",
-        recipe: [
-            ["pilot_glasses", 1],
-            ["hawk_feather", 8],
-            ["vulture_feather", 8],
-            ["penguin_feather", 8],
-            ["cord", 6]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "earmuffs",
-        recipe: [
-            ["fur", 1],
-            ["cord", 2]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 140
-    }, {
-        item: "coat",
-        recipe: [
-            ["earmuffs", 1],
-            ["fur_wolf", 5],
-            ["cord", 4]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 12,
-        bonus: 474
-    }, {
-        item: "cap_scarf",
-        recipe: [
-            ["coat", 1],
-            ["fur_winter", 5],
-            ["blue_cord", 4]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 30
-    }, {
-        item: "fur_hat",
-        recipe: [
-            ["cap_scarf", 1],
-            ["fur_winter", 5],
-            ["fur_mammoth", 10],
-            ["blue_cord", 4]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 50
-    }, {
-        item: "wood_helmet",
-        recipe: [
-            ["wood", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 20
-    }, {
-        item: "stone_helmet",
-        recipe: [
-            ["stone", 75],
-            ["wood", 75],
-            ["wood_helmet", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 58
-    }, {
-        item: "gold_helmet",
-        recipe: [
-            ["stone", 90],
-            ["wood", 90],
-            ["gold", 90],
-            ["stone_helmet", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "diamond_helmet",
-        recipe: [
-            ["stone", 100],
-            ["gold", 100],
-            ["diamond", 100],
-            ["gold_helmet", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 30
-    }, {
-        item: "amethyst_helmet",
-        recipe: [
-            ["amethyst", 80],
-            ["gold", 150],
-            ["diamond", 120],
-            ["diamond_helmet", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "reidite_helmet",
-        recipe: [
-            ["reidite", 80],
-            ["diamond", 150],
-            ["amethyst", 120],
-            ["amethyst_helmet", 1]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "diving_mask",
-        recipe: [
-            ["scales", 2],
-            ["diamond", 40],
-            ["cord", 4]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "super_diving_suit",
-        recipe: [
-            ["diving_mask", 1],
-            ["gold", 80],
-            ["kraken_skin", 1],
-            ["amethyst", 20]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "diamond_protection",
-        recipe: [
-            ["flame", 5],
-            ["diamond", 50],
-            ["blue_cord", 5]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "amethyst_protection",
-        recipe: [
-            ["diamond_protection", 1],
-            ["flame", 10],
-            ["amethyst", 50]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "reidite_protection",
-        recipe: [
-            ["amethyst_protection", 1],
-            ["flame", 15],
-            ["amethyst", 50],
-            ["reidite", 50]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "turban1",
-        recipe: [
-            ["cord", 4],
-            ["fur_boar", 2]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 15
-    }, {
-        item: "turban2",
-        recipe: [
-            ["turban1", 1],
-            ["cord", 6],
-            ["fur_boar", 4],
-            ["vulture_feather", 12],
-            ["penguin_feather", 4]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 150
-    }, {
-        item: "bag",
-        recipe: [
-            ["cord", 6],
-            ["fur_wolf", 5]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 15,
-        bonus: 580
-    }, {
-        item: "paper",
-        recipe: [
-            ["wood", 20]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 3,
-        bonus: 10
-    }, {
-        item: "blue_cord",
-        recipe: [
-            ["diamond", 1],
-            ["cord", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 3
-    }, {
-        item: "lock",
-        recipe: [
-            ["gold", 10]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 15
-    }, {
-        item: "lockpick",
-        recipe: [
-            ["gold", 250]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60,
-        bonus: 245
-    }, {
-        item: "totem",
-        recipe: [
-            ["wood", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 30
-    }, {
-        item: "bridge",
-        recipe: [
-            ["wood", 15]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 13
-    }, {
-        item: "roof",
-        recipe: [
-            ["wood", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 16
-    }, {
-        item: "wood_tower",
-        recipe: [
-            ["wood", 120]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 15
-    }, {
-        item: "plot",
-        recipe: [
-            ["wood", 20],
-            ["ground", 15]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "bottle_empty",
-        recipe: [
-            ["sand", 25]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "bottle_full",
-        recipe: [
-            ["bottle_empty", 1]
-        ],
-        fire: 0,
-        water: 1,
-        workbench: 0,
-        well: 0,
-        time: 5
-    }, {
-        item: "bottle_full",
-        recipe: [
-            ["ice", 20],
-            ["bottle_empty", 1]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 10
-    }, {
-        item: "bottle_full",
-        recipe: [
-            ["bottle_empty", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 1,
-        time: 3
-    }, {
-        item: "windmill",
-        recipe: [
-            ["wood", 60],
-            ["stone", 20],
-            ["cord", 2]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10
-    }, {
-        item: "resurrection",
-        recipe: [
-            ["diamond", 40],
-            ["stone", 45]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "emerald_machine",
-        recipe: [
-            ["resurrection", 1],
-            ["emerald", 40],
-            ["sandworm_juice", 1]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 200
-    }, {
-        item: "extractor_machine_stone",
-        recipe: [
-            ["wood", 50],
-            ["stone", 100]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "extractor_machine_gold",
-        recipe: [
-            ["stone", 60],
-            ["gold", 120]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "extractor_machine_diamond",
-        recipe: [
-            ["gold", 70],
-            ["diamond", 140]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "extractor_machine_amethyst",
-        recipe: [
-            ["diamond", 80],
-            ["amethyst", 160]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "extractor_machine_reidite",
-        recipe: [
-            ["amethyst", 90],
-            ["reidite", 180]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "spanner",
-        recipe: [
-            ["stone", 70]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10
-    }, {
-        item: "machete",
-        recipe: [
-            ["stone", 70],
-            ["wood", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 51
-    }, {
-        item: "bread_oven",
-        recipe: [
-            ["wood", 40],
-            ["stone", 40]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 40
-    }, {
-        item: "sandwich",
-        recipe: [
-            ["bread", 1],
-            ["cooked_meat", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 0,
-        well: 0,
-        time: 3,
-        bonus: 6
-    }, {
-        item: "dragon_helmet",
-        recipe: [
-            ["blue_cord", 30],
-            ["dragon_cube", 1],
-            ["amethyst", 150],
-            ["dragon_heart", 3]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 120
-    }, {
-        item: "lava_helmet",
-        recipe: [
-            ["dragon_helmet", 1],
-            ["lava_cube", 1],
-            ["reidite", 150],
-            ["lava_heart", 2]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 180,
-        bonus: 9000
-    }, {
-        item: "crown_crab",
-        recipe: [
-            ["gold_helmet", 1],
-            ["crab_loot", 10],
-            ["crab_stick", 10],
-            ["cord", 10]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "dragon_sword",
-        recipe: [
-            ["blue_cord", 20],
-            ["dragon_orb", 1],
-            ["amethyst", 150],
-            ["dragon_heart", 3]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 120
-    }, {
-        item: "lava_sword",
-        recipe: [
-            ["dragon_sword", 1],
-            ["lava_orb", 1],
-            ["reidite", 150],
-            ["lava_heart", 2]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 180,
-        bonus: 10000
-    }, {
-        item: "wood_bow",
-        recipe: [
-            ["wood", 100],
-            ["cord", 4]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "wood_arrow",
-        recipe: [
-            ["wood", 30]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "stone_bow",
-        recipe: [
-            ["stone", 200],
-            ["cord", 8],
-            ["penguin_feather", 4],
-            ["wood_bow", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 25
-    }, {
-        item: "stone_arrow",
-        recipe: [
-            ["stone", 20],
-            ["hawk_feather", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "gold_bow",
-        recipe: [
-            ["gold", 200],
-            ["cord", 12],
-            ["hawk_feather", 4],
-            ["penguin_feather", 4],
-            ["stone_bow", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 30
-    }, {
-        item: "gold_arrow",
-        recipe: [
-            ["gold", 20],
-            ["penguin_feather", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10
-    }, {
-        item: "diamond_bow",
-        recipe: [
-            ["diamond", 200],
-            ["blue_cord", 10],
-            ["hawk_feather", 8],
-            ["penguin_feather", 8],
-            ["gold_bow", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 35
-    }, {
-        item: "diamond_arrow",
-        recipe: [
-            ["diamond", 10],
-            ["penguin_feather", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10
-    }, {
-        item: "amethyst_bow",
-        recipe: [
-            ["amethyst", 200],
-            ["blue_cord", 10],
-            ["penguin_feather", 8],
-            ["vulture_feather", 8],
-            ["diamond_bow", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 40
-    }, {
-        item: "amethyst_arrow",
-        recipe: [
-            ["amethyst", 10],
-            ["vulture_feather", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 15
-    }, {
-        item: "reidite_bow",
-        recipe: [
-            ["reidite", 200],
-            ["blue_cord", 10],
-            ["kraken_skin", 1],
-            ["amethyst_bow", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 45
-    }, {
-        item: "reidite_arrow",
-        recipe: [
-            ["reidite", 10],
-            ["vulture_feather", 1],
-            ["flame", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 15
-    }, {
-        item: "dragon_bow",
-        recipe: [
-            ["emerald", 200],
-            ["blue_cord", 10],
-            ["dragon_orb", 1],
-            ["reidite_bow", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 50
-    }, {
-        item: "dragon_arrow",
-        recipe: [
-            ["emerald", 10],
-            ["sandworm_juice", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "wood_shield",
-        recipe: [
-            ["wood", 100]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 25
-    }, {
-        item: "stone_shield",
-        recipe: [
-            ["wood_shield", 1],
-            ["stone", 100],
-            ["wood", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 40
-    }, {
-        item: "gold_shield",
-        recipe: [
-            ["stone_shield", 1],
-            ["gold", 50],
-            ["stone", 50],
-            ["wood", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 50
-    }, {
-        item: "diamond_shield",
-        recipe: [
-            ["gold_shield", 1],
-            ["diamond", 50],
-            ["gold", 50],
-            ["stone", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 70
-    }, {
-        item: "amethyst_shield",
-        recipe: [
-            ["diamond_shield", 1],
-            ["amethyst", 50],
-            ["diamond", 50],
-            ["gold", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 90
-    }, {
-        item: "reidite_shield",
-        recipe: [
-            ["amethyst_shield", 1],
-            ["reidite", 50],
-            ["amethyst", 50],
-            ["diamond", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 120
-    }, {
-        item: "crown_green",
-        recipe: [
-            ["gemme_green", 1],
-            ["gold", 200]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "crown_orange",
-        recipe: [
-            ["gemme_orange", 1],
-            ["gold", 200]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "crown_blue",
-        recipe: [
-            ["gemme_blue", 1],
-            ["gold", 200],
-            ["dragon_heart", 1]
-        ],
-        fire: 1,
-        water: 1,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "hood",
-        recipe: [
-            ["fur_wolf", 10],
-            ["fur", 5],
-            ["cord", 6]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 970
-    }, {
-        item: "peasant",
-        recipe: [
-            ["fur", 3],
-            ["cord", 2]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10,
-        bonus: 214
-    }, {
-        item: "winter_hood",
-        recipe: [
-            ["hood", 1],
-            ["special_fur_", 1],
-            ["fur_winter", 15],
-            ["blue_cord", 5],
-            ["penguin_feather", 8]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "winter_peasant",
-        recipe: [
-            ["peasant", 1],
-            ["special_fur", 1],
-            ["fur_winter", 10],
-            ["blue_cord", 5],
-            ["penguin_feather", 8]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 60
-    }, {
-        item: "bucket_full",
-        recipe: [
-            ["bucket_empty", 1]
-        ],
-        fire: 0,
-        water: 1,
-        workbench: 0,
-        well: 0,
-        time: 5,
-        bonus: 10
-    }, {
-        item: "bucket_empty",
-        recipe: [
-            ["wood", 20],
-            ["cord", 1]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5,
-        bonus: 64
-    }, {
-        item: "well",
-        recipe: [
-            ["stone", 100],
-            ["ground", 30]
-        ],
-        fire: 1,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 10
-    }, {
-        item: "sign",
-        recipe: [
-            ["wood", 20]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 5
-    }, {
-        item: "bed",
-        recipe: [
-            ["wood", 100],
-            ["stone", 50],
-            ["fur", 5],
-            ["fur_wolf", 5],
-            ["cord", 6]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "boat",
-        recipe: [
-            ["wood", 250],
-            ["blue_cord", 10],
-            ["fur_winter", 2],
-            ["scales", 2]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 50
-    }, {
-        item: "sled",
-        recipe: [
-            ["wood", 250],
-            ["cord", 10],
-            ["fur_winter", 2],
-            ["penguin_feather", 8]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 50
-    }, {
-        item: "saddle",
-        recipe: [
-            ["cord", 10],
-            ["fur_wolf", 6],
-            ["fur", 4],
-            ["sand", 50]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 20
-    }, {
-        item: "plane",
-        recipe: [
-            ["wood", 250],
-            ["cord", 10],
-            ["paper", 10],
-            ["hawk_feather", 8]
-        ],
-        fire: 0,
-        water: 0,
-        workbench: 1,
-        well: 0,
-        time: 50
-    }];
+import {ItemType} from "../enums/types/ItemType";
+
+export const RECIPES = [] as Recipe[];
+
+RECIPES[ItemType.WOOD_SWORD] = {
+    r: [
+        [ItemType.WOOD, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+
+RECIPES[ItemType.STONE_SWORD] = {
+    r: [
+        [ItemType.WOOD, 50],
+        [ItemType.STONE, 25],
+        [ItemType.WOOD_SWORD, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+
+RECIPES[ItemType.GOLD_SWORD] = {
+    r: [
+        [ItemType.WOOD, 60],
+        [ItemType.GOLD, 40],
+        [ItemType.STONE, 50],
+        [ItemType.STONE_SWORD, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_SWORD] = {
+    r: [
+        [ItemType.DIAMOND, 40],
+        [ItemType.GOLD, 60],
+        [ItemType.STONE, 80],
+        [ItemType.GOLD_SWORD, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 30,
+    bonus: 0
+}
+
+RECIPES[ItemType.AMETHYST_SWORD] ={
+    r: [
+        [ItemType.DIAMOND, 60],
+        [ItemType.GOLD, 100],
+        [ItemType.AMETHYST, 40],
+        [ItemType.DIAMOND_SWORD, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+
+RECIPES[ItemType.REIDITE_SWORD] = {
+    r: [
+        [ItemType.DIAMOND, 100],
+        [ItemType.AMETHYST, 80],
+        [ItemType.REIDITE, 40],
+        [ItemType.AMETHYST_SWORD, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+
+RECIPES[ItemType.DRAGON_SWORD] = {
+    r: [
+        [ItemType.DIAMOND_CORD, 20],
+        [ItemType.DRAGON_ORB, 1],
+        [ItemType.AMETHYST, 150],
+        [ItemType.DRAGON_HEART, 3]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 120,
+    bonus: 0
+}
+
+RECIPES[ItemType.LAVA_SWORD] = {
+    r: [
+        [ItemType.DRAGON_SWORD, 1],
+        [ItemType.LAVA_ORB, 1],
+        [ItemType.REIDITE, 150],
+        [ItemType.LAVA_HEART, 2]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 180,
+    bonus: 0
+}
+
+RECIPES[ItemType.WOOD_SPEAR] = {
+    r: [
+        [ItemType.WOOD, 40]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+
+RECIPES[ItemType.STONE_SPEAR] = {
+    r: [
+        [ItemType.WOOD_SPEAR, 1],
+        [ItemType.WOOD, 60],
+        [ItemType.STONE, 10]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+
+RECIPES[ItemType.GOLD_SPEAR] = {
+    r: [
+        [ItemType.WOOD, 80],
+        [ItemType.GOLD, 30],
+        [ItemType.STONE, 30],
+        [ItemType.STONE_SPEAR, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_SPEAR] = {
+    r: [
+        [ItemType.WOOD, 200],
+        [ItemType.DIAMOND, 40],
+        [ItemType.GOLD, 60],
+        [ItemType.GOLD_SPEAR, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 30,
+    bonus: 0
+}
+
+RECIPES[ItemType.AMETHYST_SPEAR] = {
+    r: [
+        [ItemType.AMETHYST, 40],
+        [ItemType.DIAMOND, 80],
+        [ItemType.GOLD, 90],
+        [ItemType.DIAMOND_SPEAR, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+
+RECIPES[ItemType.REIDITE_SPEAR] = {
+    r: [
+        [ItemType.REIDITE, 40],
+        [ItemType.AMETHYST, 80],
+        [ItemType.DIAMOND, 90],
+        [ItemType.AMETHYST_SPEAR, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+
+RECIPES[ItemType.DRAGON_SPEAR] = {
+    r: [
+        [ItemType.DIAMOND_CORD, 20],
+        [ItemType.DRAGON_ORB, 1],
+        [ItemType.AMETHYST, 100],
+        [ItemType.DRAGON_HEART, 3]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 120,
+    bonus: 0
+}
+RECIPES[ItemType.LAVA_SPEAR] = {
+    r: [
+        [ItemType.DRAGON_SPEAR, 1],
+        [ItemType.LAVA_ORB, 1],
+        [ItemType.REIDITE, 100],
+        [ItemType.LAVA_HEART, 2]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 200,
+    bonus: 0
+}
+RECIPES[ItemType.CRAB_SPEAR] = {
+    r: [
+        [ItemType.WOOD_SPEAR, 1],
+        [ItemType.CRAB_LOOT, 5],
+        [ItemType.CORD, 6]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 30,
+    bonus: 0
+}
+RECIPES[ItemType.WOOD_BOW] = {
+    r: [
+        [ItemType.WOOD, 100],
+        [ItemType.CORD, 4]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_BOW] = {
+    r: [
+        [ItemType.STONE, 200],
+        [ItemType.CORD, 8],
+        [ItemType.PENGUIN_FEATHER, 4],
+        [ItemType.WOOD_BOW, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 25,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_BOW] = {
+    r: [
+        [ItemType.GOLD, 200],
+        [ItemType.CORD, 12],
+        [ItemType.HAWK_FEATHER, 4],
+        [ItemType.PENGUIN_FEATHER, 4],
+        [ItemType.STONE_BOW, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 30,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_BOW] = {
+    r: [
+        [ItemType.DIAMOND, 200],
+        [ItemType.DIAMOND_CORD, 10],
+        [ItemType.HAWK_FEATHER, 8],
+        [ItemType.PENGUIN_FEATHER, 8],
+        [ItemType.GOLD_BOW, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 35,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_BOW] = {
+    r: [
+        [ItemType.AMETHYST, 200],
+        [ItemType.DIAMOND_CORD, 10],
+        [ItemType.PENGUIN_FEATHER, 8],
+        [ItemType.VULTURE_FEATHER, 8],
+        [ItemType.DIAMOND_BOW, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 40,
+    bonus: 0
+}
+RECIPES[ItemType.REIDITE_BOW] = {
+    r: [
+        [ItemType.REIDITE, 200],
+        [ItemType.DIAMOND_CORD, 10],
+        [ItemType.KRAKEN_FUR, 1],
+        [ItemType.AMETHYST_BOW, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 45,
+    bonus: 0
+}
+RECIPES[ItemType.DRAGON_BOW] = {
+    r: [
+        [ItemType.EMERALD, 200],
+        [ItemType.DIAMOND_CORD, 10],
+        [ItemType.DRAGON_ORB, 1],
+        [ItemType.REIDITE_BOW, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 50,
+    bonus: 0
+}
+RECIPES[ItemType.WOOD_ARROW] = {
+    r: [
+        [ItemType.WOOD, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_ARROW] = {
+    r: [
+        [ItemType.STONE, 20],
+        [ItemType.HAWK_FEATHER, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_ARROW] = {
+    r: [
+        [ItemType.GOLD, 20],
+        [ItemType.PENGUIN_FEATHER, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.DIAMOND_ARROW] = {
+    r: [
+        [ItemType.DIAMOND, 10],
+        [ItemType.PENGUIN_FEATHER, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_ARROW] = {
+    r: [
+        [ItemType.AMETHYST, 10],
+        [ItemType.VULTURE_FEATHER, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 15,
+    bonus: 0
+}
+RECIPES[ItemType.REIDITE_ARROW] = {
+    r: [
+        [ItemType.REIDITE, 10],
+        [ItemType.VULTURE_FEATHER, 1],
+        [ItemType.FLAME, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 15,
+    bonus: 0
+}
+RECIPES[ItemType.DRAGON_ARROW] = {
+    r: [
+        [ItemType.EMERALD, 10],
+        [ItemType.SANDWORM_JUICE, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.WOOD_SHIELD] = {
+    r: [
+        [ItemType.WOOD, 100]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 25,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_SHIELD] = {
+    r: [
+        [ItemType.WOOD_SHIELD, 1],
+        [ItemType.STONE, 100],
+        [ItemType.WOOD, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 40,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_SHIELD] = {
+    r: [
+        [ItemType.STONE_SHIELD, 1],
+        [ItemType.GOLD, 50],
+        [ItemType.STONE, 50],
+        [ItemType.WOOD, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 50,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_SHIELD] = {
+    r: [
+        [ItemType.GOLD_SHIELD, 1],
+        [ItemType.DIAMOND, 50],
+        [ItemType.GOLD, 50],
+        [ItemType.STONE, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 70,
+    bonus: 0
+}
+
+RECIPES[ItemType.AMETHYST_SHIELD] = {
+    r: [
+        [ItemType.DIAMOND_SHIELD, 1],
+        [ItemType.AMETHYST, 50],
+        [ItemType.DIAMOND, 50],
+        [ItemType.GOLD, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+
+RECIPES[ItemType.REIDITE_SHIELD] = {
+    r: [
+        [ItemType.AMETHYST_SHIELD, 1],
+        [ItemType.REIDITE, 50],
+        [ItemType.AMETHYST, 50],
+        [ItemType.DIAMOND, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 120,
+    bonus: 0
+}
+
+RECIPES[ItemType.WOOD_PICK] = {
+    r: [
+        [ItemType.WOOD, 10]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+
+RECIPES[ItemType.STONE_PICK] = {
+    r: [
+        [ItemType.WOOD_PICK, 1],
+        [ItemType.WOOD, 50],
+        [ItemType.STONE, 15]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 8,
+    bonus: 0
+}
+
+RECIPES[ItemType.GOLD_PICK] = {
+    r: [
+        [ItemType.WOOD, 40],
+        [ItemType.GOLD, 20],
+        [ItemType.STONE, 30],
+        [ItemType.STONE_PICK, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 12,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_PICK] = {
+    r: [
+        [ItemType.DIAMOND, 20],
+        [ItemType.GOLD, 50],
+        [ItemType.STONE, 80],
+        [ItemType.GOLD_PICK, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+
+RECIPES[ItemType.AMETHYST_PICK] = {
+    r: [
+        [ItemType.DIAMOND, 40],
+        [ItemType.GOLD, 60],
+        [ItemType.AMETHYST, 30],
+        [ItemType.DIAMOND_PICK, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+
+RECIPES[ItemType.REIDITE_PICK] = {
+    r: [
+        [ItemType.AMETHYST, 30],
+        [ItemType.DIAMOND, 40],
+        [ItemType.REIDITE, 30],
+        [ItemType.AMETHYST_PICK, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+
+RECIPES[ItemType.STONE_SHOVEL] = {
+    r: [
+        [ItemType.WOOD, 30],
+        [ItemType.STONE, 15]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+
+RECIPES[ItemType.GOLD_SHOVEL] = {
+    r: [
+        [ItemType.STONE_SHOVEL, 1],
+        [ItemType.GOLD, 20],
+        [ItemType.STONE, 30],
+        [ItemType.WOOD, 40]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_SHOVEL] = {
+    r: [
+        [ItemType.GOLD_SHOVEL, 1],
+        [ItemType.DIAMOND, 20],
+        [ItemType.GOLD, 50],
+        [ItemType.STONE, 80]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+
+RECIPES[ItemType.AMETHYST_SHOVEL] = {
+    r: [
+        [ItemType.DIAMOND_SHOVEL, 1],
+        [ItemType.GOLD, 60],
+        [ItemType.AMETHYST, 30],
+        [ItemType.DIAMOND, 40]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 40,
+    bonus: 0
+}
+
+RECIPES[ItemType.WOOD_HELMET] = {
+    r: [
+        [ItemType.WOOD, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+
+RECIPES[ItemType.STONE_HELMET] = {
+    r: [
+        [ItemType.STONE, 75],
+        [ItemType.WOOD, 75],
+        [ItemType.WOOD_HELMET, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+
+RECIPES[ItemType.GOLD_HELMET] = {
+    r: [
+        [ItemType.STONE, 90],
+        [ItemType.WOOD, 90],
+        [ItemType.GOLD, 90],
+        [ItemType.STONE_HELMET, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_HELMET] = {
+    r: [
+        [ItemType.STONE, 100],
+        [ItemType.GOLD, 100],
+        [ItemType.DIAMOND, 100],
+        [ItemType.GOLD_HELMET, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 30,
+    bonus: 0
+}
+
+RECIPES[ItemType.AMETHYST_HELMET] = {
+    r: [
+        [ItemType.AMETHYST, 80],
+        [ItemType.GOLD, 150],
+        [ItemType.DIAMOND, 120],
+        [ItemType.DIAMOND_HELMET, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+
+RECIPES[ItemType.REIDITE_HELMET] = {
+    r: [
+        [ItemType.REIDITE, 80],
+        [ItemType.DIAMOND, 150],
+        [ItemType.AMETHYST, 120],
+        [ItemType.AMETHYST_HELMET, 1]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+
+RECIPES[ItemType.DRAGON_HELMET] = {
+    r: [
+        [ItemType.DIAMOND_CORD, 30],
+        [ItemType.DRAGON_CUBE, 1],
+        [ItemType.AMETHYST, 150],
+        [ItemType.DRAGON_HEART, 3]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 120,
+    bonus: 0
+}
+
+RECIPES[ItemType.LAVA_HELMET] = {
+    r: [
+        [ItemType.DRAGON_HELMET, 1],
+        [ItemType.LAVA_CUBE, 1],
+        [ItemType.REIDITE, 150],
+        [ItemType.LAVA_HEART, 2]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 180,
+    bonus: 0
+}
+
+RECIPES[ItemType.CRAB_HELMET] = {
+    r: [
+        [ItemType.GOLD_HELMET, 1],
+        [ItemType.CRAB_LOOT, 10],
+        [ItemType.CRAB_STICK, 10],
+        [ItemType.CORD, 10]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_PROTECTION] = {
+    r: [
+        [ItemType.FLAME, 5],
+        [ItemType.DIAMOND, 50],
+        [ItemType.DIAMOND_CORD, 5]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_PROTECTION] = {
+    r: [
+        [ItemType.DIAMOND_PROTECTION, 1],
+        [ItemType.FLAME, 10],
+        [ItemType.AMETHYST, 50]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.REIDITE_PROTECTION] = {
+    r: [
+        [ItemType.AMETHYST_PROTECTION, 1],
+        [ItemType.FLAME, 15],
+        [ItemType.AMETHYST, 50],
+        [ItemType.REIDITE, 50]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+RECIPES[ItemType.SUPER_DIVING_SUIT] = {
+    r: [
+        [ItemType.DIVING_MASK, 1],
+        [ItemType.GOLD, 80],
+        [ItemType.KRAKEN_FUR, 1],
+        [ItemType.AMETHYST, 20]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+RECIPES[ItemType.DIVING_MASK] = {
+    r: [
+        [ItemType.PIRANHA_SCALES, 2],
+        [ItemType.DIAMOND, 40],
+        [ItemType.CORD, 4]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_HAMMER] = {
+    r: [
+        [ItemType.WOOD, 90],
+        [ItemType.STONE, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_HAMMER] = {
+    r: [
+        [ItemType.WOOD, 160],
+        [ItemType.STONE, 120],
+        [ItemType.GOLD, 80],
+        [ItemType.STONE_HAMMER, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 15,
+    bonus: 0
+}
+RECIPES[ItemType.DIAMOND_HAMMER] = {
+    r: [
+        [ItemType.DIAMOND, 80],
+        [ItemType.STONE, 200],
+        [ItemType.GOLD, 150],
+        [ItemType.GOLD_HAMMER, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_HAMMER] = {
+    r: [
+        [ItemType.DIAMOND, 160],
+        [ItemType.AMETHYST, 60],
+        [ItemType.GOLD, 250],
+        [ItemType.DIAMOND_HAMMER, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.REIDITE_HAMMER] = {
+    r: [
+        [ItemType.AMETHYST, 160],
+        [ItemType.REIDITE, 60],
+        [ItemType.DIAMOND, 250],
+        [ItemType.AMETHYST_HAMMER, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+RECIPES[ItemType.SUPER_HAMMER] = {
+    r: [
+        [ItemType.REIDITE_HAMMER, 1],
+        [ItemType.BOTTLE_FULL, 1],
+        [ItemType.KRAKEN_FUR, 1],
+        [ItemType.PIRANHA_SCALES, 10],
+        [ItemType.AMETHYST, 20]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 120,
+    bonus: 0
+}
+RECIPES[ItemType.CROWN_GREEN] = {
+    r: [
+        [ItemType.GEM_GREEN, 1],
+        [ItemType.GOLD, 200]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.CROWN_ORANGE] = {
+    r: [
+        [ItemType.GEM_ORANGE, 1],
+        [ItemType.GOLD, 200]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.CROWN_BLUE] = {
+    r: [
+        [ItemType.GEM_BLUE, 1],
+        [ItemType.GOLD, 200],
+        [ItemType.DRAGON_HEART, 1]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.FIRE] = {
+    r: [
+        [ItemType.WOOD, 25],
+        [ItemType.STONE, 5]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.BIG_FIRE] = {
+    r: [
+        [ItemType.FIRE, 1],
+        [ItemType.WOOD, 35],
+        [ItemType.STONE, 10]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.FURNACE] = {
+    r: [
+        [ItemType.WOOD, 150],
+        [ItemType.STONE, 50],
+        [ItemType.GOLD, 15]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.WORKBENCH] = {
+    r: [
+        [ItemType.WOOD, 20],
+        [ItemType.STONE, 10]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 6,
+    bonus: 0
+}
+RECIPES[ItemType.PAPER] = {
+    r: [
+        [ItemType.WOOD, 20]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_EXTRACTOR] = {
+    r: [
+        [ItemType.WOOD, 50],
+        [ItemType.STONE, 100]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_EXTRACTOR] = {
+    r: [
+        [ItemType.STONE, 60],
+        [ItemType.GOLD, 120]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+RECIPES[ItemType.DIAMOND_EXTRACTOR] = {
+    r: [
+        [ItemType.GOLD, 70],
+        [ItemType.DIAMOND, 140]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_EXTRACTOR] = {
+    r: [
+        [ItemType.DIAMOND, 80],
+        [ItemType.AMETHYST, 160]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+RECIPES[ItemType.REIDITE_EXTRACTOR] = {
+    r: [
+        [ItemType.AMETHYST, 90],
+        [ItemType.REIDITE, 180]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 90,
+    bonus: 0
+}
+RECIPES[ItemType.EARMUFFS] = {
+    r: [
+        [ItemType.RABBIT_FUR, 1],
+        [ItemType.CORD, 2]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.COAT] = {
+    r: [
+        [ItemType.EARMUFFS, 1],
+        [ItemType.WOLF_FUR, 5],
+        [ItemType.CORD, 4]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 12,
+    bonus: 0
+}
+RECIPES[ItemType.CAP_SCARF] = {
+    r: [
+        [ItemType.COAT, 1],
+        [ItemType.WINTER_FUR, 5],
+        [ItemType.DIAMOND_CORD, 4]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 30,
+    bonus: 0
+}
+RECIPES[ItemType.FUR_HAT] = {
+    r: [
+        [ItemType.CAP_SCARF, 1],
+        [ItemType.WINTER_FUR, 5],
+        [ItemType.MAMMOTH_FUR, 10],
+        [ItemType.DIAMOND_CORD, 4]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 50,
+    bonus: 0
+}
+RECIPES[ItemType.HOOD] = {
+    r: [
+        [ItemType.WOLF_FUR, 10],
+        [ItemType.RABBIT_FUR, 5],
+        [ItemType.CORD, 6]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.PEASANT] = {
+    r: [
+        [ItemType.RABBIT_FUR, 3],
+        [ItemType.CORD, 2]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.WINTER_HOOD] = {
+    r: [
+        [ItemType.HOOD, 1],
+        [ItemType.WINTER_HOOD_FUR, 1],
+        [ItemType.WINTER_FUR, 15],
+        [ItemType.DIAMOND_CORD, 5],
+        [ItemType.PENGUIN_FEATHER, 8]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.WINTER_PEASANT] = {
+    r: [
+        [ItemType.PEASANT, 1],
+        [ItemType.WINTER_PEASANT_FUR, 1],
+        [ItemType.WINTER_FUR, 10],
+        [ItemType.DIAMOND_CORD, 5],
+        [ItemType.PENGUIN_FEATHER, 8]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.PILOT_HAT] = {
+    r: [
+        [ItemType.PILOT_GLASSES, 1],
+        [ItemType.HAWK_FEATHER, 8],
+        [ItemType.VULTURE_FEATHER, 8],
+        [ItemType.PENGUIN_FEATHER, 8],
+        [ItemType.CORD, 6]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.TURBAN1] = {
+    r: [
+        [ItemType.CORD, 4],
+        [ItemType.BOAR_FUR, 2]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 15,
+    bonus: 0
+}
+RECIPES[ItemType.TURBAN2] = {
+    r: [
+        [ItemType.TURBAN1, 1],
+        [ItemType.CORD, 6],
+        [ItemType.BOAR_FUR, 4],
+        [ItemType.VULTURE_FEATHER, 12],
+        [ItemType.PENGUIN_FEATHER, 4]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 150,
+    bonus: 0
+}
+RECIPES[ItemType.BOOK] = {
+    r: [
+        [ItemType.PAPER, 4],
+        [ItemType.CORD, 4],
+        [ItemType.WOLF_FUR, 4]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 15,
+    bonus: 0
+}
+RECIPES[ItemType.BAG] = {
+    r: [
+        [ItemType.CORD, 6],
+        [ItemType.WOLF_FUR, 5]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 15,
+    bonus: 0
+}
+RECIPES[ItemType.EXPLORER_HAT] = {
+    r: [
+        [ItemType.PAPER, 1],
+        [ItemType.RABBIT_FUR, 1],
+        [ItemType.CORD, 2]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.PIRATE_HAT] = {
+    r: [
+        [ItemType.PAPER, 5],
+        [ItemType.PENGUIN_FEATHER, 20],
+        [ItemType.DIAMOND_CORD, 5],
+        [ItemType.RABBIT_FUR, 5]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 30,
+    bonus: 0
+}
+RECIPES[ItemType.PITCHFORK] = {
+    r: [
+        [ItemType.WOOD, 100],
+        [ItemType.STONE, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_PITCHFORK] = {
+    r: [
+        [ItemType.PITCHFORK, 1],
+        [ItemType.PITCHFORK_PART, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.WRENCH] = {
+    r: [
+        [ItemType.STONE, 70]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.MACHETE] = {
+    r: [
+        [ItemType.STONE, 70],
+        [ItemType.WOOD, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.WATERING_CAN_EMPTY] = {
+    r: [
+        [ItemType.WOOD, 40]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 8,
+    bonus: 0
+}
+RECIPES[ItemType.WATERING_CAN_FULL] = {
+    r: [
+        [ItemType.WATERING_CAN_EMPTY, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 1,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.BRIDGE] = {
+    r: [
+        [ItemType.WOOD, 15]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.TOWER] = {
+    r: [
+        [ItemType.WOOD, 120]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 15,
+    bonus: 0
+}
+RECIPES[ItemType.SADDLE] = {
+    r: [
+        [ItemType.CORD, 10],
+        [ItemType.WOLF_FUR, 6],
+        [ItemType.RABBIT_FUR, 4],
+        [ItemType.SAND, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.WINDMILL] = {
+    r: [
+        [ItemType.WOOD, 60],
+        [ItemType.STONE, 20],
+        [ItemType.CORD, 2]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.PLOT] = {
+    r: [
+        [ItemType.WOOD, 20],
+        [ItemType.GROUND, 15]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.BREAD_OVEN] = {
+    r: [
+        [ItemType.WOOD, 40],
+        [ItemType.STONE, 40]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+
+RECIPES[ItemType.DIAMOND_CORD] = {
+    r: [
+        [ItemType.DIAMOND, 1],
+        [ItemType.CORD, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.RESURRECTION] = {
+    r: [
+        [ItemType.DIAMOND, 40],
+        [ItemType.STONE, 45]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.EMERALD_MACHINE] = {
+    r: [
+        [ItemType.RESURRECTION, 1],
+        [ItemType.EMERALD, 40],
+        [ItemType.SANDWORM_JUICE, 1]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 1,
+    time: 200,
+    bonus: 0
+}
+RECIPES[ItemType.LOCK_PICK] = {
+    r: [
+        [ItemType.GOLD, 250]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 60,
+    bonus: 0
+}
+RECIPES[ItemType.LOCK] = {
+    r: [
+        [ItemType.GOLD, 10]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.TOTEM] = {
+    r: [
+        [ItemType.WOOD, 50]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.CHEST] = {
+    r: [
+        [ItemType.WOOD, 25],
+        [ItemType.GOLD, 2]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.WELL] = {
+    r: [
+        [ItemType.STONE, 100],
+        [ItemType.GROUND, 30]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 10,
+    bonus: 0
+}
+RECIPES[ItemType.BANDAGE] = {
+    r: [
+        [ItemType.CORD, 2]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.ROOF] = {
+    r: [
+        [ItemType.WOOD, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.BED] = {
+    r: [
+        [ItemType.WOOD, 100],
+        [ItemType.STONE, 50],
+        [ItemType.RABBIT_FUR, 5],
+        [ItemType.WOLF_FUR, 5],
+        [ItemType.CORD, 6]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.BOAT] = {
+    r: [
+        [ItemType.WOOD, 250],
+        [ItemType.DIAMOND_CORD, 10],
+        [ItemType.WINTER_FUR, 2],
+        [ItemType.PIRANHA_SCALES, 2]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 50,
+    bonus: 0
+}
+RECIPES[ItemType.SLED] = {
+    r: [
+        [ItemType.WOOD, 250],
+        [ItemType.CORD, 10],
+        [ItemType.WINTER_FUR, 2],
+        [ItemType.PENGUIN_FEATHER, 8]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 50,
+    bonus: 0
+}
+RECIPES[ItemType.PLANE] = {
+    r: [
+        [ItemType.WOOD, 250],
+        [ItemType.CORD, 10],
+        [ItemType.PAPER, 10],
+        [ItemType.HAWK_FEATHER, 8]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 50,
+    bonus: 0
+}
+RECIPES[ItemType.BERRY_SEED] = {
+    r: [
+        [ItemType.BERRY, 3]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.WHEAT_SEED] = {
+    r: [
+        [ItemType.WHEAT, 3]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.PUMPKIN_SEED] = {
+    r: [
+        [ItemType.PUMPKIN, 8]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.CARROT_SEED] = {
+    r: [
+        [ItemType.CARROT, 8]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.TOMATO_SEED] = {
+    r: [
+        [ItemType.TOMATO, 8]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.THORNBUSH_SEED] = {
+    r: [
+        [ItemType.THORNBUSH, 8]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.GARLIC_SEED] = {
+    r: [
+        [ItemType.GARLIC, 8]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.WATERMELON_SEED] = {
+    r: [
+        [ItemType.WATERMELON, 16]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.ALOE_VERA_SEED] = {
+    r: [
+        [ItemType.ALOE_VERA, 16]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.BREAD] = {
+    r: [
+        [ItemType.FLOUR, 3]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.SANDWICH] = {
+    r: [
+        [ItemType.BREAD, 1],
+        [ItemType.COOKED_MEAT, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.BOTTLE_FULL] = {
+    r: [
+        [ItemType.BOTTLE_EMPTY, 1]
+    ],
+    f: 0,
+    e: 1,
+    w: 0,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.BOTTLE_FULL_2] = {
+    r: [
+        [ItemType.BOTTLE_EMPTY, 1],
+        [ItemType.ICE, 20]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.BOTTLE_FULL_3] = {
+    r: [
+        [ItemType.BOTTLE_EMPTY, 1],
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 1,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.BOTTLE_EMPTY] = {
+    r: [
+        [ItemType.SAND, 25]
+    ],
+    f: 1,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.COOKIE] = {
+    r: [
+        [ItemType.FLOUR, 3],
+        [ItemType.BERRY, 1]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.CAKE] = {
+    r: [
+        [ItemType.FLOUR, 5],
+        [ItemType.BERRY, 2],
+        [ItemType.ICE, 2]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.FISH_COOKED] = {
+    r: [
+        [ItemType.FISH, 1]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 3,
+    bonus: 0
+}
+RECIPES[ItemType.COOKED_MEAT] = {
+    r: [
+        [ItemType.MEAT, 1]
+    ],
+    f: 1,
+    e: 0,
+    w: 0,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.BUCKET_FULL] = {
+    r: [
+        [ItemType.BUCKET_EMPTY, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 0,
+    o: 1,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.BUCKET_EMPTY] = {
+    r: [
+        [ItemType.WOOD, 20],
+        [ItemType.CORD, 1]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.WOOD_WALL] = {
+    r: [
+        [ItemType.WOOD, 20]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_WALL] = {
+    r: [
+        [ItemType.WOOD_WALL, 1],
+        [ItemType.STONE, 17]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_WALL] = {
+    r: [
+        [ItemType.STONE_WALL, 1],
+        [ItemType.GOLD, 14]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.DIAMOND_WALL] = {
+    r: [
+        [ItemType.GOLD_WALL, 1],
+        [ItemType.DIAMOND, 11]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_WALL] = {
+    r: [
+        [ItemType.DIAMOND_WALL, 1],
+        [ItemType.AMETHYST, 8]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.REIDITE_WALL] = {
+    r: [
+        [ItemType.AMETHYST_WALL, 1],
+        [ItemType.REIDITE, 5]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 5,
+    bonus: 0
+}
+RECIPES[ItemType.WOOD_SPIKE] = {
+    r: [
+        [ItemType.WOOD_WALL, 1],
+        [ItemType.WOOD, 40],
+        [ItemType.STONE, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_SPIKE] = {
+    r: [
+        [ItemType.STONE_WALL, 1],
+        [ItemType.STONE, 70]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_SPIKE] = {
+    r: [
+        [ItemType.GOLD_WALL, 1],
+        [ItemType.GOLD, 40],
+        [ItemType.STONE, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.DIAMOND_SPIKE] = {
+    r: [
+        [ItemType.DIAMOND_WALL, 1],
+        [ItemType.DIAMOND, 40],
+        [ItemType.STONE, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_SPIKE] = {
+    r: [
+        [ItemType.AMETHYST_WALL, 1],
+        [ItemType.AMETHYST, 40],
+        [ItemType.STONE, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.REIDITE_SPIKE] = {
+    r: [
+        [ItemType.REIDITE_WALL, 1],
+        [ItemType.REIDITE, 40],
+        [ItemType.GOLD, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.WOOD_DOOR] = {
+    r: [
+        [ItemType.WOOD, 30]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 8,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_DOOR] = {
+    r: [
+        [ItemType.WOOD_DOOR, 1],
+        [ItemType.STONE, 27]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 8,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_DOOR] = {
+    r: [
+        [ItemType.STONE_DOOR, 1],
+        [ItemType.GOLD, 24]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 8,
+    bonus: 0
+}
+RECIPES[ItemType.DIAMOND_DOOR] = {
+    r: [
+        [ItemType.GOLD_DOOR, 1],
+        [ItemType.DIAMOND, 21]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 8,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_DOOR] = {
+    r: [
+        [ItemType.DIAMOND_DOOR, 1],
+        [ItemType.AMETHYST, 18]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 8,
+    bonus: 0
+}
+RECIPES[ItemType.REIDITE_DOOR] = {
+    r: [
+        [ItemType.AMETHYST_DOOR, 1],
+        [ItemType.REIDITE, 15]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 8,
+    bonus: 0
+}
+RECIPES[ItemType.WOOD_DOOR_SPIKE] = {
+    r: [
+        [ItemType.WOOD_DOOR, 1],
+        [ItemType.WOOD, 80],
+        [ItemType.STONE, 60]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.STONE_DOOR_SPIKE] = {
+    r: [
+        [ItemType.STONE_DOOR, 1],
+        [ItemType.STONE, 140]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.GOLD_DOOR_SPIKE] = {
+    r: [
+        [ItemType.GOLD_DOOR, 1],
+        [ItemType.GOLD, 80],
+        [ItemType.STONE, 60]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.DIAMOND_DOOR_SPIKE] = {
+    r: [
+        [ItemType.DIAMOND_DOOR, 1],
+        [ItemType.DIAMOND, 80],
+        [ItemType.STONE, 60]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+RECIPES[ItemType.AMETHYST_DOOR_SPIKE] = {
+    r: [
+        [ItemType.AMETHYST_DOOR, 1],
+        [ItemType.AMETHYST, 80],
+        [ItemType.STONE, 60]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
+}
+
+RECIPES[ItemType.REIDITE_DOOR_SPIKE] = {
+    r: [
+        [ItemType.REIDITE_DOOR, 1],
+        [ItemType.REIDITE, 80],
+        [ItemType.GOLD, 60]
+    ],
+    f: 0,
+    e: 0,
+    w: 1,
+    o: 0,
+    time: 20,
+    bonus: 0
 }

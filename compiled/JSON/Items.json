@@ -49,20 +49,20 @@
         "damage": 10,
         "id": 12
     },
-    "STONE_SPEAR": {
+    "SPEAR": {
         "type": "weapon",
         "damage": 14,
-        "id": 96
+        "id": 13
     },
     "GOLD_SPEAR": {
         "type": "weapon",
         "damage": 15,
-        "id": 97
+        "id": 14
     },
     "DIAMOND_SPEAR": {
         "type": "weapon",
         "damage": 17,
-        "id": 98
+        "id": 15
     },
     "AMETHYST_SPEAR": {
         "type": "weapon",
@@ -89,13 +89,17 @@
         "damage": 24,
         "id": 17
     },
+    "WOOD_BOW": {
+        "type": "weapon",
+        "id": 64
+    },
     "PICK_WOOD": {
         "type": "tool",
         "harvest": 2,
         "damage": 1,
         "id": 8
     },
-    "PICK": {
+    "PICK_STONE": {
         "type": "tool",
         "harvest": 3,
         "damage": 2,
@@ -124,6 +128,60 @@
         "harvest": 7,
         "damage": 6,
         "id": 32
+    },
+    "SHOVEL": {
+        "type": "tool",
+        "dig": 1,
+        "damage": 1,
+        "id": 46
+    },
+    "SHOVEL_GOLD": {
+        "type": "tool",
+        "dig": 2,
+        "damage": 2,
+        "id": 50
+    },
+    "SHOVEL_DIAMOND": {
+        "type": "tool",
+        "dig": 3,
+        "damage": 3,
+        "id": 51
+    },
+    "SHOVEL_AMETHYST": {
+        "type": "tool",
+        "dig": 4,
+        "damage": 4,
+        "id": 52
+    },
+    "PITCHFORK": {
+        "type": "tool",
+        "harvest": 0,
+        "damage": 0,
+        "id": 53
+    },
+    "PITCHFORK2": {
+        "type": "tool",
+        "harvest": 0,
+        "damage": 0,
+        "id": 54
+    },
+    "MACHETE": {
+        "type": "tool",
+        "harvest": 0,
+        "damage": 5,
+        "id": 56
+    },
+    "WATERING_CAN_FULL": {
+        "type": "tool",
+        "harvest": 0,
+        "damage": 0,
+        "id": 49
+    },
+    "SPANNER": {
+        "type": "hammer",
+        "building_damage": 70,
+        "damage": 2,
+        "id": 55
     },
     "HAMMER": {
         "type": "hammer",
@@ -158,7 +216,7 @@
     "SUPER_HAMMER": {
         "type": "hammer",
         "building_damage": 70,
-        "damage": 1200,
+        "damage": 12,
         "id": 45
     },
     "BOOK": {
@@ -251,6 +309,74 @@
         "mob_defense": -18,
         "id": 76
     },
+    "CROWN_BLUE": {
+        "type": "helmet",
+        "defense": -4,
+        "mob_defense": -16,
+        "id": 79
+    },
+    "CROWN_GREEN": {
+        "type": "helmet",
+        "defense": -4,
+        "mob_defense": -16,
+        "id": 77
+    },
+    "EARMUFFS": {
+        "type": "hat",
+        "id": 10
+    },
+    "COAT": {
+        "type": "hat",
+        "id": 11
+    },
+    "CAP_SCARF": {
+        "type": "hat",
+        "id": 40
+    },
+    "FUR_HAT": {
+        "type": "hat",
+        "id": 88
+    },
+    "DIVING_MASK": {
+        "type": "hat",
+        "defense": -2,
+        "mob_defense": -8,
+        "id": 48
+    },
+    "SUPER_DIVING_SUIT": {
+        "type": "helmet",
+        "defense": -4,
+        "mob_defense": -16,
+        "id": 47
+    },
+    "HOOD": {
+        "type": "hat",
+        "id": 83
+    },
+    "PEASANT": {
+        "type": "hat",
+        "id": 84
+    },
+    "WINTER_HOOD": {
+        "type": "hat",
+        "id": 85
+    },
+    "WINTER_PEASANT": {
+        "type": "hat",
+        "id": 86
+    },
+    "DIAMOND_PROTECTION": {
+        "type": "helmet",
+        "id": 20
+    },
+    "AMETHYST_PROTECTION": {
+        "type": "helmet",
+        "id": 21
+    },
+    "REIDITE_PROTECTION": {
+        "type": "helmet",
+        "id": 22
+    },
     "WOOD_HELMET": {
         "type": "helmet",
         "defense": -1,
@@ -303,11 +429,6 @@
         "id": 60,
         "mob_defense": -30,
         "defense": -10
-    },
-    "CROWN_GREEN": {
-        "type": "helmet",
-        "id": 77,
-        "defense": -4
     },
     "BABY_DRAGON": {
         "type": "pet",
@@ -423,5 +544,15 @@
         "type": "food",
         "id": 189,
         "heal_boost": 5
+    },
+    "ICE": {
+        "type": "food",
+        "id": 136,
+        "cold": 20
+    },
+    "BOTTLE_FULL": {
+        "type": "food",
+        "id": 121,
+        "water": 50
     }
 }
